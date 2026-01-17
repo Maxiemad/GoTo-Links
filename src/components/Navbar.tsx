@@ -158,7 +158,6 @@ export const Navbar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
-  const [isAnimating, setIsAnimating] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -322,19 +321,15 @@ export const Navbar: React.FC = () => {
     if (item.dropdown) {
       // Open submenu
       if (openSubmenu !== item.label) {
-        setIsAnimating(true)
         setOpenSubmenu(item.label)
         const firstTab = item.dropdown.tabs?.[0]
         if (firstTab) {
           setActiveTab(firstTab.label)
         }
-        setTimeout(() => setIsAnimating(false), 300)
       } else {
         // Close submenu
-        setIsAnimating(true)
         setOpenSubmenu(null)
         setActiveTab(null)
-        setTimeout(() => setIsAnimating(false), 300)
       }
     } else if (item.href) {
       navigate(item.href)
@@ -348,20 +343,16 @@ export const Navbar: React.FC = () => {
   const handleMobileTabClick = (e: React.MouseEvent, tabLabel: string) => {
     if (isDesktop) return
     e.preventDefault()
-    setIsAnimating(true)
     setActiveTab(tabLabel)
-    setTimeout(() => setIsAnimating(false), 300)
   }
 
   // Mobile: Handle back button
   const handleBackClick = () => {
-    setIsAnimating(true)
     if (activeTab) {
       setActiveTab(null)
     } else {
       setOpenSubmenu(null)
     }
-    setTimeout(() => setIsAnimating(false), 300)
   }
 
   // Get active dropdown content
@@ -378,7 +369,6 @@ export const Navbar: React.FC = () => {
     return dropdown.tabs?.find((tab) => tab.label === activeTab)?.content
   }
 
-  const activeDropdownContent = getActiveDropdownContent()
   const activeTabContent = getActiveTabContent()
 
   return (
@@ -476,7 +466,6 @@ export const Navbar: React.FC = () => {
                       left: '50%',
                       transform: 'translateX(-50%)',
                       marginTop: '0.25rem',
-                      paddingTop: '0.75rem',
                       backgroundColor: colors.white,
                       borderRadius: borderRadius.xl,
                       boxShadow: shadows.xl,
