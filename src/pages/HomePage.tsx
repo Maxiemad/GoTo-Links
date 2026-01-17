@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
+import { Navbar } from '../components/Navbar'
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
@@ -59,44 +60,7 @@ export const HomePage: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: colors.background }}>
       {/* Navigation */}
-      <nav
-        style={{
-          padding: '1.5rem 2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          maxWidth: '1200px',
-          margin: '0 auto',
-          flexWrap: 'wrap',
-          backgroundColor: colors.white,
-          borderRadius: '0 0 1rem 1rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-        }}
-      >
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
-          <img 
-            src="/goto-links-high-resolution-logo-transparent.png" 
-            alt="GoToLinks" 
-            style={{ height: '40px', width: 'auto' }}
-            onError={(e) => {
-              // Fallback to text if image not found
-              e.currentTarget.style.display = 'none'
-              const parent = e.currentTarget.parentElement
-              if (parent) {
-                parent.innerHTML = '<span style="fontSize: 1.5rem; fontWeight: 700; color: #A18267;">GoToLinks</span>'
-              }
-            }}
-          />
-        </Link>
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <Link to="/login" style={{ color: colors.text.primary, fontSize: '0.95rem', textDecoration: 'none' }}>
-            Login
-          </Link>
-          <Button size="sm" variant="primary" to="/signup">
-            Create free profile
-          </Button>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Hero Section with Gradient Background */}
       <section
@@ -180,6 +144,7 @@ export const HomePage: React.FC = () => {
 
       {/* Why wellness creators love GoToLinks */}
       <section
+        id="features"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(180deg, ${colors.white} 0%, ${colors.background} 100%)`,
@@ -242,6 +207,7 @@ export const HomePage: React.FC = () => {
 
       {/* Made for retreats */}
       <section
+        id="use-cases"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
@@ -322,6 +288,7 @@ export const HomePage: React.FC = () => {
 
       {/* How it works */}
       <section
+        id="how-it-works"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(180deg, ${colors.background} 0%, ${colors.white} 100%)`,
@@ -403,6 +370,7 @@ export const HomePage: React.FC = () => {
 
       {/* Free vs Pro */}
       <section
+        id="pricing"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,

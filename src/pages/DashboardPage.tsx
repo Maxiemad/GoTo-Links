@@ -61,16 +61,9 @@ export const DashboardPage: React.FC = () => {
       >
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
           <img 
-            src="/goto-links-high-resolution-logo-transparent.png" 
+            src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png" 
             alt="GoToLinks" 
             style={{ height: '40px', width: 'auto' }}
-            onError={(e) => {
-              e.currentTarget.style.display = 'none'
-              const parent = e.currentTarget.parentElement
-              if (parent) {
-                parent.innerHTML = '<span style="fontSize: 1.5rem; fontWeight: 700; color: #A18267;">GoToLinks</span>'
-              }
-            }}
           />
         </Link>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
