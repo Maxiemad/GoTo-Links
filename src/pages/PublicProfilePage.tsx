@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Button } from '../components/Button'
 import { colors, typography, borderRadius, themes, shadows } from '../styles/theme'
 import { mockApi } from '../utils/mockData'
 import { Profile, ProfileBlock } from '../types'
@@ -60,7 +59,7 @@ export const PublicProfilePage: React.FC = () => {
     )
   }
 
-  const theme = themes[profile.theme] || themes['zen-minimal']
+  const theme = (profile.theme && themes[profile.theme as keyof typeof themes]) || themes['zen-minimal']
   const backgroundStyle: React.CSSProperties = {
     minHeight: '100vh',
     background: Array.isArray(theme.background)

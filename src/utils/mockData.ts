@@ -1,5 +1,4 @@
 import { User, Profile, Stats } from '../types'
-import { themes } from '../styles/theme'
 
 export const mockUser: User = {
   id: '1',

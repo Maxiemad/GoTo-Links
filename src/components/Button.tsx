@@ -10,6 +10,8 @@ interface ButtonProps {
   to?: string
   as?: 'button' | 'link'
   onClick?: (e: React.MouseEvent<HTMLElement>) => void
+  onMouseEnter?: (e: React.MouseEvent<HTMLElement>) => void
+  onMouseLeave?: (e: React.MouseEvent<HTMLElement>) => void
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   className?: string
@@ -22,6 +24,8 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   to,
   as,
+  onMouseEnter,
+  onMouseLeave,
   ...props
 }) => {
   const baseStyles: React.CSSProperties = {
@@ -90,6 +94,7 @@ export const Button: React.FC<ButtonProps> = ({
     if (variant !== 'ghost') {
       Object.assign(e.currentTarget.style, hoverStyles)
     }
+    onMouseEnter?.(e)
   }
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
@@ -97,6 +102,7 @@ export const Button: React.FC<ButtonProps> = ({
       e.currentTarget.style.transform = ''
       e.currentTarget.style.boxShadow = variantStyles[variant].boxShadow || ''
     }
+    onMouseLeave?.(e)
   }
 
   // If 'to' prop is provided, render as Link

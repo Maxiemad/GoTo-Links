@@ -95,7 +95,7 @@ export const themes = {
     secondary: colors.gray[200],
     background: colors.white,
     text: colors.gray[800],
-    accent: colors.teal[300],
+    accent: colors.primary[300],
   },
   'mystic-teal-gold': {
     name: 'Mystic Teal & Gold',
@@ -103,12 +103,12 @@ export const themes = {
     secondary: colors.gold[500],
     background: colors.white,
     text: colors.gray[800],
-    accent: colors.gold[400],
+    accent: colors.accent[400],
   },
   'ocean-temple': {
     name: 'Ocean Temple',
     primary: '#0EA5E9',
-    secondary: colors.teal[400],
+    secondary: colors.primary[400],
     background: 'linear-gradient(135deg, #E0F2FE 0%, #B3E5FC 100%)',
     text: colors.gray[800],
     accent: colors.teal[500],

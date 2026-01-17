@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
-import { colors, typography, spacing, borderRadius, themes } from '../styles/theme'
+import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
@@ -835,12 +835,12 @@ export const HomePage: React.FC = () => {
                 position: 'relative',
                 pointerEvents: selectedTheme && !isLoading ? 'auto' : 'none',
               }}
-              onMouseEnter={(e) => {
+              onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
                 if (selectedTheme && !isLoading && !prefersReducedMotion) {
                   e.currentTarget.style.filter = 'brightness(1.05)'
                 }
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
                 if (!prefersReducedMotion) {
                   e.currentTarget.style.filter = isLoading ? 'brightness(0.95)' : 'brightness(1)'
                 }

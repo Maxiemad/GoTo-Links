@@ -183,7 +183,7 @@ export const DashboardPage: React.FC = () => {
                     width: '50px',
                     height: '50px',
                     borderRadius: borderRadius.full,
-                    backgroundColor: colors.sage[100],
+                    backgroundColor: colors.secondary[100],
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
