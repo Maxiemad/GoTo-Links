@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import Lottie from 'lottie-react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Navbar } from '../components/Navbar'
@@ -9,12 +10,24 @@ export const HomePage: React.FC = () => {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [lottieData, setLottieData] = useState<any>(null)
   const themeSectionRef = useRef<HTMLDivElement>(null)
 
   const scrollToDemo = () => {
     const demo = document.getElementById('demo')
     demo?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  // Load Lottie animation from local file
+  useEffect(() => {
+    fetch('/a/Main%20Scene.json')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load animation')
+        return res.json()
+      })
+      .then((data) => setLottieData(data))
+      .catch((err) => console.error('Error loading Lottie animation:', err))
+  }, [])
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -58,7 +71,7 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: colors.background }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'transparent' }}>
       {/* Navigation */}
       <Navbar />
 
@@ -66,8 +79,7 @@ export const HomePage: React.FC = () => {
       <section
         style={{
           padding: '6rem 2rem',
-          textAlign: 'center',
-          maxWidth: '1000px',
+          maxWidth: '1200px',
           margin: '0 auto',
           background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, ${colors.white} 100%)`,
           borderRadius: '2rem',
@@ -77,68 +89,109 @@ export const HomePage: React.FC = () => {
           overflow: 'hidden',
         }}
       >
-        {/* Hero Image - Real Retreat Photo */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '800px',
-            height: '400px',
-            margin: '0 auto 3rem',
-            borderRadius: '1.5rem',
-            overflow: 'hidden',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-            backgroundImage: 'url(https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200&h=600&fit=crop)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            position: 'relative',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: `linear-gradient(135deg, ${colors.primary[500]}20 0%, ${colors.secondary[500]}20 100%)`,
-            }}
-          />
-        </div>
-        
-        <h1
-          style={{
-            fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-            fontWeight: 700,
-            color: colors.text.primary,
-            marginBottom: '1.5rem',
-            lineHeight: 1.2,
-            fontFamily: typography.fontFamily.sans,
-          }}
-        >
-          Your Wellness-Branded Link in Bio
-        </h1>
-        <p
-          style={{
-            fontSize: '1.25rem',
-            color: colors.text.secondary,
-            marginBottom: '2.5rem',
-            lineHeight: 1.6,
-          }}
-        >
-          Designed for retreat leaders, healers, coaches and venues. A soulful alternative to
-          generic link tools.
-        </p>
         <div
           style={{
             display: 'flex',
-            gap: '1rem',
-            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '4rem',
             flexWrap: 'wrap',
           }}
         >
-          <Button size="lg" variant="primary" to="/signup">
-            Create your free GoToLinks profile
-          </Button>
-          <Button size="lg" variant="outline" onClick={scrollToDemo}>
-            See example profile
-          </Button>
+          {/* Text Content - Left Side */}
+          <div
+            className="hero-content"
+            style={{
+              flex: '1 1 400px',
+              textAlign: 'left',
+            }}
+          >
+            <h1
+              style={{
+                fontWeight: 700,
+                color: colors.text.primary,
+                marginBottom: '1.5rem',
+                lineHeight: 1.3,
+                fontFamily: typography.fontFamily.sans,
+              }}
+            >
+              <span style={{ fontSize: 'clamp(2rem, 3vw, 3.5rem)', display: 'block' }}>
+                Your Wellness-Branded
+              </span>
+              <span style={{ fontSize: 'clamp(2.5rem, 4vw, 4rem)', display: 'block' }}>
+                Link in Bio
+              </span>
+            </h1>
+            <p
+              style={{
+                fontSize: '1.25rem',
+                color: colors.text.secondary,
+                marginBottom: '2.5rem',
+                lineHeight: 1.6,
+              }}
+            >
+              Designed for retreat leaders, healers, coaches and venues. A soulful alternative to
+              generic link tools.
+            </p>
+            <div
+              className="hero-buttons"
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                justifyContent: 'flex-start',
+                flexWrap: 'wrap',
+              }}
+            >
+              <Button size="lg" variant="primary" to="/signup">
+                Create your free GoToLinks profile
+              </Button>
+              <Button size="lg" variant="outline" onClick={scrollToDemo}>
+                See example profile
+              </Button>
+            </div>
+          </div>
+
+          {/* Hero Animation - Right Side */}
+          <div
+            style={{
+              flex: '1 1 400px',
+              width: '100%',
+              maxWidth: '600px',
+              height: '400px',
+              borderRadius: '1.5rem',
+              overflow: 'hidden',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+              backgroundColor: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+            }}
+          >
+            {lottieData ? (
+              <Lottie
+                animationData={lottieData}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                loop={true}
+                autoplay={true}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: colors.text.secondary,
+                }}
+              >
+                Loading animation...
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -173,27 +226,84 @@ export const HomePage: React.FC = () => {
               {
                 title: 'Video Hero',
                 description: 'Showcase your retreats with stunning video backgrounds that capture the essence of your offerings.',
-                icon: '🎥',
+                color: colors.primary[500],
+                animation: 'video',
               },
               {
                 title: 'Retreat Blocks',
                 description: 'Beautiful, dedicated blocks for your retreats and events with dates, locations, and easy booking.',
-                icon: '🌿',
+                color: colors.secondary[500],
+                animation: 'retreat',
               },
               {
                 title: 'Testimonials',
                 description: 'Let your community speak for you with elegant testimonial cards that build trust.',
-                icon: '💬',
+                color: colors.accent[500],
+                animation: 'testimonial',
               },
               {
                 title: 'Analytics',
                 description: 'Track what matters - see which links and retreats resonate most with your audience.',
-                icon: '📊',
+                color: colors.primary[600],
+                animation: 'analytics',
               },
             ].map((feature, idx) => (
-              <Card key={idx}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{feature.icon}</div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem' }}>
+              <Card 
+                key={idx}
+                className="feature-card"
+                style={{
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  animation: `fadeInUp 0.6s ease ${idx * 0.1}s both`,
+                  cursor: 'default',
+                }}
+              >
+                <div 
+                  style={{ 
+                    width: '80px',
+                    height: '80px',
+                    marginBottom: '1.5rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: borderRadius.full,
+                    background: `linear-gradient(135deg, ${feature.color}20 0%, ${feature.color}40 100%)`,
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {feature.animation === 'video' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+                      <rect x="2" y="6" width="14" height="12" rx="2" stroke={feature.color} strokeWidth="2" fill="none"/>
+                      <path d="M18 8l4-2v12l-4-2V8z" stroke={feature.color} strokeWidth="2" fill={feature.color} opacity="0.3"/>
+                      <circle cx="9" cy="12" r="2" fill={feature.color} style={{ animation: 'scale 2s ease-in-out infinite' }}/>
+                    </svg>
+                  )}
+                  {feature.animation === 'retreat' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                      <path d="M12 2L4 8v8l8 6 8-6V8l-8-6z" stroke={feature.color} strokeWidth="2" fill="none"/>
+                      <path d="M12 2v6l6 4" stroke={feature.color} strokeWidth="2" fill="none" opacity="0.6"/>
+                      <circle cx="12" cy="12" r="3" fill={feature.color} opacity="0.2" style={{ animation: 'pulse 2s ease-in-out infinite' }}/>
+                      <path d="M8 14l4-2 4 2" stroke={feature.color} strokeWidth="1.5" fill={feature.color} opacity="0.4"/>
+                    </svg>
+                  )}
+                  {feature.animation === 'testimonial' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'bounce 2s ease-in-out infinite' }}>
+                      <path d="M3 21c3-3 7-5 9-5s6 2 9 5" stroke={feature.color} strokeWidth="2" fill="none"/>
+                      <path d="M8 8c0-2.5 2-4.5 4.5-4.5S17 5.5 17 8c0 2.5-2 4.5-4.5 4.5S8 10.5 8 8z" stroke={feature.color} strokeWidth="2" fill={feature.color} opacity="0.2"/>
+                      <circle cx="12.5" cy="8" r="1.5" fill={feature.color} style={{ animation: 'pulse 1.5s ease-in-out infinite' }}/>
+                      <path d="M6 14l2-2 2 2M14 14l2-2 2 2" stroke={feature.color} strokeWidth="1.5" fill="none" opacity="0.6"/>
+                    </svg>
+                  )}
+                  {feature.animation === 'analytics' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'slideUp 2s ease-in-out infinite' }}>
+                      <rect x="3" y="18" width="4" height="4" rx="1" fill={feature.color} opacity="0.6" style={{ animation: 'grow 2s ease-in-out infinite 0s' }}/>
+                      <rect x="9" y="14" width="4" height="8" rx="1" fill={feature.color} opacity="0.7" style={{ animation: 'grow 2s ease-in-out infinite 0.2s' }}/>
+                      <rect x="15" y="10" width="4" height="12" rx="1" fill={feature.color} opacity="0.8" style={{ animation: 'grow 2s ease-in-out infinite 0.4s' }}/>
+                      <path d="M5 18l4-4 4 4 6-6" stroke={feature.color} strokeWidth="2" fill="none" opacity="0.5"/>
+                    </svg>
+                  )}
+                </div>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: colors.text.primary }}>
                   {feature.title}
                 </h3>
                 <p style={{ color: colors.text.secondary, lineHeight: 1.6 }}>
@@ -290,80 +400,152 @@ export const HomePage: React.FC = () => {
       <section
         id="how-it-works"
         style={{
-          padding: '5rem 2rem',
+          position: 'relative',
+          minHeight: '100vh',
+          padding: '6rem 2rem',
           background: `linear-gradient(180deg, ${colors.background} 0%, ${colors.white} 100%)`,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        {/* Main Content - Centered */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 10,
+            maxWidth: '800px',
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
           <h2
             style={{
-              fontSize: '2.5rem',
-              fontWeight: 700,
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: 600,
               textAlign: 'center',
-              marginBottom: '3rem',
+              marginBottom: '4rem',
               color: colors.text.primary,
+              fontFamily: typography.fontFamily.sans,
             }}
           >
             How it works
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '3rem',
+              marginBottom: '4rem',
+            }}
+          >
             {[
               {
-                step: '1',
+                number: '1',
                 title: 'Create profile',
-                description: 'Sign up in seconds and set up your wellness-branded profile with your name, photo, and bio.',
+                description: 'Sign up in seconds and set up your wellness-branded profile.',
               },
               {
-                step: '2',
+                number: '2',
                 title: 'Add links & retreats',
-                description: 'Add your links, retreat listings, booking calendars, and testimonials. Drag and drop to reorder.',
+                description: 'Add booking calendars, retreats, testimonials.',
               },
               {
-                step: '3',
+                number: '3',
                 title: 'Share your GoToLinks everywhere',
-                description: 'Put your unique link in your Instagram bio, email signature, and anywhere you connect with your community.',
+                description: 'Instagram bio, email signature, everywhere.',
               },
             ].map((step, idx) => (
               <div
                 key={idx}
                 style={{
-                  display: 'flex',
-                  gap: '2rem',
-                  alignItems: 'flex-start',
-                  backgroundColor: colors.white,
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(10px)',
                   padding: '2rem',
-                  borderRadius: borderRadius['2xl'],
-                  boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+                  borderRadius: borderRadius.xl,
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                  border: `1px solid rgba(255, 255, 255, 0.5)`,
                 }}
               >
                 <div
                   style={{
-                    width: '60px',
-                    height: '60px',
-                    borderRadius: borderRadius.full,
-                    background: `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.secondary[500]} 100%)`,
-                    color: colors.white,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '1.5rem',
-                    fontWeight: 700,
-                    flexShrink: 0,
-                    boxShadow: '0 4px 12px rgba(255, 112, 67, 0.3)',
+                    gap: '1.5rem',
+                    flexWrap: 'wrap',
                   }}
                 >
-                  {step.step}
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem', color: colors.text.primary }}>
-                    {step.title}
-                  </h3>
-                  <p style={{ color: colors.text.secondary, lineHeight: 1.6 }}>
-                    {step.description}
-                  </p>
+                  <div
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      borderRadius: borderRadius.full,
+                      background: `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.secondary[500]} 100%)`,
+                      color: colors.white,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.5rem',
+                      fontWeight: 700,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {step.number}
+                  </div>
+                  <div style={{ flex: 1, minWidth: '200px', textAlign: 'left' }}>
+                    <h3
+                      style={{
+                        fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
+                        fontWeight: 600,
+                        marginBottom: '0.5rem',
+                        color: colors.text.primary,
+                      }}
+                    >
+                      {step.title}
+                    </h3>
+                    <p
+                      style={{
+                        color: colors.text.secondary,
+                        lineHeight: 1.6,
+                        fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
+                      }}
+                    >
+                      {step.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Trust Stats */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '2rem',
+              marginTop: '4rem',
+              textAlign: 'center',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                3 easy steps
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                1 powerful wellness link
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                Unlimited sharing
+              </div>
+            </div>
           </div>
         </div>
       </section>

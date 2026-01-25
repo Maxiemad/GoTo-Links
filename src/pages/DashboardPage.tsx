@@ -47,7 +47,7 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: colors.background }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'transparent' }}>
       {/* Navigation */}
       <nav
         style={{
