@@ -12,17 +12,11 @@ export const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [lottieData, setLottieData] = useState<any>(null)
-  const [chatText, setChatText] = useState('')
-  const [chatVisible, setChatVisible] = useState(true)
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [isHoveringCTA, setIsHoveringCTA] = useState(false)
-  const [avatarBlink, setAvatarBlink] = useState(false)
-  const [avatarTilt, setAvatarTilt] = useState(0)
-  const [scrollY, setScrollY] = useState(0)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
   const themeSectionRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
-  const chatRef = useRef<HTMLDivElement>(null)
   const howItWorksRef = useRef<HTMLDivElement>(null)
 
   const scrollToDemo = () => {
@@ -67,47 +61,6 @@ export const HomePage: React.FC = () => {
 
   // Check for prefers-reduced-motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  // Typewriter effect for chat
-  useEffect(() => {
-    const text = "What are you hoping to find today?"
-    let index = 0
-    const timer = setInterval(() => {
-      if (index < text.length) {
-        setChatText(text.slice(0, index + 1))
-        index++
-      } else {
-        clearInterval(timer)
-      }
-    }, 50)
-    return () => clearInterval(timer)
-  }, [])
-
-  // Avatar blink animation
-  useEffect(() => {
-    const blinkInterval = setInterval(() => {
-      setAvatarBlink(true)
-      setTimeout(() => setAvatarBlink(false), 200)
-    }, 6000 + Math.random() * 2000)
-    return () => clearInterval(blinkInterval)
-  }, [])
-
-  // Avatar tilt animation
-  useEffect(() => {
-    const tiltInterval = setInterval(() => {
-      setAvatarTilt(Math.sin(Date.now() / 3000) * 3)
-    }, 100)
-    return () => clearInterval(tiltInterval)
-  }, [])
-
-  // Scroll tracking for chat nudge
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY)
-    }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   // Custom cursor tracking for CTA buttons and mouse parallax
   useEffect(() => {
@@ -457,116 +410,6 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Chat Avatar Widget */}
-        {chatVisible ? (
-          <div
-            ref={chatRef}
-            className="chat-widget"
-            style={{
-              position: 'fixed',
-              bottom: '2rem',
-              right: '2rem',
-              zIndex: 1000,
-              transform: `translateY(${Math.min(scrollY * 0.1, 10)}px)`,
-              transition: 'transform 0.3s ease-out',
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: colors.white,
-                borderRadius: borderRadius['2xl'],
-                padding: '1rem 1.25rem',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-                maxWidth: '280px',
-                marginBottom: '1rem',
-                animation: 'fadeInUp 0.6s ease-out',
-              }}
-            >
-              <p style={{ 
-                fontSize: '0.875rem', 
-                color: colors.text.primary,
-                lineHeight: 1.5,
-                margin: 0,
-              }}>
-                {chatText}
-                <span style={{ 
-                  display: 'inline-block',
-                  width: '2px',
-                  height: '1em',
-                  backgroundColor: colors.accent[500],
-                  marginLeft: '2px',
-                  animation: 'blink 1s infinite',
-                }} />
-              </p>
-            </div>
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: borderRadius.full,
-                background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.secondary[400]} 100%)`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-                cursor: 'pointer',
-                marginLeft: 'auto',
-                transform: `rotate(${avatarTilt}deg)`,
-                transition: 'transform 0.3s ease-out',
-              }}
-              onClick={() => setChatVisible(false)}
-              onMouseEnter={(e) => {
-                if (!prefersReducedMotion) {
-                  e.currentTarget.style.transform = `rotate(${avatarTilt}deg) scale(1.1)`
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = `rotate(${avatarTilt}deg) scale(1)`
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '1.5rem',
-                  transform: avatarBlink ? 'scaleY(0.1)' : 'scaleY(1)',
-                  transition: 'transform 0.15s ease-out',
-                }}
-              >
-                💬
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              position: 'fixed',
-              bottom: '2rem',
-              right: '2rem',
-              zIndex: 1000,
-              width: '56px',
-              height: '56px',
-              borderRadius: borderRadius.full,
-              background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.secondary[400]} 100%)`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-              cursor: 'pointer',
-              transform: `translateY(${Math.min(scrollY * 0.1, 10)}px)`,
-              transition: 'transform 0.3s ease-out',
-            }}
-            onClick={() => setChatVisible(true)}
-            onMouseEnter={(e) => {
-              if (!prefersReducedMotion) {
-                e.currentTarget.style.transform = `translateY(${Math.min(scrollY * 0.1, 10)}px) scale(1.1)`
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = `translateY(${Math.min(scrollY * 0.1, 10)}px) scale(1)`
-            }}
-          >
-            <span style={{ fontSize: '1.5rem' }}>💬</span>
-          </div>
-        )}
       </section>
 
       {/* Why wellness creators love GoToLinks */}
