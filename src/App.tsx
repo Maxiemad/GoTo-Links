@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { SignupPage } from './pages/SignupPage'
@@ -7,10 +8,32 @@ import { ProfileEditorPage } from './pages/ProfileEditorPage'
 import { PublicProfilePage } from './pages/PublicProfilePage'
 import './styles/global.css'
 
-function App() {
+const AnimatedRoutes = () => {
+  const location = useLocation()
+  const [displayLocation, setDisplayLocation] = useState(location)
+  const [transitionStage, setTransitionStage] = useState('page-transition-enter-active')
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  useEffect(() => {
+    if (location.pathname !== displayLocation.pathname) {
+      if (!prefersReducedMotion) {
+        setTransitionStage('page-transition-exit-active')
+        setTimeout(() => {
+          setDisplayLocation(location)
+          setTransitionStage('page-transition-enter')
+          setTimeout(() => {
+            setTransitionStage('page-transition-enter-active')
+          }, 10)
+        }, 300)
+      } else {
+        setDisplayLocation(location)
+      }
+    }
+  }, [location, displayLocation.pathname, prefersReducedMotion])
+
   return (
-    <BrowserRouter>
-      <Routes>
+    <div className={transitionStage} style={{ minHeight: '100vh' }}>
+      <Routes location={displayLocation}>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
@@ -18,6 +41,14 @@ function App() {
         <Route path="/dashboard/profile-editor" element={<ProfileEditorPage />} />
         <Route path="/profile/:handle" element={<PublicProfilePage />} />
       </Routes>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AnimatedRoutes />
     </BrowserRouter>
   )
 }

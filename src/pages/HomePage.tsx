@@ -4,6 +4,8 @@ import Lottie from 'lottie-react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Navbar } from '../components/Navbar'
+import { FloatingParticles, BreathingCircle, LotusElement, ParallaxImage } from '../components/AnimationSystem'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
@@ -11,7 +13,19 @@ export const HomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [lottieData, setLottieData] = useState<any>(null)
+  const [chatText, setChatText] = useState('')
+  const [chatVisible, setChatVisible] = useState(true)
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
+  const [isHoveringCTA, setIsHoveringCTA] = useState(false)
+  const [avatarBlink, setAvatarBlink] = useState(false)
+  const [avatarTilt, setAvatarTilt] = useState(0)
+  const [scrollY, setScrollY] = useState(0)
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const themeSectionRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const chatRef = useRef<HTMLDivElement>(null)
+  const howItWorksRef = useRef<HTMLDivElement>(null)
 
   const scrollToDemo = () => {
     const demo = document.getElementById('demo')
@@ -56,16 +70,109 @@ export const HomePage: React.FC = () => {
   // Check for prefers-reduced-motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  // Typewriter effect for chat
+  useEffect(() => {
+    const text = "What are you hoping to find today?"
+    let index = 0
+    const timer = setInterval(() => {
+      if (index < text.length) {
+        setChatText(text.slice(0, index + 1))
+        index++
+      } else {
+        clearInterval(timer)
+      }
+    }, 50)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Avatar blink animation
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setAvatarBlink(true)
+      setTimeout(() => setAvatarBlink(false), 200)
+    }, 6000 + Math.random() * 2000)
+    return () => clearInterval(blinkInterval)
+  }, [])
+
+  // Avatar tilt animation
+  useEffect(() => {
+    const tiltInterval = setInterval(() => {
+      setAvatarTilt(Math.sin(Date.now() / 3000) * 3)
+    }, 100)
+    return () => clearInterval(tiltInterval)
+  }, [])
+
+  // Scroll tracking for chat nudge
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Custom cursor tracking for CTA buttons and mouse parallax
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY })
+      setMousePosition({ x: e.clientX, y: e.clientY })
+
+      // Parallax effect for floating icons
+      if (howItWorksRef.current) {
+        const rect = howItWorksRef.current.getBoundingClientRect()
+        const isInSection = e.clientX >= rect.left && e.clientX <= rect.right && 
+                           e.clientY >= rect.top && e.clientY <= rect.bottom
+        if (isInSection) {
+          const centerX = rect.left + rect.width / 2
+          const centerY = rect.top + rect.height / 2
+          const deltaX = (e.clientX - centerX) / 20
+          const deltaY = (e.clientY - centerY) / 20
+          
+          document.querySelectorAll('.floating-icon').forEach((icon, idx) => {
+            const element = icon as HTMLElement
+            const angle = (idx * 60) * (Math.PI / 180)
+            const radius = 200
+            const baseX = Math.cos(angle) * radius
+            const baseY = Math.sin(angle) * radius
+            element.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`
+          })
+        }
+      }
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+    }
+  }, [])
+
+  // Intersection Observer for scroll-based animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('data-section-id')
+            if (id) {
+              setVisibleSections((prev) => new Set([...prev, id]))
+            }
+          }
+        })
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
+    )
+
+    document.querySelectorAll('[data-section-id]').forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [])
+
   const handleThemeSelect = (themeKey: string) => {
     setSelectedTheme(themeKey)
   }
 
   const handleCreateAndStyle = () => {
     setIsLoading(true)
-    // Simulate loading state
     setTimeout(() => {
       setIsLoading(false)
-      // Navigate to signup with selected theme
       window.location.href = '/signup'
     }, 800)
   }
@@ -77,11 +184,12 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Section with Gradient Background */}
       <section
+        ref={heroRef}
+        className="hero-section"
         style={{
           padding: '6rem 2rem',
           maxWidth: '1200px',
           margin: '0 auto',
-          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, ${colors.white} 100%)`,
           borderRadius: '2rem',
           marginTop: '2rem',
           marginBottom: '4rem',
@@ -89,12 +197,68 @@ export const HomePage: React.FC = () => {
           overflow: 'hidden',
         }}
       >
+        {/* Animated Gradient Background */}
+        <div
+          className="hero-gradient-bg"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: '2rem',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Floating Particles */}
+        <FloatingParticles count={40} intensity="medium" sacredGeometry={true} />
+
+        {/* Breathing Circles */}
+        <div style={{ position: 'absolute', top: '10%', left: '5%', zIndex: 0, opacity: 0.3, pointerEvents: 'none' }}>
+          <BreathingCircle size={120} color={colors.primary[300]} duration={4} delay={0} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '15%', right: '8%', zIndex: 0, opacity: 0.3, pointerEvents: 'none' }}>
+          <BreathingCircle size={80} color={colors.secondary[300]} duration={5} delay={1} />
+        </div>
+
+        {/* Lotus Elements */}
+        <div style={{ position: 'absolute', top: '20%', right: '10%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={80} petals={8} color={colors.secondary[200]} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '20%', left: '10%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={60} petals={6} color={colors.primary[200]} />
+        </div>
+        
+        {/* Custom Cursor Glow - Only visual enhancement, doesn't hide cursor */}
+        {isHoveringCTA && (
+          <div
+            className="cursor-glow"
+            style={{
+              position: 'fixed',
+              left: cursorPosition.x - 20,
+              top: cursorPosition.y - 20,
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              background: `radial-gradient(circle, ${colors.accent[500]}30 0%, transparent 70%)`,
+              pointerEvents: 'none',
+              zIndex: 9999,
+              transition: 'transform 0.1s ease-out',
+              transform: 'scale(1.2)',
+            }}
+          />
+        )}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '4rem',
             flexWrap: 'wrap',
+            position: 'relative',
+            zIndex: 10,
+            pointerEvents: 'auto',
           }}
         >
           {/* Text Content - Left Side */}
@@ -103,6 +267,9 @@ export const HomePage: React.FC = () => {
             style={{
               flex: '1 1 400px',
               textAlign: 'left',
+              position: 'relative',
+              zIndex: 10,
+              pointerEvents: 'auto',
             }}
           >
             <h1
@@ -112,12 +279,30 @@ export const HomePage: React.FC = () => {
                 marginBottom: '1.5rem',
                 lineHeight: 1.3,
                 fontFamily: typography.fontFamily.sans,
+                position: 'relative',
+                zIndex: 1,
+                pointerEvents: 'auto',
+                cursor: 'text',
               }}
             >
-              <span style={{ fontSize: 'clamp(2rem, 3vw, 3.5rem)', display: 'block' }}>
+              <span 
+                className="headline-line-1"
+                style={{ 
+                  fontSize: 'clamp(2rem, 3vw, 3.5rem)', 
+                  display: 'block',
+                  animation: prefersReducedMotion ? 'none' : 'fadeSlideUp 0.8s ease-out',
+                }}
+              >
                 Your Wellness-Branded
               </span>
-              <span style={{ fontSize: 'clamp(2.5rem, 4vw, 4rem)', display: 'block' }}>
+              <span 
+                className="headline-line-2 gradient-text"
+                style={{ 
+                  fontSize: 'clamp(2.5rem, 4vw, 4rem)', 
+                  display: 'block',
+                  animation: prefersReducedMotion ? 'none' : 'fadeSlideUpPop 0.8s ease-out 0.15s both',
+                }}
+              >
                 Link in Bio
               </span>
             </h1>
@@ -127,6 +312,8 @@ export const HomePage: React.FC = () => {
                 color: colors.text.secondary,
                 marginBottom: '2.5rem',
                 lineHeight: 1.6,
+                pointerEvents: 'auto',
+                cursor: 'text',
               }}
             >
               Designed for retreat leaders, healers, coaches and venues. A soulful alternative to
@@ -139,19 +326,98 @@ export const HomePage: React.FC = () => {
                 gap: '1rem',
                 justifyContent: 'flex-start',
                 flexWrap: 'wrap',
+                position: 'relative',
+                zIndex: 1,
+                pointerEvents: 'auto',
               }}
             >
-              <Button size="lg" variant="primary" to="/signup">
-                Create your free GoToLinks profile
-              </Button>
-              <Button size="lg" variant="outline" onClick={scrollToDemo}>
-                See example profile
-              </Button>
+              <div
+                className="cta-primary-wrapper elegant-hover ripple-effect"
+                onMouseEnter={() => setIsHoveringCTA(true)}
+                onMouseLeave={() => setIsHoveringCTA(false)}
+                style={{ position: 'relative', cursor: 'pointer', pointerEvents: 'auto' }}
+              >
+                <Button 
+                  size="lg" 
+                  variant="primary" 
+                  to="/signup"
+                  className="cta-primary button-elegant glow-effect"
+                  style={{
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!prefersReducedMotion) {
+                      e.currentTarget.style.transform = 'scale(1.03)'
+                      e.currentTarget.style.filter = 'brightness(0.95)'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = ''
+                    e.currentTarget.style.filter = ''
+                  }}
+                  onMouseDown={(e) => {
+                    if (!prefersReducedMotion) {
+                      e.currentTarget.style.transform = 'scale(0.98) translateY(2px)'
+                    }
+                  }}
+                  onMouseUp={(e) => {
+                    if (!prefersReducedMotion) {
+                      e.currentTarget.style.transform = 'scale(1.03)'
+                    }
+                  }}
+                >
+                  Create your free GoToLinks profile
+                </Button>
+              </div>
+              <div
+                className="cta-secondary-wrapper elegant-hover"
+                style={{ position: 'relative', cursor: 'pointer', pointerEvents: 'auto' }}
+              >
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  onClick={scrollToDemo}
+                  className="cta-secondary button-elegant"
+                  style={{
+                    position: 'relative',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!prefersReducedMotion) {
+                      const underline = e.currentTarget.querySelector('.underline-animation') as HTMLElement
+                      if (underline) underline.style.width = '100%'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    const underline = e.currentTarget.querySelector('.underline-animation') as HTMLElement
+                    if (underline) underline.style.width = '0%'
+                  }}
+                >
+                  <span style={{ position: 'relative', zIndex: 1 }}>
+                    See example profile
+                    <span style={{ marginLeft: '0.5rem', transition: 'transform 0.3s ease' }}>→</span>
+                  </span>
+                  <span 
+                    className="underline-animation"
+                    style={{
+                      position: 'absolute',
+                      bottom: '0.5rem',
+                      left: 0,
+                      height: '2px',
+                      width: '0%',
+                      background: colors.accent[500],
+                      transition: 'width 0.3s ease',
+                    }}
+                  />
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Hero Animation - Right Side */}
           <div
+            className="parallax-container elegant-hover"
             style={{
               flex: '1 1 400px',
               width: '100%',
@@ -159,12 +425,13 @@ export const HomePage: React.FC = () => {
               height: '400px',
               borderRadius: '1.5rem',
               overflow: 'hidden',
-              boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02)',
               backgroundColor: 'transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
+              zIndex: 1,
             }}
           >
             {lottieData ? (
@@ -193,24 +460,152 @@ export const HomePage: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Chat Avatar Widget */}
+        {chatVisible ? (
+          <div
+            ref={chatRef}
+            className="chat-widget"
+            style={{
+              position: 'fixed',
+              bottom: '2rem',
+              right: '2rem',
+              zIndex: 1000,
+              transform: `translateY(${Math.min(scrollY * 0.1, 10)}px)`,
+              transition: 'transform 0.3s ease-out',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius['2xl'],
+                padding: '1rem 1.25rem',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+                maxWidth: '280px',
+                marginBottom: '1rem',
+                animation: 'fadeInUp 0.6s ease-out',
+              }}
+            >
+              <p style={{ 
+                fontSize: '0.875rem', 
+                color: colors.text.primary,
+                lineHeight: 1.5,
+                margin: 0,
+              }}>
+                {chatText}
+                <span style={{ 
+                  display: 'inline-block',
+                  width: '2px',
+                  height: '1em',
+                  backgroundColor: colors.accent[500],
+                  marginLeft: '2px',
+                  animation: 'blink 1s infinite',
+                }} />
+              </p>
+            </div>
+            <div
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: borderRadius.full,
+                background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.secondary[400]} 100%)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                marginLeft: 'auto',
+                transform: `rotate(${avatarTilt}deg)`,
+                transition: 'transform 0.3s ease-out',
+              }}
+              onClick={() => setChatVisible(false)}
+              onMouseEnter={(e) => {
+                if (!prefersReducedMotion) {
+                  e.currentTarget.style.transform = `rotate(${avatarTilt}deg) scale(1.1)`
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = `rotate(${avatarTilt}deg) scale(1)`
+              }}
+            >
+              <div
+                style={{
+                  fontSize: '1.5rem',
+                  transform: avatarBlink ? 'scaleY(0.1)' : 'scaleY(1)',
+                  transition: 'transform 0.15s ease-out',
+                }}
+              >
+                💬
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '2rem',
+              right: '2rem',
+              zIndex: 1000,
+              width: '56px',
+              height: '56px',
+              borderRadius: borderRadius.full,
+              background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.secondary[400]} 100%)`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+              cursor: 'pointer',
+              transform: `translateY(${Math.min(scrollY * 0.1, 10)}px)`,
+              transition: 'transform 0.3s ease-out',
+            }}
+            onClick={() => setChatVisible(true)}
+            onMouseEnter={(e) => {
+              if (!prefersReducedMotion) {
+                e.currentTarget.style.transform = `translateY(${Math.min(scrollY * 0.1, 10)}px) scale(1.1)`
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = `translateY(${Math.min(scrollY * 0.1, 10)}px) scale(1)`
+            }}
+          >
+            <span style={{ fontSize: '1.5rem' }}>💬</span>
+          </div>
+        )}
       </section>
 
       {/* Why wellness creators love GoToLinks */}
       <section
         id="features"
+        data-section-id="features"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(180deg, ${colors.white} 0%, ${colors.background} 100%)`,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Subtle Floating Particles */}
+        <FloatingParticles count={20} intensity="low" sacredGeometry={true} />
+
+        {/* Breathing Circles */}
+        <div style={{ position: 'absolute', top: '5%', right: '5%', zIndex: 0, opacity: 0.15 }}>
+          <BreathingCircle size={100} color={colors.primary[200]} duration={5} delay={0} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '5%', left: '5%', zIndex: 0, opacity: 0.15 }}>
+          <BreathingCircle size={80} color={colors.secondary[200]} duration={6} delay={1.5} />
+        </div>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <h2
+            className="gradient-text"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
               textAlign: 'center',
               marginBottom: '3rem',
               color: colors.text.primary,
+              opacity: visibleSections.has('features') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('features') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
             }}
           >
             Why wellness creators love GoToLinks
@@ -247,14 +642,33 @@ export const HomePage: React.FC = () => {
                 color: colors.primary[600],
                 animation: 'analytics',
               },
+              {
+                title: 'Social Links',
+                description: 'Connect all your social platforms in one beautiful, branded link that reflects your wellness brand.',
+                color: colors.secondary[600],
+                animation: 'social',
+              },
+              {
+                title: 'Booking Calendar',
+                description: 'Seamlessly integrate booking calendars and accept reservations directly from your profile.',
+                color: colors.accent[600],
+                animation: 'booking',
+              },
             ].map((feature, idx) => (
               <Card 
                 key={idx}
-                className="feature-card"
+                className={`feature-card card-elegant stagger-item ${visibleSections.has('features') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
                   transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                  animation: `fadeInUp 0.6s ease ${idx * 0.1}s both`,
+                  animation: visibleSections.has('features') || prefersReducedMotion 
+                    ? `fadeInUp 0.6s ease ${idx * 0.1}s both` 
+                    : 'none',
+                  opacity: visibleSections.has('features') || prefersReducedMotion ? 1 : 0,
+                  transform: visibleSections.has('features') || prefersReducedMotion 
+                    ? 'translateY(0)' 
+                    : 'translateY(30px)',
                   cursor: 'default',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
                 }}
               >
                 <div 
@@ -302,6 +716,27 @@ export const HomePage: React.FC = () => {
                       <path d="M5 18l4-4 4 4 6-6" stroke={feature.color} strokeWidth="2" fill="none" opacity="0.5"/>
                     </svg>
                   )}
+                  {feature.animation === 'social' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'pulse 2s ease-in-out infinite' }}>
+                      <circle cx="12" cy="12" r="3" stroke={feature.color} strokeWidth="2" fill={feature.color} opacity="0.2"/>
+                      <circle cx="6" cy="8" r="2" fill={feature.color} opacity="0.6" style={{ animation: 'scale 2s ease-in-out infinite 0s' }}/>
+                      <circle cx="18" cy="8" r="2" fill={feature.color} opacity="0.6" style={{ animation: 'scale 2s ease-in-out infinite 0.2s' }}/>
+                      <circle cx="6" cy="16" r="2" fill={feature.color} opacity="0.6" style={{ animation: 'scale 2s ease-in-out infinite 0.4s' }}/>
+                      <circle cx="18" cy="16" r="2" fill={feature.color} opacity="0.6" style={{ animation: 'scale 2s ease-in-out infinite 0.6s' }}/>
+                      <path d="M8 8l4 4M16 8l-4 4M8 16l4-4M16 16l-4-4" stroke={feature.color} strokeWidth="1.5" opacity="0.4"/>
+                    </svg>
+                  )}
+                  {feature.animation === 'booking' && (
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style={{ animation: 'float 3s ease-in-out infinite' }}>
+                      <rect x="4" y="5" width="16" height="16" rx="2" stroke={feature.color} strokeWidth="2" fill="none"/>
+                      <path d="M4 9h16" stroke={feature.color} strokeWidth="2"/>
+                      <circle cx="8" cy="13" r="1.5" fill={feature.color} opacity="0.6" style={{ animation: 'pulse 2s ease-in-out infinite 0s' }}/>
+                      <circle cx="12" cy="13" r="1.5" fill={feature.color} opacity="0.6" style={{ animation: 'pulse 2s ease-in-out infinite 0.2s' }}/>
+                      <circle cx="16" cy="13" r="1.5" fill={feature.color} opacity="0.6" style={{ animation: 'pulse 2s ease-in-out infinite 0.4s' }}/>
+                      <path d="M8 17h8" stroke={feature.color} strokeWidth="1.5" opacity="0.5"/>
+                      <path d="M6 3v4M18 3v4" stroke={feature.color} strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  )}
                 </div>
                 <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem', color: colors.text.primary }}>
                   {feature.title}
@@ -318,13 +753,27 @@ export const HomePage: React.FC = () => {
       {/* Made for retreats */}
       <section
         id="use-cases"
+        data-section-id="use-cases"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Floating Particles */}
+        <FloatingParticles count={30} intensity="medium" sacredGeometry={true} />
+
+        {/* Lotus Elements */}
+        <div style={{ position: 'absolute', top: '10%', left: '8%', zIndex: 0 }}>
+          <LotusElement size={70} petals={8} color={colors.primary[200]} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '10%', right: '8%', zIndex: 0 }}>
+          <LotusElement size={50} petals={6} color={colors.secondary[200]} />
+        </div>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <h2
+            className="gradient-text"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
@@ -362,24 +811,45 @@ export const HomePage: React.FC = () => {
                 image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=400&fit=crop',
               },
             ].map((retreat, idx) => (
-              <Card key={idx}>
+              <Card 
+                key={idx}
+                className={`card-elegant stagger-item ${visibleSections.has('use-cases') || prefersReducedMotion ? 'visible' : ''}`}
+                style={{
+                  opacity: visibleSections.has('use-cases') || prefersReducedMotion ? 1 : 0,
+                  transform: visibleSections.has('use-cases') || prefersReducedMotion 
+                    ? 'translateY(0)' 
+                    : 'translateY(30px)',
+                  transition: prefersReducedMotion 
+                    ? 'none' 
+                    : `opacity 0.6s ease-out ${idx * 0.15}s, transform 0.6s ease-out ${idx * 0.15}s`,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
+                }}
+              >
                 <div
+                  className="image-morph"
                   style={{
                     height: '200px',
-                    backgroundImage: `url(${retreat.image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
                     borderRadius: borderRadius.xl,
                     marginBottom: '1.5rem',
                     position: 'relative',
                     overflow: 'hidden',
                   }}
                 >
+                  <ParallaxImage
+                    src={retreat.image}
+                    alt={retreat.title}
+                    speed={0.3}
+                    style={{
+                      height: '100%',
+                      width: '100%',
+                    }}
+                  />
                   <div
                     style={{
                       position: 'absolute',
                       inset: 0,
                       background: `linear-gradient(135deg, ${colors.primary[500]}40 0%, ${colors.secondary[500]}40 100%)`,
+                      pointerEvents: 'none',
                     }}
                   />
                 </div>
@@ -398,7 +868,9 @@ export const HomePage: React.FC = () => {
 
       {/* How it works */}
       <section
+        ref={howItWorksRef}
         id="how-it-works"
+        data-section-id="how-it-works"
         style={{
           position: 'relative',
           minHeight: '100vh',
@@ -410,6 +882,46 @@ export const HomePage: React.FC = () => {
           justifyContent: 'center',
         }}
       >
+        {/* Floating Particles Background */}
+        <FloatingParticles count={25} intensity="low" sacredGeometry={true} />
+
+        {/* Floating Wellness Icons */}
+        {!prefersReducedMotion && (
+          <>
+            {['🧘', '🌿', '✨', '🌸', '🕯️', '🌊'].map((icon, idx) => {
+              const angle = (idx * 60) * (Math.PI / 180)
+              const radius = 200
+              return (
+                <div
+                  key={idx}
+                  className="floating-icon float-element"
+                  style={{
+                    position: 'absolute',
+                    left: `calc(50% + ${Math.cos(angle) * radius}px)`,
+                    top: `calc(50% + ${Math.sin(angle) * radius}px)`,
+                    fontSize: '3rem',
+                    opacity: 0.15,
+                    animation: `floatIcon ${8 + idx * 2}s ease-in-out infinite`,
+                    animationDelay: `${idx * 0.5}s`,
+                    pointerEvents: 'none',
+                    transform: 'translate(-50%, -50%)',
+                  }}
+                >
+                  {icon}
+                </div>
+              )
+            })}
+          </>
+        )}
+
+        {/* Breathing Circles */}
+        <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 1, opacity: 0.2 }}>
+          <BreathingCircle size={150} color={colors.primary[300]} duration={6} delay={0} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '10%', right: '10%', zIndex: 1, opacity: 0.2 }}>
+          <BreathingCircle size={100} color={colors.secondary[300]} duration={7} delay={2} />
+        </div>
+
         {/* Main Content - Centered */}
         <div
           style={{
@@ -428,6 +940,9 @@ export const HomePage: React.FC = () => {
               marginBottom: '4rem',
               color: colors.text.primary,
               fontFamily: typography.fontFamily.sans,
+              opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
             }}
           >
             How it works
@@ -460,13 +975,21 @@ export const HomePage: React.FC = () => {
             ].map((step, idx) => (
               <div
                 key={idx}
+                className={`card-elegant stagger-item ${visibleSections.has('how-it-works') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(10px)',
                   padding: '2rem',
                   borderRadius: borderRadius.xl,
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.08)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.02)',
                   border: `1px solid rgba(255, 255, 255, 0.5)`,
+                  opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
+                  transform: visibleSections.has('how-it-works') || prefersReducedMotion 
+                    ? 'translateY(0)' 
+                    : 'translateY(30px)',
+                  transition: prefersReducedMotion 
+                    ? 'none' 
+                    : `opacity 0.6s ease-out ${idx * 0.15}s, transform 0.6s ease-out ${idx * 0.15}s`,
                 }}
               >
                 <div
@@ -617,6 +1140,7 @@ export const HomePage: React.FC = () => {
             ].map((plan, idx) => (
               <Card
                 key={idx}
+                className="card-elegant"
                 style={{
                   border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
                   position: 'relative',
@@ -671,6 +1195,7 @@ export const HomePage: React.FC = () => {
                 <Button
                   variant={plan.highlight ? 'primary' : 'outline'}
                   size="lg"
+                  className="button-elegant"
                   style={{ width: '100%' }}
                 >
                   {plan.cta}
@@ -691,6 +1216,39 @@ export const HomePage: React.FC = () => {
           overflow: 'hidden',
         }}
       >
+        {/* Floating Particles */}
+        <FloatingParticles count={25} intensity="low" sacredGeometry={true} />
+
+        {/* Morphing Blob Background */}
+        <div
+          className="morph-blob"
+          style={{
+            position: 'absolute',
+            top: '10%',
+            right: '10%',
+            width: '300px',
+            height: '300px',
+            background: `linear-gradient(135deg, ${colors.primary[100]} 0%, ${colors.secondary[100]} 100%)`,
+            opacity: 0.2,
+            filter: 'blur(60px)',
+            zIndex: 0,
+          }}
+        />
+        <div
+          className="morph-blob"
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '10%',
+            width: '250px',
+            height: '250px',
+            background: `linear-gradient(135deg, ${colors.secondary[100]} 0%, ${colors.accent[100]} 100%)`,
+            opacity: 0.2,
+            filter: 'blur(60px)',
+            zIndex: 0,
+            animationDelay: '2s',
+          }}
+        />
         {/* Animated Background Elements */}
         <div
           style={{
@@ -856,6 +1414,7 @@ export const HomePage: React.FC = () => {
                   }}
                 >
                   <Card
+                    className="card-elegant"
                     style={{
                       border: isSelected ? `2px solid ${colors.accent[500]}` : '2px solid transparent',
                       boxShadow: isSelected
