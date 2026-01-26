@@ -191,6 +191,7 @@ export const BreathingCircle: React.FC<BreathingCircleProps> = ({
           borderRadius: '50%',
           border: `2px solid ${color}`,
           opacity: 0.3,
+          pointerEvents: 'none',
         }}
       />
     )
@@ -207,6 +208,7 @@ export const BreathingCircle: React.FC<BreathingCircleProps> = ({
         opacity: 0.3,
         animation: `breathe ${duration}s ease-in-out infinite`,
         animationDelay: `${delay}s`,
+        pointerEvents: 'none',
       }}
     />
   )
@@ -249,6 +251,7 @@ export const LotusElement: React.FC<LotusElementProps> = ({
       style={{
         opacity: 0.4,
         filter: 'blur(0.5px)',
+        pointerEvents: 'none',
       }}
     >
       {Array.from({ length: petals }).map((_, i) => {

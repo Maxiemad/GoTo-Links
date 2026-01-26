@@ -5,7 +5,6 @@ import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Navbar } from '../components/Navbar'
 import { FloatingParticles, BreathingCircle, LotusElement, ParallaxImage } from '../components/AnimationSystem'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
@@ -21,7 +20,6 @@ export const HomePage: React.FC = () => {
   const [avatarTilt, setAvatarTilt] = useState(0)
   const [scrollY, setScrollY] = useState(0)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const themeSectionRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const chatRef = useRef<HTMLDivElement>(null)
@@ -115,7 +113,6 @@ export const HomePage: React.FC = () => {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setCursorPosition({ x: e.clientX, y: e.clientY })
-      setMousePosition({ x: e.clientX, y: e.clientY })
 
       // Parallax effect for floating icons
       if (howItWorksRef.current) {
@@ -128,12 +125,8 @@ export const HomePage: React.FC = () => {
           const deltaX = (e.clientX - centerX) / 20
           const deltaY = (e.clientY - centerY) / 20
           
-          document.querySelectorAll('.floating-icon').forEach((icon, idx) => {
+          document.querySelectorAll('.floating-icon').forEach((icon) => {
             const element = icon as HTMLElement
-            const angle = (idx * 60) * (Math.PI / 180)
-            const radius = 200
-            const baseX = Math.cos(angle) * radius
-            const baseY = Math.sin(angle) * radius
             element.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`
           })
         }
@@ -195,6 +188,7 @@ export const HomePage: React.FC = () => {
           marginBottom: '4rem',
           position: 'relative',
           overflow: 'hidden',
+          cursor: 'default',
         }}
       >
         {/* Animated Gradient Background */}
@@ -251,14 +245,16 @@ export const HomePage: React.FC = () => {
           />
         )}
         <div
+          className="hero-content-wrapper"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '4rem',
             flexWrap: 'wrap',
             position: 'relative',
-            zIndex: 10,
+            zIndex: 100,
             pointerEvents: 'auto',
+            cursor: 'default',
           }}
         >
           {/* Text Content - Left Side */}
@@ -355,12 +351,12 @@ export const HomePage: React.FC = () => {
                     e.currentTarget.style.transform = ''
                     e.currentTarget.style.filter = ''
                   }}
-                  onMouseDown={(e) => {
+                  onMouseDown={(e: React.MouseEvent<HTMLElement>) => {
                     if (!prefersReducedMotion) {
                       e.currentTarget.style.transform = 'scale(0.98) translateY(2px)'
                     }
                   }}
-                  onMouseUp={(e) => {
+                  onMouseUp={(e: React.MouseEvent<HTMLElement>) => {
                     if (!prefersReducedMotion) {
                       e.currentTarget.style.transform = 'scale(1.03)'
                     }
@@ -915,11 +911,19 @@ export const HomePage: React.FC = () => {
         )}
 
         {/* Breathing Circles */}
-        <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 1, opacity: 0.2 }}>
+        <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
           <BreathingCircle size={150} color={colors.primary[300]} duration={6} delay={0} />
         </div>
-        <div style={{ position: 'absolute', bottom: '10%', right: '10%', zIndex: 1, opacity: 0.2 }}>
+        <div style={{ position: 'absolute', bottom: '10%', right: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
           <BreathingCircle size={100} color={colors.secondary[300]} duration={7} delay={2} />
+        </div>
+
+        {/* Lotus Elements */}
+        <div style={{ position: 'absolute', top: '15%', right: '15%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={70} petals={8} color={colors.secondary[200]} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '15%', left: '15%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={60} petals={6} color={colors.primary[200]} />
         </div>
 
         {/* Main Content - Centered */}
@@ -933,6 +937,7 @@ export const HomePage: React.FC = () => {
           }}
         >
           <h2
+            className="gradient-text"
             style={{
               fontSize: 'clamp(2rem, 4vw, 3rem)',
               fontWeight: 600,
@@ -1002,6 +1007,7 @@ export const HomePage: React.FC = () => {
                   }}
                 >
                   <div
+                    className="step-number"
                     style={{
                       width: '50px',
                       height: '50px',
@@ -1014,6 +1020,7 @@ export const HomePage: React.FC = () => {
                       fontSize: '1.5rem',
                       fontWeight: 700,
                       flexShrink: 0,
+                      boxShadow: '0 4px 12px rgba(255, 112, 67, 0.3)',
                     }}
                   >
                     {step.number}
@@ -1046,29 +1053,35 @@ export const HomePage: React.FC = () => {
 
           {/* Trust Stats */}
           <div
+            className="stagger-item"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '2rem',
               marginTop: '4rem',
               textAlign: 'center',
+              opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.5s, transform 0.6s ease-out 0.5s',
             }}
           >
-            <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
-                3 easy steps
+            {['3 easy steps', '1 powerful wellness link', 'Unlimited sharing'].map((stat, idx) => (
+              <div
+                key={idx}
+                className="card-elegant"
+                style={{
+                  padding: '1.5rem',
+                  borderRadius: borderRadius.xl,
+                  backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
+                }}
+              >
+                <div className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                  {stat}
+                </div>
               </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
-                1 powerful wellness link
-              </div>
-            </div>
-            <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
-                Unlimited sharing
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1076,19 +1089,45 @@ export const HomePage: React.FC = () => {
       {/* Free vs Pro */}
       <section
         id="pricing"
+        data-section-id="pricing"
         style={{
           padding: '5rem 2rem',
           background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        {/* Floating Particles */}
+        <FloatingParticles count={20} intensity="low" sacredGeometry={true} />
+
+        {/* Breathing Circles */}
+        <div style={{ position: 'absolute', top: '5%', left: '5%', zIndex: 0, opacity: 0.15, pointerEvents: 'none' }}>
+          <BreathingCircle size={100} color={colors.primary[300]} duration={5} delay={0} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '5%', right: '5%', zIndex: 0, opacity: 0.15, pointerEvents: 'none' }}>
+          <BreathingCircle size={80} color={colors.secondary[300]} duration={6} delay={1.5} />
+        </div>
+
+        {/* Lotus Elements */}
+        <div style={{ position: 'absolute', top: '10%', right: '8%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={60} petals={6} color={colors.primary[200]} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '10%', left: '8%', zIndex: 0, pointerEvents: 'none' }}>
+          <LotusElement size={50} petals={8} color={colors.secondary[200]} />
+        </div>
+
+        <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <h2
+            className="gradient-text"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
               textAlign: 'center',
               marginBottom: '1rem',
               color: colors.text.primary,
+              opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
             }}
           >
             Free forever, upgrade when you're ready
@@ -1099,6 +1138,9 @@ export const HomePage: React.FC = () => {
               color: colors.text.secondary,
               marginBottom: '3rem',
               fontSize: '1.125rem',
+              opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
             }}
           >
             Start free, upgrade to unlock advanced features
@@ -1140,14 +1182,18 @@ export const HomePage: React.FC = () => {
             ].map((plan, idx) => (
               <Card
                 key={idx}
-                className="card-elegant"
+                className={`card-elegant stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
                   border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
                   position: 'relative',
+                  opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
+                  transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+                  transition: prefersReducedMotion ? 'none' : `opacity 0.6s ease-out ${0.3 + idx * 0.15}s, transform 0.6s ease-out ${0.3 + idx * 0.15}s`,
                 }}
               >
                 {plan.highlight && (
                   <div
+                    className="float-element"
                     style={{
                       position: 'absolute',
                       top: '-12px',
@@ -1159,6 +1205,8 @@ export const HomePage: React.FC = () => {
                       borderRadius: borderRadius.full,
                       fontSize: '0.875rem',
                       fontWeight: 600,
+                      animation: 'float 3s ease-in-out infinite',
+                      boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
                     }}
                   >
                     Most Popular
@@ -1333,6 +1381,7 @@ export const HomePage: React.FC = () => {
         </div>
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <h2
+            className="gradient-text"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
@@ -1579,14 +1628,38 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Demo Section */}
-      <section id="demo" style={{ padding: '5rem 2rem', background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)` }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+      <section 
+        id="demo" 
+        data-section-id="demo"
+        style={{ 
+          padding: '5rem 2rem', 
+          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Floating Particles */}
+        <FloatingParticles count={15} intensity="low" sacredGeometry={true} />
+
+        {/* Breathing Circles */}
+        <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
+          <BreathingCircle size={120} color={colors.primary[300]} duration={4} delay={0} />
+        </div>
+        <div style={{ position: 'absolute', bottom: '10%', right: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
+          <BreathingCircle size={90} color={colors.secondary[300]} duration={5} delay={1} />
+        </div>
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <h2
+            className="gradient-text"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
               marginBottom: '2rem',
               color: colors.text.primary,
+              opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
             }}
           >
             See it in action
@@ -1596,35 +1669,61 @@ export const HomePage: React.FC = () => {
               fontSize: '1.125rem',
               color: colors.text.secondary,
               marginBottom: '3rem',
+              opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
             }}
           >
             Check out a live example profile
           </p>
-          <Button size="lg" variant="primary" to="/profile/demo-creator">
-            View example profile
-          </Button>
+          <div
+            style={{
+              opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s',
+            }}
+          >
+            <Button 
+              size="lg" 
+              variant="primary" 
+              to="/profile/demo-creator"
+              className="button-elegant glow-effect"
+            >
+              View example profile
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer
+        data-section-id="footer"
         style={{
           padding: '3rem 2rem',
           backgroundColor: colors.gray[900],
           color: colors.gray[300],
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Subtle Floating Particles */}
+        <FloatingParticles count={10} intensity="low" sacredGeometry={true} />
+
+        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div
+            className="stagger-item"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
               gap: '2rem',
               marginBottom: '2rem',
+              opacity: visibleSections.has('footer') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('footer') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
             }}
           >
             <div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem' }}>
+              <div className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '1rem', color: colors.gray[300] }}>
                 GoToLinks
               </div>
               <p style={{ fontSize: '0.875rem', lineHeight: 1.6 }}>
@@ -1634,20 +1733,25 @@ export const HomePage: React.FC = () => {
             <div>
               <h4 style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Product</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <Link to="/" style={{ fontSize: '0.875rem' }}>
+                <Link to="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   About
                 </Link>
-                <Link to="/" style={{ fontSize: '0.875rem' }}>
+                <Link to="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   Pricing
                 </Link>
-                <Link to="/login" style={{ fontSize: '0.875rem' }}>
+                <Link to="/login" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   Login
                 </Link>
               </div>
             </div>
             <div>
               <h4 style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Get Started</h4>
-              <Button size="sm" variant="secondary" to="/signup">
+              <Button 
+                size="sm" 
+                variant="secondary" 
+                to="/signup"
+                className="button-elegant"
+              >
                 Create free profile
               </Button>
             </div>
@@ -1658,6 +1762,9 @@ export const HomePage: React.FC = () => {
               borderTop: `1px solid ${colors.gray[800]}`,
               textAlign: 'center',
               fontSize: '0.875rem',
+              opacity: visibleSections.has('footer') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('footer') || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.3s, transform 0.6s ease-out 0.3s',
             }}
           >
             © 2024 GoToLinks. All rights reserved.

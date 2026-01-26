@@ -12,6 +12,8 @@ interface ButtonProps {
   onClick?: (e: React.MouseEvent<HTMLElement>) => void
   onMouseEnter?: (e: React.MouseEvent<HTMLElement>) => void
   onMouseLeave?: (e: React.MouseEvent<HTMLElement>) => void
+  onMouseDown?: (e: React.MouseEvent<HTMLElement>) => void
+  onMouseUp?: (e: React.MouseEvent<HTMLElement>) => void
   type?: 'button' | 'submit' | 'reset'
   disabled?: boolean
   className?: string
@@ -26,6 +28,8 @@ export const Button: React.FC<ButtonProps> = ({
   as,
   onMouseEnter,
   onMouseLeave,
+  onMouseDown,
+  onMouseUp,
   ...props
 }) => {
   const baseStyles: React.CSSProperties = {
@@ -117,6 +121,8 @@ export const Button: React.FC<ButtonProps> = ({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
         onClick={onClick}
         {...linkProps}
       >
@@ -131,6 +137,8 @@ export const Button: React.FC<ButtonProps> = ({
       style={combinedStyles}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
       {...props}
     >
       {children}
