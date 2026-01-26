@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Lottie from 'lottie-react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
@@ -8,6 +8,7 @@ import { FloatingParticles, BreathingCircle, LotusElement, ParallaxImage } from 
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
+  const navigate = useNavigate()
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
@@ -119,7 +120,7 @@ export const HomePage: React.FC = () => {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      window.location.href = '/signup'
+      navigate('/signup')
     }, 800)
   }
 
@@ -1427,17 +1428,18 @@ export const HomePage: React.FC = () => {
               variant="primary"
               size="lg"
               onClick={handleCreateAndStyle}
-              disabled={isLoading || !selectedTheme}
+              disabled={isLoading}
+              className="button-elegant glow-effect"
               style={{
-                opacity: selectedTheme ? 1 : 0.6,
-                cursor: selectedTheme && !isLoading ? 'pointer' : 'not-allowed',
+                opacity: isLoading ? 0.7 : 1,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
                 transition: 'opacity 0.3s ease, filter 0.2s ease',
                 filter: isLoading ? 'brightness(0.95)' : 'brightness(1)',
                 position: 'relative',
-                pointerEvents: selectedTheme && !isLoading ? 'auto' : 'none',
+                pointerEvents: isLoading ? 'none' : 'auto',
               }}
               onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
-                if (selectedTheme && !isLoading && !prefersReducedMotion) {
+                if (!isLoading && !prefersReducedMotion) {
                   e.currentTarget.style.filter = 'brightness(1.05)'
                 }
               }}
