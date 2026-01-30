@@ -880,10 +880,15 @@ export const HomePage: React.FC = () => {
                 title: 'Share your GoToLinks everywhere',
                 description: 'Instagram bio, email signature, everywhere.',
               },
-            ].map((step, idx) => (
+            ].map((step, idx) => {
+              const isVisible = visibleSections.has('how-it-works') || prefersReducedMotion
+              const fromLeft = idx === 0
+              const startX = fromLeft ? -120 : 120
+              const delay = idx * 0.2
+              return (
               <div
                 key={idx}
-                className={`card-elegant stagger-item ${visibleSections.has('how-it-works') || prefersReducedMotion ? 'visible' : ''}`}
+                className={`card-elegant stagger-item ${isVisible ? 'visible' : ''}`}
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(10px)',
@@ -891,13 +896,11 @@ export const HomePage: React.FC = () => {
                   borderRadius: borderRadius.xl,
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.02)',
                   border: `1px solid rgba(255, 255, 255, 0.5)`,
-                  opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
-                  transform: visibleSections.has('how-it-works') || prefersReducedMotion 
-                    ? 'translateY(0)' 
-                    : 'translateY(30px)',
-                  transition: prefersReducedMotion 
-                    ? 'none' 
-                    : `opacity 0.4s ease-out ${idx * 0.06}s, transform 0.4s ease-out ${idx * 0.06}s`,
+                  opacity: isVisible ? 1 : 0,
+                  transform: isVisible ? 'translateX(0)' : `translateX(${startX}px)`,
+                  transition: prefersReducedMotion
+                    ? 'none'
+                    : `opacity 0.6s ease-out ${delay}s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s`,
                 }}
               >
                 <div
@@ -951,7 +954,7 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ); })}
           </div>
 
           {/* Trust Stats */}
