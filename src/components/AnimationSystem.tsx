@@ -284,6 +284,172 @@ export const LotusElement: React.FC<LotusElementProps> = ({
   )
 }
 
+/* Aurora-style soft gradient blobs */
+interface AuroraGlowProps {
+  size?: number
+  color?: string
+  duration?: number
+  delay?: number
+  style?: React.CSSProperties
+}
+
+export const AuroraGlow: React.FC<AuroraGlowProps> = ({
+  size = 300,
+  color = colors.primary[200],
+  duration = 18,
+  delay = 0,
+  style = {},
+}) => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (prefersReducedMotion) return null
+  return (
+    <div
+      className="aurora-glow"
+      style={{
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${color}40 0%, ${color}15 40%, transparent 70%)`,
+        filter: 'blur(50px)',
+        pointerEvents: 'none',
+        animation: `auroraFloat ${duration}s ease-in-out infinite`,
+        animationDelay: `${delay}s`,
+        opacity: 0.7,
+        ...style,
+      }}
+    />
+  )
+}
+
+/* Soft animated wave lines */
+interface SoftWavesProps {
+  color?: string
+  opacity?: number
+  style?: React.CSSProperties
+}
+
+export const SoftWaves: React.FC<SoftWavesProps> = ({
+  color = colors.primary[200],
+  opacity = 0.15,
+  style = {},
+}) => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (prefersReducedMotion) return null
+  return (
+    <div
+      className="soft-waves"
+      style={{
+        position: 'absolute',
+        inset: 0,
+        background: `repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 80px,
+          ${color} 80px,
+          ${color} 81px
+        )`,
+        opacity,
+        animation: 'waveSlide 12s linear infinite',
+        pointerEvents: 'none',
+        ...style,
+      }}
+    />
+  )
+}
+
+/* Twinkling dots scattered in background */
+interface TwinkleDotsProps {
+  count?: number
+  color?: string
+  size?: number
+  style?: React.CSSProperties
+}
+
+export const TwinkleDots: React.FC<TwinkleDotsProps> = ({
+  count = 12,
+  color = colors.accent[400],
+  size = 4,
+  style = {},
+}) => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const positions = React.useMemo(
+    () =>
+      Array.from({ length: count }, () => ({
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        delay: Math.random() * 2,
+        duration: 2 + Math.random() * 2,
+      })),
+    [count]
+  )
+  if (prefersReducedMotion) return null
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden', ...style }}>
+      {positions.map((pos, i) => (
+        <div
+          key={i}
+          className="twinkle-dot"
+          style={{
+            position: 'absolute',
+            left: pos.left,
+            top: pos.top,
+            width: size,
+            height: size,
+            borderRadius: '50%',
+            backgroundColor: color,
+            opacity: 0.3,
+            animation: `twinkle ${pos.duration}s ease-in-out infinite`,
+            animationDelay: `${pos.delay}s`,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* Large floating soft orbs */
+interface FloatingOrbProps {
+  size?: number
+  color?: string
+  duration?: number
+  delay?: number
+  variant?: 1 | 2 | 3
+  style?: React.CSSProperties
+}
+
+export const FloatingOrb: React.FC<FloatingOrbProps> = ({
+  size = 250,
+  color,
+  duration = 22,
+  delay = 0,
+  variant = 1,
+  style = {},
+}) => {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const c = color || (variant === 1 ? colors.primary[100] : variant === 2 ? colors.secondary[100] : colors.accent[100])
+  const anim = variant === 1 ? 'floatOrbSoft1' : variant === 2 ? 'floatOrbSoft2' : 'floatOrbSoft3'
+  if (prefersReducedMotion) return null
+  return (
+    <div
+      className="floating-orb-bg"
+      style={{
+        position: 'absolute',
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${c}50 0%, ${c}20 50%, transparent 70%)`,
+        filter: 'blur(40px)',
+        pointerEvents: 'none',
+        animation: `${anim} ${duration}s ease-in-out infinite`,
+        animationDelay: `${delay}s`,
+        opacity: 0.6,
+        ...style,
+      }}
+    />
+  )
+}
+
 interface ParallaxImageProps {
   src: string
   alt: string

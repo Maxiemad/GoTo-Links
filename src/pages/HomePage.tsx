@@ -4,7 +4,7 @@ import Lottie from 'lottie-react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Navbar } from '../components/Navbar'
-import { FloatingParticles, BreathingCircle, LotusElement } from '../components/AnimationSystem'
+import { FloatingParticles, BreathingCircle, LotusElement, AuroraGlow, SoftWaves, TwinkleDots, FloatingOrb } from '../components/AnimationSystem'
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
@@ -67,7 +67,7 @@ export const HomePage: React.FC = () => {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   // Icons move along the ellipse path (not the ring rotating)
-  const ORBIT_RADIUS_X = 280
+  const ORBIT_RADIUS_X = 340
   const ORBIT_RADIUS_Y = 178
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -190,6 +190,16 @@ export const HomePage: React.FC = () => {
 
         {/* Floating Particles */}
         <FloatingParticles count={40} intensity="medium" sacredGeometry={true} />
+
+        {/* Aurora glows in hero */}
+        {!prefersReducedMotion && (
+          <>
+            <AuroraGlow size={400} color={colors.primary[200]} duration={24} style={{ top: '-10%', right: '-5%' }} />
+            <AuroraGlow size={350} color={colors.secondary[200]} duration={26} delay={2} style={{ bottom: '-10%', left: '-5%' }} />
+            <FloatingOrb size={300} variant={1} duration={28} style={{ top: '30%', left: '-15%' }} />
+            <TwinkleDots count={20} color={colors.accent[400]} size={3} />
+          </>
+        )}
 
         {/* Breathing Circles */}
         <div style={{ position: 'absolute', top: '10%', left: '5%', zIndex: 0, opacity: 0.3, pointerEvents: 'none' }}>
@@ -465,7 +475,13 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Subtle Floating Particles */}
-        <FloatingParticles count={20} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={28} intensity="low" sacredGeometry={true} />
+
+        {/* Aurora glows + soft waves + twinkle */}
+        <AuroraGlow size={320} color={colors.primary[200]} duration={20} delay={0} style={{ top: '5%', left: '-5%' }} />
+        <AuroraGlow size={280} color={colors.secondary[200]} duration={22} delay={2} style={{ bottom: '10%', right: '-5%' }} />
+        <SoftWaves color={colors.primary[300]} opacity={0.12} />
+        <TwinkleDots count={14} color={colors.accent[400]} size={3} />
 
         {/* Breathing Circles */}
         <div style={{ position: 'absolute', top: '5%', right: '5%', zIndex: 0, opacity: 0.15 }}>
@@ -646,7 +662,13 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Floating Particles */}
-        <FloatingParticles count={30} intensity="medium" sacredGeometry={true} />
+        <FloatingParticles count={35} intensity="medium" sacredGeometry={true} />
+
+        {/* Aurora + orbs + twinkle */}
+        <AuroraGlow size={300} color={colors.secondary[200]} duration={18} style={{ top: '15%', right: '0' }} />
+        <FloatingOrb size={220} variant={1} duration={24} delay={1} style={{ bottom: '20%', left: '-10%' }} />
+        <FloatingOrb size={200} variant={2} duration={26} style={{ top: '25%', right: '-8%' }} />
+        <TwinkleDots count={10} color={colors.accent[500]} size={4} />
 
         {/* Lotus Elements */}
         <div style={{ position: 'absolute', top: '10%', left: '8%', zIndex: 0, pointerEvents: 'none' }}>
@@ -676,37 +698,37 @@ export const HomePage: React.FC = () => {
                 position: 'absolute',
                 left: '50%',
                 top: '50%',
-                width: '560px',
-                height: '400px',
+                width: '720px',
+                height: '420px',
                 pointerEvents: 'none',
                 transform: 'translate(-50%, -50%)',
               }}
             >
               {[
                 /* link-in-bio */
-                <svg key="link" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
+                <svg key="link" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
                 /* video hero */
-                <svg key="video" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="2" y="6" width="14" height="12" rx="2" /><path d="M18 8l4-2v12l-4-2V8z" fill={colors.secondary[400]} opacity="0.4" /></svg>,
+                <svg key="video" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="2" y="6" width="14" height="12" rx="2" /><path d="M18 8l4-2v12l-4-2V8z" fill={colors.secondary[400]} opacity="0.4" /></svg>,
                 /* retreat / location */
-                <svg key="retreat" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6z" /><path d="M12 2v6l6 4" /><circle cx="12" cy="12" r="2.5" fill={colors.accent[400]} opacity="0.5" /></svg>,
+                <svg key="retreat" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6z" /><path d="M12 2v6l6 4" /><circle cx="12" cy="12" r="2.5" fill={colors.accent[400]} opacity="0.5" /></svg>,
                 /* testimonial / quote */
-                <svg key="quote" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M3 21c3-3 7-5 9-5s6 2 9 5" /><path d="M8 8c0-2.5 2-4.5 4.5-4.5S17 5.5 17 8" /><circle cx="12.5" cy="8" r="1.5" fill={colors.primary[400]} opacity="0.4" /></svg>,
+                <svg key="quote" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M3 21c3-3 7-5 9-5s6 2 9 5" /><path d="M8 8c0-2.5 2-4.5 4.5-4.5S17 5.5 17 8" /><circle cx="12.5" cy="8" r="1.5" fill={colors.primary[400]} opacity="0.4" /></svg>,
                 /* analytics */
-                <svg key="analytics" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="3" y="18" width="4" height="4" rx="1" fill={colors.secondary[400]} opacity="0.6" /><rect x="9" y="14" width="4" height="8" rx="1" fill={colors.secondary[400]} opacity="0.7" /><rect x="15" y="10" width="4" height="12" rx="1" fill={colors.secondary[400]} opacity="0.8" /><path d="M5 18l4-4 4 4 6-6" stroke={colors.secondary[600]} opacity="0.6" /></svg>,
+                <svg key="analytics" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="3" y="18" width="4" height="4" rx="1" fill={colors.secondary[400]} opacity="0.6" /><rect x="9" y="14" width="4" height="8" rx="1" fill={colors.secondary[400]} opacity="0.7" /><rect x="15" y="10" width="4" height="12" rx="1" fill={colors.secondary[400]} opacity="0.8" /><path d="M5 18l4-4 4 4 6-6" stroke={colors.secondary[600]} opacity="0.6" /></svg>,
                 /* social / share */
-                <svg key="social" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><circle cx="12" cy="12" r="3" fill={colors.accent[400]} opacity="0.3" /><circle cx="6" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="6" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /></svg>,
+                <svg key="social" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><circle cx="12" cy="12" r="3" fill={colors.accent[400]} opacity="0.3" /><circle cx="6" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="6" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /></svg>,
                 /* booking calendar */
-                <svg key="calendar" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 9h16" /><path d="M8 13h.01" /><path d="M12 13h.01" /><path d="M16 13h.01" /><path d="M8 17h.01" /><path d="M12 17h.01" /><path d="M16 17h.01" /></svg>,
+                <svg key="calendar" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 9h16" /><path d="M8 13h.01" /><path d="M12 13h.01" /><path d="M16 13h.01" /><path d="M8 17h.01" /><path d="M12 17h.01" /><path d="M16 17h.01" /></svg>,
                 /* wellness / lotus */
-                <svg key="lotus" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="1.5"><ellipse cx="12" cy="14" rx="6" ry="4" fill={colors.secondary[300]} opacity="0.4" /><path d="M12 10v4M9 12h6M12 6c0 2 1.5 4 1.5 4s1.5-2 1.5-4" stroke={colors.secondary[500]} /><path d="M12 6c0-1.5 1-3 1-3s1 1.5 1 3" stroke={colors.secondary[600]} /></svg>,
+                <svg key="lotus" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="1.5"><ellipse cx="12" cy="14" rx="6" ry="4" fill={colors.secondary[300]} opacity="0.4" /><path d="M12 10v4M9 12h6M12 6c0 2 1.5 4 1.5 4s1.5-2 1.5-4" stroke={colors.secondary[500]} /><path d="M12 6c0-1.5 1-3 1-3s1 1.5 1 3" stroke={colors.secondary[600]} /></svg>,
                 /* candle / calm */
-                <svg key="candle" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2v4M12 18v4" /><path d="M12 6c-2 0-3 1.5-3 4s1 6 3 6 3-1.5 3-4-1-6-3-6z" fill={colors.accent[400]} opacity="0.3" /><ellipse cx="12" cy="10" rx="1.5" ry="2" fill={colors.primary[400]} opacity="0.6" /></svg>,
+                <svg key="candle" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2v4M12 18v4" /><path d="M12 6c-2 0-3 1.5-3 4s1 6 3 6 3-1.5 3-4-1-6-3-6z" fill={colors.accent[400]} opacity="0.3" /><ellipse cx="12" cy="10" rx="1.5" ry="2" fill={colors.primary[400]} opacity="0.6" /></svg>,
                 /* leaf / nature */
-                <svg key="leaf" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M12 2c-4 4-8 10-8 14 0 2 2 4 4 4 4 0 8-4 10-8 2 4 6 8 10 8 2 0 4-2 4-4 0-4-4-10-8-14z" fill={colors.primary[200]} opacity="0.5" stroke={colors.primary[500]} /></svg>,
+                <svg key="leaf" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M12 2c-4 4-8 10-8 14 0 2 2 4 4 4 4 0 8-4 10-8 2 4 6 8 10 8 2 0 4-2 4-4 0-4-4-10-8-14z" fill={colors.primary[200]} opacity="0.5" stroke={colors.primary[500]} /></svg>,
                 /* profile / bio */
-                <svg key="profile" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><circle cx="12" cy="8" r="3" /><path d="M5 20c0-3 3-5 7-5s7 2 7 5" fill={colors.secondary[200]} opacity="0.4" /></svg>,
+                <svg key="profile" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><circle cx="12" cy="8" r="3" /><path d="M5 20c0-3 3-5 7-5s7 2 7 5" fill={colors.secondary[200]} opacity="0.4" /></svg>,
                 /* sparkle / premium */
-                <svg key="sparkle" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" fill={colors.accent[400]} opacity="0.4" /><path d="M5 19l1-3 2 1-1 3-2-1zM19 5l-1 3-2-1 1-3 2 1z" stroke={colors.accent[600]} opacity="0.7" /></svg>,
+                <svg key="sparkle" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" fill={colors.accent[400]} opacity="0.4" /><path d="M5 19l1-3 2 1-1 3-2-1zM19 5l-1 3-2-1 1-3 2 1z" stroke={colors.accent[600]} opacity="0.7" /></svg>,
               ].map((icon, idx) => {
                 const angleDeg = idx * 30
                 const angleRad = (angleDeg * Math.PI) / 180
@@ -721,10 +743,10 @@ export const HomePage: React.FC = () => {
                       position: 'absolute',
                       left: '50%',
                       top: '50%',
-                      width: '44px',
-                      height: '44px',
-                      marginLeft: '-22px',
-                      marginTop: '-22px',
+                      width: '64px',
+                      height: '64px',
+                      marginLeft: '-32px',
+                      marginTop: '-32px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -782,7 +804,15 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Floating Particles Background */}
-        <FloatingParticles count={25} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={32} intensity="low" sacredGeometry={true} />
+
+        {/* Aurora + soft waves + floating orbs */}
+        <AuroraGlow size={350} color={colors.primary[200]} duration={20} style={{ top: '0', left: '10%' }} />
+        <AuroraGlow size={280} color={colors.secondary[200]} duration={22} delay={3} style={{ bottom: '0', right: '15%' }} />
+        <SoftWaves color={colors.secondary[300]} opacity={0.1} />
+        <FloatingOrb size={280} variant={1} duration={25} style={{ top: '20%', right: '-5%' }} />
+        <FloatingOrb size={240} variant={3} duration={28} delay={2} style={{ bottom: '15%', left: '-5%' }} />
+        <TwinkleDots count={16} color={colors.accent[400]} />
 
         {/* Floating Wellness Icons */}
         {!prefersReducedMotion && (
@@ -900,7 +930,20 @@ export const HomePage: React.FC = () => {
                   transform: isVisible ? 'translateX(0)' : `translateX(${startX}px)`,
                   transition: prefersReducedMotion
                     ? 'none'
-                    : `opacity 0.6s ease-out ${delay}s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s`,
+                    : `opacity 0.6s ease-out ${delay}s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s, transform 0.25s ease, box-shadow 0.25s ease`,
+                  cursor: 'default',
+                }}
+                onMouseEnter={(e) => {
+                  if (!prefersReducedMotion) {
+                    e.currentTarget.style.transform = isVisible ? 'scale(1.04)' : `translateX(${startX}px)`
+                    e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.04)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!prefersReducedMotion) {
+                    e.currentTarget.style.transform = isVisible ? 'translateX(0)' : `translateX(${startX}px)`
+                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.02)'
+                  }
                 }}
               >
                 <div
@@ -1004,7 +1047,13 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Floating Particles */}
-        <FloatingParticles count={20} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={26} intensity="low" sacredGeometry={true} />
+
+        {/* Aurora + orbs + twinkle */}
+        <AuroraGlow size={300} color={colors.accent[200]} duration={19} style={{ top: '10%', right: '-8%' }} />
+        <FloatingOrb size={260} variant={2} duration={24} style={{ bottom: '10%', left: '-8%' }} />
+        <SoftWaves color={colors.primary[200]} opacity={0.08} />
+        <TwinkleDots count={12} color={colors.secondary[400]} size={3} />
 
         {/* Breathing Circles */}
         <div style={{ position: 'absolute', top: '5%', left: '5%', zIndex: 0, opacity: 0.15, pointerEvents: 'none' }}>
@@ -1171,7 +1220,15 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Floating Particles */}
-        <FloatingParticles count={25} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={30} intensity="low" sacredGeometry={true} />
+
+        {/* Aurora + floating orbs + twinkle */}
+        <AuroraGlow size={340} color={colors.primary[200]} duration={21} style={{ top: '5%', left: '-10%' }} />
+        <AuroraGlow size={300} color={colors.secondary[200]} duration={23} delay={1} style={{ bottom: '5%', right: '-10%' }} />
+        <FloatingOrb size={300} variant={1} duration={26} style={{ top: '15%', right: '5%' }} />
+        <FloatingOrb size={260} variant={3} duration={24} delay={2} style={{ bottom: '20%', left: '5%' }} />
+        <SoftWaves color={colors.accent[200]} opacity={0.1} />
+        <TwinkleDots count={18} color={colors.primary[400]} size={3} />
 
         {/* Morphing Blob Background */}
         <div
@@ -1301,189 +1358,134 @@ export const HomePage: React.FC = () => {
           >
             Choose Theme
           </h2>
+          {/* Horizontal infinite train – moves until user selects a theme */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '2rem',
+              overflow: 'hidden',
               marginBottom: '3rem',
+              marginLeft: '-2rem',
+              marginRight: '-2rem',
             }}
           >
-            {Object.entries(themes).map(([key, theme], idx) => {
-              const isSelected = selectedTheme === key
-              const cardDelay = prefersReducedMotion ? 0 : idx * 35
-              const cardVisible = isVisible || prefersReducedMotion
+            <div
+              className="theme-train-track"
+              style={{
+                display: 'flex',
+                gap: '1.5rem',
+                width: 'max-content',
+                animation: !selectedTheme && !prefersReducedMotion ? 'themeTrain 80s linear infinite' : 'none',
+                animationPlayState: selectedTheme ? 'paused' : 'running',
+              }}
+            >
+              {[...Object.entries(themes), ...Object.entries(themes)].map(([key, theme], idx) => {
+                const isSelected = selectedTheme === key
+                const cardVisible = isVisible || prefersReducedMotion
+                const themeBg = typeof theme.background === 'string' && theme.background.startsWith('linear-gradient')
+                  ? theme.background
+                  : theme.background as string
 
-              return (
-                <div
-                  key={key}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Select ${theme.name} theme`}
-                  onClick={() => handleThemeSelect(key)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      handleThemeSelect(key)
-                    }
-                  }}
-                  style={{
-                    position: 'relative',
-                    cursor: 'pointer',
-                    opacity: cardVisible || prefersReducedMotion ? 1 : 0,
-                    transform: cardVisible || prefersReducedMotion
-                      ? 'translateY(0)'
-                      : 'translateY(20px)',
-                    transition: prefersReducedMotion
-                      ? 'none'
-                      : `opacity 0.4s ease-out ${cardDelay}ms, transform 0.4s ease-out ${cardDelay}ms, transform 0.2s ease, box-shadow 0.2s ease`,
-                    outline: 'none',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!prefersReducedMotion) {
-                      e.currentTarget.style.transform = 'scale(1.02) translateY(0)'
-                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 2px ' + colors.accent[500] + '40'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!prefersReducedMotion) {
-                      e.currentTarget.style.transform = isSelected
-                        ? 'scale(1) translateY(0)'
-                        : 'scale(1) translateY(0)'
-                      e.currentTarget.style.boxShadow = isSelected
-                        ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
-                        : '0 10px 20px rgba(0, 0, 0, 0.1)'
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    if (!prefersReducedMotion) {
-                      e.currentTarget.style.transform = 'scale(0.98) translateY(0)'
-                    }
-                  }}
-                  onMouseUp={(e) => {
-                    if (!prefersReducedMotion) {
-                      e.currentTarget.style.transform = isSelected
-                        ? 'scale(1) translateY(0)'
-                        : 'scale(1.02) translateY(0)'
-                    }
-                  }}
-                >
-                  <Card
-                    className="card-elegant"
+                return (
+                  <div
+                    key={`${key}-${idx}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select ${theme.name} theme`}
+                    onClick={() => handleThemeSelect(key)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleThemeSelect(key)
+                      }
+                    }}
                     style={{
-                      border: isSelected ? `2px solid ${colors.accent[500]}` : '2px solid transparent',
-                      boxShadow: isSelected
-                        ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
-                        : '0 10px 20px rgba(0, 0, 0, 0.1)',
-                      position: 'relative',
-                      padding: 0,
-                      overflow: 'hidden',
+                      flexShrink: 0,
+                      width: '260px',
+                      minWidth: '260px',
+                      cursor: 'pointer',
+                      opacity: cardVisible ? 1 : 0,
+                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                      outline: 'none',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!prefersReducedMotion) {
+                        e.currentTarget.style.transform = 'scale(1.03)'
+                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 2px ' + colors.accent[500] + '40'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!prefersReducedMotion) {
+                        e.currentTarget.style.transform = 'scale(1)'
+                        e.currentTarget.style.boxShadow = isSelected
+                          ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
+                          : '0 10px 20px rgba(0, 0, 0, 0.1)'
+                      }
                     }}
                   >
-                    {/* Theme Preview Image */}
-                    <div
+                    <Card
+                      className="card-elegant"
                       style={{
-                        height: '200px',
-                        background: Array.isArray(theme.background)
-                          ? `linear-gradient(135deg, ${theme.background[0]} 0%, ${theme.background[1]} 100%)`
-                          : theme.background,
+                        border: isSelected ? `2px solid ${colors.accent[500]}` : '2px solid transparent',
+                        boxShadow: isSelected
+                          ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
+                          : '0 10px 20px rgba(0, 0, 0, 0.1)',
                         position: 'relative',
+                        padding: 0,
+                        overflow: 'hidden',
                       }}
                     >
-                      {/* Theme color swatches */}
                       <div
                         style={{
-                          position: 'absolute',
-                          bottom: '1rem',
-                          left: '1rem',
-                          right: '1rem',
-                          display: 'flex',
-                          gap: '0.5rem',
-                          justifyContent: 'center',
+                          height: '180px',
+                          background: themeBg,
+                          position: 'relative',
                         }}
                       >
                         <div
                           style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: borderRadius.full,
-                            backgroundColor: theme.primary,
-                            border: '2px solid rgba(255, 255, 255, 0.5)',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                            position: 'absolute',
+                            bottom: '1rem',
+                            left: '1rem',
+                            right: '1rem',
+                            display: 'flex',
+                            gap: '0.5rem',
+                            justifyContent: 'center',
                           }}
-                        />
-                        <div
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: borderRadius.full,
-                            backgroundColor: theme.secondary,
-                            border: '2px solid rgba(255, 255, 255, 0.5)',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                          }}
-                        />
-                        <div
-                          style={{
-                            width: '40px',
-                            height: '40px',
-                            borderRadius: borderRadius.full,
-                            backgroundColor: theme.accent,
-                            border: '2px solid rgba(255, 255, 255, 0.5)',
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div style={{ padding: '1.5rem' }}>
-                      <h3
-                        style={{
-                          fontSize: '1.25rem',
-                          fontWeight: 600,
-                          marginBottom: '0.5rem',
-                          color: colors.text.primary,
-                        }}
-                      >
-                        {theme.name}
-                      </h3>
-                    </div>
-                    {/* Selected Checkmark */}
-                    {isSelected && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          top: '1rem',
-                          right: '1rem',
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: borderRadius.full,
-                          backgroundColor: colors.accent[500],
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
-                          animation: prefersReducedMotion
-                            ? 'none'
-                            : 'fadeInScale 0.3s ease-out',
-                        }}
-                      >
-                        <svg
-                          width="18"
-                          height="18"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="white"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
                         >
-                          <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
+                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.primary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.secondary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.accent, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                        </div>
                       </div>
-                    )}
-                  </Card>
-                </div>
-              )
-            })}
+                      <div style={{ padding: '1.25rem' }}>
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.25rem', color: colors.text.primary }}>
+                          {theme.name}
+                        </h3>
+                      </div>
+                      {isSelected && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '1rem',
+                            right: '1rem',
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: borderRadius.full,
+                            backgroundColor: colors.accent[500],
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
+                            animation: prefersReducedMotion ? 'none' : 'fadeInScale 0.3s ease-out',
+                          }}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        </div>
+                      )}
+                    </Card>
+                  </div>
+                )
+              })}
+            </div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <Button
@@ -1546,7 +1548,12 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Floating Particles */}
-        <FloatingParticles count={15} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={22} intensity="low" sacredGeometry={true} />
+
+        {/* Aurora + orbs + twinkle */}
+        <AuroraGlow size={280} color={colors.secondary[200]} duration={20} style={{ top: '15%', right: '-5%' }} />
+        <FloatingOrb size={240} variant={2} duration={22} style={{ bottom: '15%', left: '-5%' }} />
+        <TwinkleDots count={12} color={colors.primary[300]} />
 
         {/* Breathing Circles */}
         <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
@@ -1614,7 +1621,11 @@ export const HomePage: React.FC = () => {
         }}
       >
         {/* Subtle Floating Particles */}
-        <FloatingParticles count={10} intensity="low" sacredGeometry={true} />
+        <FloatingParticles count={16} intensity="low" sacredGeometry={true} />
+
+        {/* Soft background motion in footer */}
+        <AuroraGlow size={200} color={colors.primary[700]} duration={25} style={{ top: '20%', left: '-15%', opacity: 0.4 }} />
+        <TwinkleDots count={8} color={colors.gray[500]} size={2} />
 
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div
