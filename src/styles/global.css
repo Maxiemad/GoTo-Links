@@ -262,6 +262,67 @@ html {
   }
 }
 
+/* Hero text – short-delay animations */
+@keyframes heroLine1 {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroLine2Pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes heroSubtextIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Section heading text reveal (short delay) */
+@keyframes sectionTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-title-reveal {
+  will-change: opacity, transform;
+}
+
 /* Hero Gradient Background Animation */
 .hero-gradient-bg {
   background: linear-gradient(
@@ -295,6 +356,16 @@ html {
   }
   51%, 100% {
     opacity: 0;
+  }
+}
+
+/* Made for retreats – orbit ring */
+@keyframes orbitRing {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 

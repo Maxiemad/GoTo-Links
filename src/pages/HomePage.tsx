@@ -4,7 +4,7 @@ import Lottie from 'lottie-react'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Navbar } from '../components/Navbar'
-import { FloatingParticles, BreathingCircle, LotusElement, ParallaxImage } from '../components/AnimationSystem'
+import { FloatingParticles, BreathingCircle, LotusElement } from '../components/AnimationSystem'
 import { colors, typography, borderRadius, themes } from '../styles/theme'
 
 export const HomePage: React.FC = () => {
@@ -19,6 +19,9 @@ export const HomePage: React.FC = () => {
   const themeSectionRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const howItWorksRef = useRef<HTMLDivElement>(null)
+  const orbitAngleRef = useRef(0)
+  const orbitStartRef = useRef<number | null>(null)
+  const orbitIconRefs = useRef<(HTMLDivElement | null)[]>([])
 
   const scrollToDemo = () => {
     const demo = document.getElementById('demo')
@@ -62,6 +65,31 @@ export const HomePage: React.FC = () => {
 
   // Check for prefers-reduced-motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // Icons move along the ellipse path (not the ring rotating)
+  const ORBIT_RADIUS_X = 280
+  const ORBIT_RADIUS_Y = 178
+  useEffect(() => {
+    if (prefersReducedMotion) return
+    const ORBIT_DURATION_MS = 28000
+    let rafId: number
+    const tick = (now: number) => {
+      if (orbitStartRef.current === null) orbitStartRef.current = now
+      const elapsed = now - orbitStartRef.current
+      orbitAngleRef.current = ((elapsed / ORBIT_DURATION_MS) * 360) % 360
+      orbitIconRefs.current.forEach((el, idx) => {
+        if (!el) return
+        const angleDeg = orbitAngleRef.current + idx * 30
+        const angleRad = (angleDeg * Math.PI) / 180
+        const x = Math.cos(angleRad) * ORBIT_RADIUS_X
+        const y = Math.sin(angleRad) * ORBIT_RADIUS_Y
+        el.style.transform = `translate(${x}px, ${y}px) rotate(-${angleDeg}deg)`
+      })
+      rafId = requestAnimationFrame(tick)
+    }
+    rafId = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId)
+  }, [prefersReducedMotion])
 
   // Custom cursor tracking for CTA buttons and mouse parallax
   useEffect(() => {
@@ -240,7 +268,7 @@ export const HomePage: React.FC = () => {
                 style={{ 
                   fontSize: 'clamp(2rem, 3vw, 3.5rem)', 
                   display: 'block',
-                  animation: prefersReducedMotion ? 'none' : 'fadeSlideUp 0.8s ease-out',
+                  animation: prefersReducedMotion ? 'none' : 'heroLine1 0.35s ease-out 0s both',
                 }}
               >
                 Your Wellness-Branded
@@ -250,13 +278,14 @@ export const HomePage: React.FC = () => {
                 style={{ 
                   fontSize: 'clamp(2.5rem, 4vw, 4rem)', 
                   display: 'block',
-                  animation: prefersReducedMotion ? 'none' : 'fadeSlideUpPop 0.8s ease-out 0.15s both',
+                  animation: prefersReducedMotion ? 'none' : 'heroLine2Pop 0.4s ease-out 0.08s both',
                 }}
               >
                 Link in Bio
               </span>
             </h1>
             <p
+              className="hero-subtext"
               style={{
                 fontSize: '1.25rem',
                 color: colors.text.secondary,
@@ -264,6 +293,7 @@ export const HomePage: React.FC = () => {
                 lineHeight: 1.6,
                 pointerEvents: 'auto',
                 cursor: 'text',
+                animation: prefersReducedMotion ? 'none' : 'heroSubtextIn 0.4s ease-out 0.18s both',
               }}
             >
               Designed for retreat leaders, healers, coaches and venues. A soulful alternative to
@@ -282,10 +312,15 @@ export const HomePage: React.FC = () => {
               }}
             >
               <div
-                className="cta-primary-wrapper elegant-hover ripple-effect"
+                className="cta-primary-wrapper elegant-hover ripple-effect hero-cta-slide"
                 onMouseEnter={() => setIsHoveringCTA(true)}
                 onMouseLeave={() => setIsHoveringCTA(false)}
-                style={{ position: 'relative', cursor: 'pointer', pointerEvents: 'auto' }}
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  animation: prefersReducedMotion ? 'none' : 'slideInFromLeft 0.4s ease-out 0.28s both',
+                }}
               >
                 <Button 
                   size="lg" 
@@ -320,8 +355,13 @@ export const HomePage: React.FC = () => {
                 </Button>
               </div>
               <div
-                className="cta-secondary-wrapper elegant-hover"
-                style={{ position: 'relative', cursor: 'pointer', pointerEvents: 'auto' }}
+                className="cta-secondary-wrapper elegant-hover hero-cta-slide"
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer',
+                  pointerEvents: 'auto',
+                  animation: prefersReducedMotion ? 'none' : 'slideInFromLeft 0.4s ease-out 0.32s both',
+                }}
               >
                 <Button 
                   size="lg" 
@@ -436,7 +476,7 @@ export const HomePage: React.FC = () => {
         </div>
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <h2
-            className="gradient-text"
+            className="gradient-text section-title-reveal"
             style={{
               fontSize: '2.5rem',
               fontWeight: 700,
@@ -444,8 +484,8 @@ export const HomePage: React.FC = () => {
               marginBottom: '3rem',
               color: colors.text.primary,
               opacity: visibleSections.has('features') || prefersReducedMotion ? 1 : 0,
-              transform: visibleSections.has('features') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transform: visibleSections.has('features') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             Why wellness creators love GoToLinks
@@ -590,7 +630,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Made for retreats */}
+      {/* Made for retreats – center heading with revolving GoTo Links icons */}
       <section
         id="use-cases"
         data-section-id="use-cases"
@@ -599,110 +639,129 @@ export const HomePage: React.FC = () => {
           background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
           position: 'relative',
           overflow: 'hidden',
+          minHeight: '420px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
         {/* Floating Particles */}
         <FloatingParticles count={30} intensity="medium" sacredGeometry={true} />
 
         {/* Lotus Elements */}
-        <div style={{ position: 'absolute', top: '10%', left: '8%', zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '10%', left: '8%', zIndex: 0, pointerEvents: 'none' }}>
           <LotusElement size={70} petals={8} color={colors.primary[200]} />
         </div>
-        <div style={{ position: 'absolute', bottom: '10%', right: '8%', zIndex: 0 }}>
+        <div style={{ position: 'absolute', bottom: '10%', right: '8%', zIndex: 0, pointerEvents: 'none' }}>
           <LotusElement size={50} petals={6} color={colors.secondary[200]} />
         </div>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+            maxWidth: '1200px',
+          }}
+        >
+          {/* Orbit ring – 12 GoTo Links branding icons revolving around center */}
+          {!prefersReducedMotion && (
+            <div
+              className="orbit-ring"
+              style={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                width: '560px',
+                height: '400px',
+                pointerEvents: 'none',
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              {[
+                /* link-in-bio */
+                <svg key="link" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>,
+                /* video hero */
+                <svg key="video" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="2" y="6" width="14" height="12" rx="2" /><path d="M18 8l4-2v12l-4-2V8z" fill={colors.secondary[400]} opacity="0.4" /></svg>,
+                /* retreat / location */
+                <svg key="retreat" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2L4 8v8l8 6 8-6V8l-8-6z" /><path d="M12 2v6l6 4" /><circle cx="12" cy="12" r="2.5" fill={colors.accent[400]} opacity="0.5" /></svg>,
+                /* testimonial / quote */
+                <svg key="quote" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M3 21c3-3 7-5 9-5s6 2 9 5" /><path d="M8 8c0-2.5 2-4.5 4.5-4.5S17 5.5 17 8" /><circle cx="12.5" cy="8" r="1.5" fill={colors.primary[400]} opacity="0.4" /></svg>,
+                /* analytics */
+                <svg key="analytics" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><rect x="3" y="18" width="4" height="4" rx="1" fill={colors.secondary[400]} opacity="0.6" /><rect x="9" y="14" width="4" height="8" rx="1" fill={colors.secondary[400]} opacity="0.7" /><rect x="15" y="10" width="4" height="12" rx="1" fill={colors.secondary[400]} opacity="0.8" /><path d="M5 18l4-4 4 4 6-6" stroke={colors.secondary[600]} opacity="0.6" /></svg>,
+                /* social / share */
+                <svg key="social" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><circle cx="12" cy="12" r="3" fill={colors.accent[400]} opacity="0.3" /><circle cx="6" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="8" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="6" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /><circle cx="18" cy="16" r="2" fill={colors.accent[500]} opacity="0.8" /></svg>,
+                /* booking calendar */
+                <svg key="calendar" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><rect x="4" y="5" width="16" height="16" rx="2" /><path d="M4 9h16" /><path d="M8 13h.01" /><path d="M12 13h.01" /><path d="M16 13h.01" /><path d="M8 17h.01" /><path d="M12 17h.01" /><path d="M16 17h.01" /></svg>,
+                /* wellness / lotus */
+                <svg key="lotus" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="1.5"><ellipse cx="12" cy="14" rx="6" ry="4" fill={colors.secondary[300]} opacity="0.4" /><path d="M12 10v4M9 12h6M12 6c0 2 1.5 4 1.5 4s1.5-2 1.5-4" stroke={colors.secondary[500]} /><path d="M12 6c0-1.5 1-3 1-3s1 1.5 1 3" stroke={colors.secondary[600]} /></svg>,
+                /* candle / calm */
+                <svg key="candle" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 2v4M12 18v4" /><path d="M12 6c-2 0-3 1.5-3 4s1 6 3 6 3-1.5 3-4-1-6-3-6z" fill={colors.accent[400]} opacity="0.3" /><ellipse cx="12" cy="10" rx="1.5" ry="2" fill={colors.primary[400]} opacity="0.6" /></svg>,
+                /* leaf / nature */
+                <svg key="leaf" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.primary[500]} strokeWidth="2"><path d="M12 2c-4 4-8 10-8 14 0 2 2 4 4 4 4 0 8-4 10-8 2 4 6 8 10 8 2 0 4-2 4-4 0-4-4-10-8-14z" fill={colors.primary[200]} opacity="0.5" stroke={colors.primary[500]} /></svg>,
+                /* profile / bio */
+                <svg key="profile" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.secondary[500]} strokeWidth="2"><circle cx="12" cy="8" r="3" /><path d="M5 20c0-3 3-5 7-5s7 2 7 5" fill={colors.secondary[200]} opacity="0.4" /></svg>,
+                /* sparkle / premium */
+                <svg key="sparkle" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke={colors.accent[500]} strokeWidth="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" fill={colors.accent[400]} opacity="0.4" /><path d="M5 19l1-3 2 1-1 3-2-1zM19 5l-1 3-2-1 1-3 2 1z" stroke={colors.accent[600]} opacity="0.7" /></svg>,
+              ].map((icon, idx) => {
+                const angleDeg = idx * 30
+                const angleRad = (angleDeg * Math.PI) / 180
+                const x = Math.cos(angleRad) * ORBIT_RADIUS_X
+                const y = Math.sin(angleRad) * ORBIT_RADIUS_Y
+                return (
+                  <div
+                    key={idx}
+                    ref={(el) => { orbitIconRefs.current[idx] = el }}
+                    className="orbit-icon"
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      width: '44px',
+                      height: '44px',
+                      marginLeft: '-22px',
+                      marginTop: '-22px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transform: `translate(${x}px, ${y}px) rotate(-${angleDeg}deg)`,
+                      borderRadius: borderRadius.full,
+                      background: 'rgba(255, 255, 255, 0.85)',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    {icon}
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Center: Made for retreats */}
           <h2
             className="gradient-text"
             style={{
-              fontSize: '2.5rem',
+              fontSize: 'clamp(2rem, 4vw, 2.75rem)',
               fontWeight: 700,
               textAlign: 'center',
-              marginBottom: '3rem',
               color: colors.text.primary,
+              position: 'relative',
+              zIndex: 2,
+              padding: '1rem 2rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              borderRadius: borderRadius.xl,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+              opacity: visibleSections.has('use-cases') || prefersReducedMotion ? 1 : 0,
+              transform: visibleSections.has('use-cases') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out, transform 0.5s ease-out',
             }}
           >
             Made for retreats
           </h2>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '2rem',
-            }}
-          >
-            {[
-              {
-                title: 'Sacred Silence Retreat',
-                date: 'March 15-20, 2024',
-                location: 'Ubud, Bali',
-                image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop',
-              },
-              {
-                title: 'Ocean Healing Journey',
-                date: 'April 10-15, 2024',
-                location: 'Tulum, Mexico',
-                image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400&fit=crop',
-              },
-              {
-                title: 'Mountain Meditation',
-                date: 'May 5-10, 2024',
-                location: 'Sedona, Arizona',
-                image: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=600&h=400&fit=crop',
-              },
-            ].map((retreat, idx) => (
-              <Card 
-                key={idx}
-                className={`card-elegant stagger-item ${visibleSections.has('use-cases') || prefersReducedMotion ? 'visible' : ''}`}
-                style={{
-                  opacity: visibleSections.has('use-cases') || prefersReducedMotion ? 1 : 0,
-                  transform: visibleSections.has('use-cases') || prefersReducedMotion 
-                    ? 'translateY(0)' 
-                    : 'translateY(30px)',
-                  transition: prefersReducedMotion 
-                    ? 'none' 
-                    : `opacity 0.6s ease-out ${idx * 0.15}s, transform 0.6s ease-out ${idx * 0.15}s`,
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
-                }}
-              >
-                <div
-                  className="image-morph"
-                  style={{
-                    height: '200px',
-                    borderRadius: borderRadius.xl,
-                    marginBottom: '1.5rem',
-                    position: 'relative',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <ParallaxImage
-                    src={retreat.image}
-                    alt={retreat.title}
-                    speed={0.3}
-                    style={{
-                      height: '100%',
-                      width: '100%',
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: `linear-gradient(135deg, ${colors.primary[500]}40 0%, ${colors.secondary[500]}40 100%)`,
-                      pointerEvents: 'none',
-                    }}
-                  />
-                </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.5rem', color: colors.text.primary }}>
-                  {retreat.title}
-                </h3>
-                <p style={{ color: colors.text.secondary, marginBottom: '0.25rem' }}>
-                  📅 {retreat.date}
-                </p>
-                <p style={{ color: colors.text.secondary }}>📍 {retreat.location}</p>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -790,8 +849,8 @@ export const HomePage: React.FC = () => {
               color: colors.text.primary,
               fontFamily: typography.fontFamily.sans,
               opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
-              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             How it works
@@ -838,7 +897,7 @@ export const HomePage: React.FC = () => {
                     : 'translateY(30px)',
                   transition: prefersReducedMotion 
                     ? 'none' 
-                    : `opacity 0.6s ease-out ${idx * 0.15}s, transform 0.6s ease-out ${idx * 0.15}s`,
+                    : `opacity 0.4s ease-out ${idx * 0.06}s, transform 0.4s ease-out ${idx * 0.06}s`,
                 }}
               >
                 <div
@@ -905,8 +964,8 @@ export const HomePage: React.FC = () => {
               marginTop: '4rem',
               textAlign: 'center',
               opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
-              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.5s, transform 0.6s ease-out 0.5s',
+              transform: visibleSections.has('how-it-works') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s',
             }}
           >
             {['3 easy steps', '1 powerful wellness link', 'Unlimited sharing'].map((stat, idx) => (
@@ -970,8 +1029,8 @@ export const HomePage: React.FC = () => {
               marginBottom: '1rem',
               color: colors.text.primary,
               opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
-              transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             Free forever, upgrade when you're ready
@@ -984,7 +1043,7 @@ export const HomePage: React.FC = () => {
               fontSize: '1.125rem',
               opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.08s, transform 0.4s ease-out 0.08s',
             }}
           >
             Start free, upgrade to unlock advanced features
@@ -1031,8 +1090,8 @@ export const HomePage: React.FC = () => {
                   border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
                   position: 'relative',
                   opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
-                  transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-                  transition: prefersReducedMotion ? 'none' : `opacity 0.6s ease-out ${0.3 + idx * 0.15}s, transform 0.6s ease-out ${0.3 + idx * 0.15}s`,
+                  transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+                  transition: prefersReducedMotion ? 'none' : `opacity 0.4s ease-out ${0.08 + idx * 0.06}s, transform 0.4s ease-out ${0.08 + idx * 0.06}s`,
                 }}
               >
                 {plan.highlight && (
@@ -1234,7 +1293,7 @@ export const HomePage: React.FC = () => {
               color: colors.text.primary,
               opacity: isVisible || prefersReducedMotion ? 1 : 0,
               transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             Choose Theme
@@ -1249,7 +1308,7 @@ export const HomePage: React.FC = () => {
           >
             {Object.entries(themes).map(([key, theme], idx) => {
               const isSelected = selectedTheme === key
-              const cardDelay = prefersReducedMotion ? 0 : idx * 60
+              const cardDelay = prefersReducedMotion ? 0 : idx * 35
               const cardVisible = isVisible || prefersReducedMotion
 
               return (
@@ -1274,7 +1333,7 @@ export const HomePage: React.FC = () => {
                       : 'translateY(20px)',
                     transition: prefersReducedMotion
                       ? 'none'
-                      : `opacity 0.6s ease-out ${cardDelay}ms, transform 0.6s ease-out ${cardDelay}ms, transform 0.2s ease, box-shadow 0.2s ease`,
+                      : `opacity 0.4s ease-out ${cardDelay}ms, transform 0.4s ease-out ${cardDelay}ms, transform 0.2s ease, box-shadow 0.2s ease`,
                     outline: 'none',
                   }}
                   onMouseEnter={(e) => {
@@ -1503,8 +1562,8 @@ export const HomePage: React.FC = () => {
               marginBottom: '2rem',
               color: colors.text.primary,
               opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
-              transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(30px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             See it in action
@@ -1516,7 +1575,7 @@ export const HomePage: React.FC = () => {
               marginBottom: '3rem',
               opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.08s, transform 0.4s ease-out 0.08s',
             }}
           >
             Check out a live example profile
@@ -1525,7 +1584,7 @@ export const HomePage: React.FC = () => {
             style={{
               opacity: visibleSections.has('demo') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('demo') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.12s, transform 0.4s ease-out 0.12s',
             }}
           >
             <Button 
@@ -1564,7 +1623,7 @@ export const HomePage: React.FC = () => {
               marginBottom: '2rem',
               opacity: visibleSections.has('footer') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('footer') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
             <div>
@@ -1609,7 +1668,7 @@ export const HomePage: React.FC = () => {
               fontSize: '0.875rem',
               opacity: visibleSections.has('footer') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('footer') || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.3s, transform 0.6s ease-out 0.3s',
+              transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s',
             }}
           >
             © 2024 GoToLinks. All rights reserved.
