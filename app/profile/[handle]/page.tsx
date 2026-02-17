@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { MapPin, ExternalLink, Calendar, MessageCircle, Phone, Send } from 'lucide-react'
+import { getTheme, ThemeConfig } from '@/lib/themes'
 
 interface Block {
   id: string
@@ -45,15 +46,6 @@ async function getProfile(handle: string) {
     console.error('Failed to fetch profile:', error)
     return null
   }
-}
-
-const THEME_STYLES: Record<string, { bg: string; card: string; text: string; accent: string }> = {
-  'zen-minimal': { bg: 'bg-white', card: 'bg-gray-50', text: 'text-gray-800', accent: 'bg-primary-500' },
-  'sacred-earth': { bg: 'bg-amber-50', card: 'bg-amber-100/50', text: 'text-amber-900', accent: 'bg-amber-600' },
-  'ocean-temple': { bg: 'bg-gradient-to-b from-blue-50 to-cyan-50', card: 'bg-white/80', text: 'text-blue-900', accent: 'bg-blue-500' },
-  'forest-calm': { bg: 'bg-gradient-to-b from-green-50 to-emerald-50', card: 'bg-white/80', text: 'text-green-900', accent: 'bg-green-600' },
-  'sunset-glow': { bg: 'bg-gradient-to-b from-orange-50 to-rose-50', card: 'bg-white/80', text: 'text-orange-900', accent: 'bg-orange-500' },
-  'lavender-dreams': { bg: 'bg-gradient-to-b from-purple-50 to-pink-50', card: 'bg-white/80', text: 'text-purple-900', accent: 'bg-purple-500' },
 }
 
 export default async function PublicProfilePage({ params }: { params: Promise<{ handle: string }> }) {
