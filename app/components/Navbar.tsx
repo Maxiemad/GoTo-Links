@@ -283,7 +283,7 @@ export const Navbar: React.FC = () => {
         return // Let browser handle it
       }
       e.preventDefault()
-      navigate(href)
+      router.push(href)
       setActiveDropdown(null)
       setActiveTab(null)
     } else if (scrollTo) {
@@ -304,7 +304,7 @@ export const Navbar: React.FC = () => {
         return // Let browser handle it
       }
       e.preventDefault()
-      navigate(href)
+      router.push(href)
       setActiveDropdown(null)
       setActiveTab(null)
     } else if (scrollTo) {
@@ -335,7 +335,7 @@ export const Navbar: React.FC = () => {
         setActiveTab(null)
       }
     } else if (item.href) {
-      navigate(item.href)
+      router.push(item.href)
       setIsMobileMenuOpen(false)
     } else if (item.scrollTo) {
       handleScrollTo(item.scrollTo)
