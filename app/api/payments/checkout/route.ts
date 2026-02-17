@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma'
 import { validateSession } from '@/lib/auth'
 import { createProCheckoutSession, PRO_PLAN_AMOUNT } from '@/lib/stripe'
 
+export const dynamic = 'force-dynamic'
+
 // POST /api/payments/checkout - Create checkout session for Pro upgrade
 export async function POST(request: NextRequest) {
   try {
