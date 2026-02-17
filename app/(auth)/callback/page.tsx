@@ -2,19 +2,17 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { colors } from '@/app/styles/theme'
 
 export default function CallbackPage() {
   const router = useRouter()
   const hasProcessed = useRef(false)
 
   useEffect(() => {
-    // Prevent double processing in StrictMode
     if (hasProcessed.current) return
     hasProcessed.current = true
 
     const processAuth = async () => {
-      // Get session_id from URL fragment
       const hash = window.location.hash
       const sessionId = hash.split('session_id=')[1]?.split('&')[0]
 
@@ -49,10 +47,28 @@ export default function CallbackPage() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-secondary-50 to-white">
-      <div className="text-center">
-        <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-        <p className="text-gray-600">Completing sign in...</p>
+    <div 
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+      }}
+    >
+      <div style={{ textAlign: 'center' }}>
+        <div 
+          style={{
+            width: '48px',
+            height: '48px',
+            border: `3px solid ${colors.primary[200]}`,
+            borderTopColor: colors.primary[500],
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem',
+          }}
+        />
+        <p style={{ color: colors.text.secondary }}>Completing sign in...</p>
       </div>
     </div>
   )
