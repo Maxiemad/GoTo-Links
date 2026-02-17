@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState, RefObject } from 'react'
 
 interface UseScrollAnimationOptions {
@@ -12,7 +14,11 @@ export const useScrollAnimation = (
 ) => {
   const { threshold = 0.1, rootMargin = '0px', triggerOnce = false } = options
   const [isVisible, setIsVisible] = useState(false)
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) {
