@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma'
 import { validateSession } from '@/lib/auth'
 import { getCheckoutSession } from '@/lib/stripe'
 
+export const dynamic = 'force-dynamic'
+
 // GET /api/payments/status/[sessionId] - Get payment status
 export async function GET(
   request: NextRequest,
