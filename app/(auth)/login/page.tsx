@@ -1,30 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/app/components/Button'
-import { Input } from '@/app/components/Input'
-import { FloatingParticles, BreathingCircle, LotusElement } from '@/app/components/AnimationSystem'
 import { colors, typography, borderRadius } from '@/app/styles/theme'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [isVisible, setIsVisible] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  const formRef = useRef<HTMLDivElement>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-
-  useEffect(() => {
-    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-    setIsVisible(true)
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
     
     try {
       const res = await fetch('/api/auth/login', {
@@ -42,6 +33,8 @@ export default function LoginPage() {
       }
     } catch (err) {
       setError('Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -52,7 +45,6 @@ export default function LoginPage() {
 
   return (
     <div
-      className="login-page"
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -60,55 +52,16 @@ export default function LoginPage() {
         justifyContent: 'center',
         background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
         padding: '2rem',
-        position: 'relative',
-        overflow: 'hidden',
       }}
     >
       <div
-        className="login-gradient-bg"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, ${colors.white} 100%)`,
-          backgroundSize: '200% 200%',
-          animation: prefersReducedMotion ? 'none' : 'gradientShift 25s ease-in-out infinite',
-        }}
-      />
-
-      <FloatingParticles count={25} intensity="medium" sacredGeometry={true} />
-
-      <div style={{ position: 'absolute', top: '15%', left: '8%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
-        <BreathingCircle size={140} color={colors.primary[300]} duration={5} delay={0} />
-      </div>
-      <div style={{ position: 'absolute', bottom: '20%', right: '8%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
-        <BreathingCircle size={110} color={colors.secondary[300]} duration={6} delay={2} />
-      </div>
-
-      <div style={{ position: 'absolute', top: '25%', right: '12%', zIndex: 0, pointerEvents: 'none' }}>
-        <LotusElement size={75} petals={8} color={colors.secondary[200]} />
-      </div>
-      <div style={{ position: 'absolute', bottom: '25%', left: '12%', zIndex: 0, pointerEvents: 'none' }}>
-        <LotusElement size={65} petals={6} color={colors.primary[200]} />
-      </div>
-
-      <div
-        ref={formRef}
-        className="login-form-card card-elegant"
         style={{
           width: '100%',
           maxWidth: '450px',
           backgroundColor: colors.white,
           borderRadius: borderRadius['2xl'],
           padding: '3rem',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-          position: 'relative',
-          zIndex: 10,
-          opacity: isVisible || prefersReducedMotion ? 1 : 0,
-          transform: isVisible || prefersReducedMotion ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
-          transition: prefersReducedMotion ? 'none' : 'opacity 0.8s ease-out, transform 0.8s ease-out',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12)',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
@@ -117,33 +70,61 @@ export default function LoginPage() {
             style={{
               fontSize: '2rem',
               fontWeight: 700,
-              color: colors.text.primary,
               marginBottom: '0.5rem',
               fontFamily: typography.fontFamily.sans,
             }}
           >
             Welcome back
           </h1>
-          <p style={{ color: colors.text.secondary }}>Sign in to your GoToLinks account</p>
+          <p style={{ color: colors.text.secondary }}>
+            Sign in to your GoToLinks account
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <Input
-            type="email"
-            label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            required
-          />
-          <Input
-            type="password"
-            label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-          />
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                border: `2px solid ${colors.gray[300]}`,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.white,
+                outline: 'none',
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                border: `2px solid ${colors.gray[300]}`,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.white,
+                outline: 'none',
+              }}
+            />
+          </div>
 
           {error && (
             <div
@@ -159,25 +140,59 @@ export default function LoginPage() {
             </div>
           )}
 
-          <Button type="submit" variant="primary" size="lg" style={{ width: '100%' }}>
-            Sign in
-          </Button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: colors.white,
+              backgroundColor: colors.accent[500],
+              border: 'none',
+              borderRadius: borderRadius.xl,
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.7 : 1,
+            }}
+          >
+            {isLoading ? 'Signing in...' : 'Sign in'}
+          </button>
         </form>
 
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
           <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
             Don&apos;t have an account?{' '}
-            <Link href="/signup" style={{ color: colors.primary[500], fontWeight: 600, textDecoration: 'none' }}>
+            <Link 
+              href="/signup" 
+              style={{ color: colors.primary[500], fontWeight: 600, textDecoration: 'none' }}
+            >
               Sign up
             </Link>
           </p>
         </div>
 
         <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: `1px solid ${colors.gray[200]}` }}>
-          <Button variant="outline" size="md" style={{ width: '100%' }} onClick={handleGoogleLogin}>
-            <span style={{ marginRight: '0.5rem' }}>🔐</span>
-            Continue with Google
-          </Button>
+          <button
+            onClick={handleGoogleLogin}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: 500,
+              color: colors.text.primary,
+              backgroundColor: colors.white,
+              border: `2px solid ${colors.gray[300]}`,
+              borderRadius: borderRadius.xl,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            🔐 Continue with Google
+          </button>
         </div>
       </div>
     </div>
