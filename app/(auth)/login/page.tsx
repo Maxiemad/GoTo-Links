@@ -3,24 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Button } from '../components/Button'
-import { Input } from '../components/Input'
-import { FloatingParticles, BreathingCircle, LotusElement } from '../components/AnimationSystem'
-import { colors, typography, borderRadius } from '../styles/theme'
+import { Button } from '@/app/components/Button'
+import { Input } from '@/app/components/Input'
+import { FloatingParticles, BreathingCircle, LotusElement } from '@/app/components/AnimationSystem'
+import { colors, typography, borderRadius } from '@/app/styles/theme'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isVisible, setIsVisible] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const formRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  
-  useEffect(() => {
-    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     setIsVisible(true)
   }, [])
 
@@ -28,15 +26,28 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     
-    // Mock login
-    if (email && password) {
-      // Simulate API call
-      setTimeout(() => {
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
         router.push('/dashboard')
-      }, 500)
-    } else {
-      setError('Please enter both email and password')
+      } else {
+        setError(data.error || 'Login failed')
+      }
+    } catch (err) {
+      setError('Something went wrong. Please try again.')
     }
+  }
+
+  const handleGoogleLogin = () => {
+    const redirectUrl = window.location.origin + '/callback'
+    window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`
   }
 
   return (
@@ -141,14 +152,7 @@ export default function LoginPage() {
             transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s',
           }}
         >
-          <div
-            className="stagger-item"
-            style={{
-              opacity: isVisible || prefersReducedMotion ? 1 : 0,
-              transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out 0.5s, transform 0.5s ease-out 0.5s',
-            }}
-          >
+          <div className="stagger-item">
             <Input
               type="email"
               label="Email"
@@ -159,14 +163,7 @@ export default function LoginPage() {
               className="elegant-hover"
             />
           </div>
-          <div
-            className="stagger-item"
-            style={{
-              opacity: isVisible || prefersReducedMotion ? 1 : 0,
-              transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out 0.6s, transform 0.5s ease-out 0.6s',
-            }}
-          >
+          <div className="stagger-item">
             <Input
               type="password"
               label="Password"
@@ -180,7 +177,6 @@ export default function LoginPage() {
 
           {error && (
             <div
-              className="stagger-item"
               style={{
                 padding: '0.75rem',
                 backgroundColor: colors.error + '15',
@@ -194,14 +190,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div
-            className="stagger-item"
-            style={{
-              opacity: isVisible || prefersReducedMotion ? 1 : 0,
-              transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-              transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out 0.7s, transform 0.5s ease-out 0.7s',
-            }}
-          >
+          <div className="stagger-item">
             <Button 
               type="submit" 
               variant="primary" 
@@ -214,37 +203,16 @@ export default function LoginPage() {
           </div>
         </form>
 
-        <div 
-          className="stagger-item"
-          style={{ 
-            marginTop: '1.5rem', 
-            textAlign: 'center',
-            opacity: isVisible || prefersReducedMotion ? 1 : 0,
-            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-            transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out 0.8s, transform 0.5s ease-out 0.8s',
-          }}
-        >
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
           <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
             Don't have an account?{' '}
             <Link 
-              to="/signup" 
+              href="/signup" 
               className="elegant-hover"
               style={{ 
                 color: colors.primary[500], 
                 fontWeight: 600, 
                 textDecoration: 'none',
-                transition: 'all 0.3s ease',
-                display: 'inline-block',
-              }}
-              onMouseEnter={(e) => {
-                if (!prefersReducedMotion) {
-                  e.currentTarget.style.transform = 'translateX(2px)'
-                  e.currentTarget.style.color = colors.primary[600]
-                }
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = ''
-                e.currentTarget.style.color = colors.primary[500]
               }}
             >
               Sign up
@@ -253,14 +221,10 @@ export default function LoginPage() {
         </div>
 
         <div
-          className="stagger-item"
           style={{
             marginTop: '2rem',
             paddingTop: '2rem',
             borderTop: `1px solid ${colors.gray[200]}`,
-            opacity: isVisible || prefersReducedMotion ? 1 : 0,
-            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(10px)',
-            transition: prefersReducedMotion ? 'none' : 'opacity 0.5s ease-out 0.9s, transform 0.5s ease-out 0.9s',
           }}
         >
           <Button
@@ -268,10 +232,7 @@ export default function LoginPage() {
             size="md"
             className="button-elegant"
             style={{ width: '100%' }}
-            onClick={() => {
-              // Mock Google login
-              router.push('/dashboard')
-            }}
+            onClick={handleGoogleLogin}
           >
             <span style={{ marginRight: '0.5rem' }}>🔐</span>
             Continue with Google
@@ -281,4 +242,3 @@ export default function LoginPage() {
     </div>
   )
 }
-
