@@ -1,11 +1,8 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Button } from '@/app/components/Button'
-import { Input } from '@/app/components/Input'
-import { FloatingParticles, BreathingCircle, LotusElement } from '@/app/components/AnimationSystem'
 import { colors, typography, borderRadius } from '@/app/styles/theme'
 
 export default function SignupPage() {
@@ -14,21 +11,15 @@ export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [isVisible, setIsVisible] = useState(false)
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-  const formRef = useRef<HTMLDivElement>(null)
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
   const plan = searchParams.get('plan')
 
-  useEffect(() => {
-    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-    setIsVisible(true)
-  }, [])
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setIsLoading(true)
     
     try {
       const res = await fetch('/api/auth/signup', {
@@ -50,6 +41,8 @@ export default function SignupPage() {
       }
     } catch (err) {
       setError('Something went wrong. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -60,7 +53,6 @@ export default function SignupPage() {
 
   return (
     <div
-      className="signup-page"
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -68,151 +60,122 @@ export default function SignupPage() {
         justifyContent: 'center',
         background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
         padding: '2rem',
-        position: 'relative',
-        overflow: 'hidden',
       }}
     >
-      {/* Animated Gradient Background */}
       <div
-        className="signup-gradient-bg"
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, ${colors.white} 100%)`,
-          backgroundSize: '200% 200%',
-          animation: prefersReducedMotion ? 'none' : 'gradientShift 25s ease-in-out infinite',
-        }}
-      />
-
-      {/* Floating Particles */}
-      <FloatingParticles count={30} intensity="medium" sacredGeometry={true} />
-
-      {/* Breathing Circles */}
-      <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
-        <BreathingCircle size={150} color={colors.primary[300]} duration={5} delay={0} />
-      </div>
-      <div style={{ position: 'absolute', bottom: '15%', right: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
-        <BreathingCircle size={120} color={colors.secondary[300]} duration={6} delay={1.5} />
-      </div>
-      <div style={{ position: 'absolute', top: '50%', right: '5%', zIndex: 0, opacity: 0.15, pointerEvents: 'none' }}>
-        <BreathingCircle size={100} color={colors.accent[300]} duration={7} delay={3} />
-      </div>
-
-      {/* Lotus Elements */}
-      <div style={{ position: 'absolute', top: '20%', right: '15%', zIndex: 0, pointerEvents: 'none' }}>
-        <LotusElement size={80} petals={8} color={colors.secondary[200]} />
-      </div>
-      <div style={{ position: 'absolute', bottom: '20%', left: '15%', zIndex: 0, pointerEvents: 'none' }}>
-        <LotusElement size={70} petals={6} color={colors.primary[200]} />
-      </div>
-      <div style={{ position: 'absolute', top: '60%', left: '8%', zIndex: 0, pointerEvents: 'none' }}>
-        <LotusElement size={60} petals={8} color={colors.accent[200]} />
-      </div>
-
-      {/* Form Card */}
-      <div
-        ref={formRef}
-        className="signup-form-card card-elegant"
         style={{
           width: '100%',
           maxWidth: '450px',
           backgroundColor: colors.white,
           borderRadius: borderRadius['2xl'],
           padding: '3rem',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0,0,0,0.04)',
-          position: 'relative',
-          zIndex: 10,
-          opacity: isVisible || prefersReducedMotion ? 1 : 0,
-          transform: isVisible || prefersReducedMotion ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
-          transition: prefersReducedMotion ? 'none' : 'opacity 0.8s ease-out, transform 0.8s ease-out',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12)',
         }}
       >
-        <div 
-          style={{ 
-            textAlign: 'center', 
-            marginBottom: '2rem',
-            opacity: isVisible || prefersReducedMotion ? 1 : 0,
-            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-            transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
-          }}
-        >
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <h1
             className="gradient-text"
             style={{
               fontSize: '2rem',
               fontWeight: 700,
-              color: colors.text.primary,
               marginBottom: '0.5rem',
               fontFamily: typography.fontFamily.sans,
             }}
           >
             Create your profile
           </h1>
-          <p style={{ color: colors.text.secondary }}>Start building your wellness-branded link in bio</p>
+          <p style={{ color: colors.text.secondary }}>
+            Start building your wellness-branded link in bio
+          </p>
         </div>
 
-        <form 
-          onSubmit={handleSubmit} 
-          className="signup-form"
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '1.5rem',
-            opacity: 1,
-            transform: 'translateY(0)',
-          }}
-        >
-          <div 
-            className="stagger-item"
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr', 
-              gap: '1rem',
-            }}
-          >
-            <Input
-              type="text"
-              label="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="Sarah"
-              required
-              className="elegant-hover"
-            />
-            <Input
-              type="text"
-              label="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Moon"
-              required
-              className="elegant-hover"
-            />
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+                First Name
+              </label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Sarah"
+                required
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  fontSize: '1rem',
+                  border: `2px solid ${colors.gray[300]}`,
+                  borderRadius: borderRadius.lg,
+                  backgroundColor: colors.white,
+                  outline: 'none',
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+                Last Name
+              </label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Moon"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  fontSize: '1rem',
+                  border: `2px solid ${colors.gray[300]}`,
+                  borderRadius: borderRadius.lg,
+                  backgroundColor: colors.white,
+                  outline: 'none',
+                }}
+              />
+            </div>
           </div>
-          <div className="stagger-item">
-            <Input
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+              Email
+            </label>
+            <input
               type="email"
-              label="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              className="elegant-hover"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                border: `2px solid ${colors.gray[300]}`,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.white,
+                outline: 'none',
+              }}
             />
           </div>
-          <div className="stagger-item">
-            <Input
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem', fontWeight: 500, color: colors.text.primary }}>
+              Password
+            </label>
+            <input
               type="password"
-              label="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder="Min. 8 characters"
               required
               minLength={8}
-              className="elegant-hover"
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                fontSize: '1rem',
+                border: `2px solid ${colors.gray[300]}`,
+                borderRadius: borderRadius.lg,
+                backgroundColor: colors.white,
+                outline: 'none',
+              }}
             />
           </div>
 
@@ -224,24 +187,30 @@ export default function SignupPage() {
                 color: colors.error,
                 borderRadius: borderRadius.md,
                 fontSize: '0.875rem',
-                animation: 'fadeSlideUp 0.4s ease-out',
               }}
             >
               {error}
             </div>
           )}
 
-          <div className="stagger-item">
-            <Button 
-              type="submit" 
-              variant="primary" 
-              size="lg" 
-              className="button-elegant glow-effect ripple-effect"
-              style={{ width: '100%' }}
-            >
-              Create free profile
-            </Button>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: colors.white,
+              backgroundColor: colors.accent[500],
+              border: 'none',
+              borderRadius: borderRadius.xl,
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.7 : 1,
+            }}
+          >
+            {isLoading ? 'Creating account...' : 'Create free profile'}
+          </button>
         </form>
 
         <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
@@ -249,35 +218,34 @@ export default function SignupPage() {
             Already have an account?{' '}
             <Link 
               href="/login" 
-              className="elegant-hover"
-              style={{ 
-                color: colors.primary[500], 
-                fontWeight: 600, 
-                textDecoration: 'none',
-              }}
+              style={{ color: colors.primary[500], fontWeight: 600, textDecoration: 'none' }}
             >
               Sign in
             </Link>
           </p>
         </div>
 
-        <div
-          style={{
-            marginTop: '2rem',
-            paddingTop: '2rem',
-            borderTop: `1px solid ${colors.gray[200]}`,
-          }}
-        >
-          <Button
-            variant="outline"
-            size="md"
-            className="button-elegant"
-            style={{ width: '100%' }}
+        <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: `1px solid ${colors.gray[200]}` }}>
+          <button
             onClick={handleGoogleSignup}
+            style={{
+              width: '100%',
+              padding: '0.875rem',
+              fontSize: '1rem',
+              fontWeight: 500,
+              color: colors.text.primary,
+              backgroundColor: colors.white,
+              border: `2px solid ${colors.gray[300]}`,
+              borderRadius: borderRadius.xl,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
           >
-            <span style={{ marginRight: '0.5rem' }}>🔐</span>
-            Continue with Google
-          </Button>
+            🔐 Continue with Google
+          </button>
         </div>
       </div>
     </div>
