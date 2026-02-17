@@ -1,11 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
+import { getDb, ObjectId } from '@/lib/mongodb'
 
-// GET /api/analytics - Get analytics for current user
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    handle: user.handle,
+    plan: user.plan,
+    picture: user.picture,
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -32,47 +53,49 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     }
     
+    const db = await getDb()
+    
     // Get profile views
-    const profileViews = await prisma.analytics.count({
-      where: {
-        userId: user.id,
-        eventType: 'PROFILE_VIEW',
-        createdAt: { gte: startDate },
-      },
+    const profileViews = await db.collection('analytics').countDocuments({
+      userId: user.id,
+      eventType: 'PROFILE_VIEW',
+      createdAt: { $gte: startDate },
     })
     
     // Get link clicks
-    const linkClicks = await prisma.analytics.count({
-      where: {
-        userId: user.id,
-        eventType: { in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
-        createdAt: { gte: startDate },
-      },
+    const linkClicks = await db.collection('analytics').countDocuments({
+      userId: user.id,
+      eventType: { $in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
+      createdAt: { $gte: startDate },
     })
     
     // Get top clicked link
-    const topClickedData = await prisma.analytics.groupBy({
-      by: ['blockId'],
-      where: {
-        userId: user.id,
-        blockId: { not: null },
-        eventType: { in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
-        createdAt: { gte: startDate },
+    const topClickedData = await db.collection('analytics').aggregate([
+      {
+        $match: {
+          userId: user.id,
+          blockId: { $ne: null },
+          eventType: { $in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
+          createdAt: { $gte: startDate },
+        }
       },
-      _count: true,
-      orderBy: { _count: { blockId: 'desc' } },
-      take: 1,
-    })
+      {
+        $group: {
+          _id: '$blockId',
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 1 }
+    ]).toArray()
     
     let topClickedLink = null
-    if (topClickedData.length > 0 && topClickedData[0].blockId) {
-      const block = await prisma.block.findUnique({
-        where: { id: topClickedData[0].blockId },
-      })
+    if (topClickedData.length > 0 && topClickedData[0]._id) {
+      const block = await db.collection('blocks').findOne({ _id: new ObjectId(topClickedData[0]._id) })
       if (block) {
         topClickedLink = {
           title: block.title || 'Untitled',
-          clicks: topClickedData[0]._count,
+          clicks: topClickedData[0].count,
         }
       }
     }
