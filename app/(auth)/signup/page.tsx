@@ -1,203 +1,284 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Mail, Lock, Eye, EyeOff, User, Loader2 } from 'lucide-react'
+import { Button } from '@/app/components/Button'
+import { Input } from '@/app/components/Input'
+import { FloatingParticles, BreathingCircle, LotusElement } from '@/app/components/AnimationSystem'
+import { colors, typography, borderRadius } from '@/app/styles/theme'
 
 export default function SignupPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const plan = searchParams.get('plan')
-  
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isVisible, setIsVisible] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  const formRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const plan = searchParams.get('plan')
+
+  useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    setIsVisible(true)
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setIsLoading(true)
-
+    
     try {
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, firstName, lastName }),
       })
-
+      
       const data = await res.json()
-
-      if (!data.success) {
-        setError(data.error || 'Signup failed')
-        return
-      }
-
-      // Redirect based on plan
-      if (plan === 'pro') {
-        router.push('/dashboard/upgrade')
+      
+      if (data.success) {
+        if (plan === 'pro') {
+          router.push('/dashboard/upgrade')
+        } else {
+          router.push('/dashboard')
+        }
       } else {
-        router.push('/dashboard')
+        setError(data.error || 'Signup failed')
       }
     } catch (err) {
       setError('Something went wrong. Please try again.')
-    } finally {
-      setIsLoading(false)
     }
   }
 
   const handleGoogleSignup = () => {
-    // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
     const redirectUrl = window.location.origin + '/callback'
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-primary-50 via-secondary-50 to-white">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Logo */}
-          <Link href="/" className="flex justify-center mb-8">
-            <img 
-              src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png" 
-              alt="GoToLinks" 
-              className="h-12 w-auto"
-            />
-          </Link>
+    <div
+      className="signup-page"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+        padding: '2rem',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Animated Gradient Background */}
+      <div
+        className="signup-gradient-bg"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, ${colors.white} 100%)`,
+          backgroundSize: '200% 200%',
+          animation: prefersReducedMotion ? 'none' : 'gradientShift 25s ease-in-out infinite',
+        }}
+      />
 
-          <h1 className="text-2xl font-bold text-center mb-2 text-gray-800">Create your account</h1>
-          <p className="text-gray-600 text-center mb-8">
-            {plan === 'pro' ? 'Start your Pro journey' : 'Start your wellness profile for free'}
-          </p>
+      {/* Floating Particles */}
+      <FloatingParticles count={30} intensity="medium" sacredGeometry={true} />
 
-          {/* Google Signup */}
-          <button
-            onClick={handleGoogleSignup}
-            className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 rounded-xl py-3 px-4 font-medium text-gray-700 hover:bg-gray-50 transition-colors mb-6"
-            data-testid="google-signup-btn"
+      {/* Breathing Circles */}
+      <div style={{ position: 'absolute', top: '10%', left: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
+        <BreathingCircle size={150} color={colors.primary[300]} duration={5} delay={0} />
+      </div>
+      <div style={{ position: 'absolute', bottom: '15%', right: '10%', zIndex: 0, opacity: 0.2, pointerEvents: 'none' }}>
+        <BreathingCircle size={120} color={colors.secondary[300]} duration={6} delay={1.5} />
+      </div>
+      <div style={{ position: 'absolute', top: '50%', right: '5%', zIndex: 0, opacity: 0.15, pointerEvents: 'none' }}>
+        <BreathingCircle size={100} color={colors.accent[300]} duration={7} delay={3} />
+      </div>
+
+      {/* Lotus Elements */}
+      <div style={{ position: 'absolute', top: '20%', right: '15%', zIndex: 0, pointerEvents: 'none' }}>
+        <LotusElement size={80} petals={8} color={colors.secondary[200]} />
+      </div>
+      <div style={{ position: 'absolute', bottom: '20%', left: '15%', zIndex: 0, pointerEvents: 'none' }}>
+        <LotusElement size={70} petals={6} color={colors.primary[200]} />
+      </div>
+      <div style={{ position: 'absolute', top: '60%', left: '8%', zIndex: 0, pointerEvents: 'none' }}>
+        <LotusElement size={60} petals={8} color={colors.accent[200]} />
+      </div>
+
+      {/* Form Card */}
+      <div
+        ref={formRef}
+        className="signup-form-card card-elegant"
+        style={{
+          width: '100%',
+          maxWidth: '450px',
+          backgroundColor: colors.white,
+          borderRadius: borderRadius['2xl'],
+          padding: '3rem',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0,0,0,0.04)',
+          position: 'relative',
+          zIndex: 10,
+          opacity: isVisible || prefersReducedMotion ? 1 : 0,
+          transform: isVisible || prefersReducedMotion ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+          transition: prefersReducedMotion ? 'none' : 'opacity 0.8s ease-out, transform 0.8s ease-out',
+        }}
+      >
+        <div 
+          style={{ 
+            textAlign: 'center', 
+            marginBottom: '2rem',
+            opacity: isVisible || prefersReducedMotion ? 1 : 0,
+            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+            transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+          }}
+        >
+          <h1
+            className="gradient-text"
+            style={{
+              fontSize: '2rem',
+              fontWeight: 700,
+              color: colors.text.primary,
+              marginBottom: '0.5rem',
+              fontFamily: typography.fontFamily.sans,
+            }}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-          </button>
+            Create your profile
+          </h1>
+          <p style={{ color: colors.text.secondary }}>Start building your wellness-branded link in bio</p>
+        </div>
 
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">or continue with email</span>
-            </div>
+        <form 
+          onSubmit={handleSubmit} 
+          className="signup-form"
+          style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '1.5rem',
+            opacity: isVisible || prefersReducedMotion ? 1 : 0,
+            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
+            transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s',
+          }}
+        >
+          <div 
+            className="stagger-item"
+            style={{ 
+              display: 'grid', 
+              gridTemplateColumns: '1fr 1fr', 
+              gap: '1rem',
+            }}
+          >
+            <Input
+              type="text"
+              label="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="Sarah"
+              required
+              className="elegant-hover"
+            />
+            <Input
+              type="text"
+              label="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Moon"
+              required
+              className="elegant-hover"
+            />
+          </div>
+          <div className="stagger-item">
+            <Input
+              type="email"
+              label="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              className="elegant-hover"
+            />
+          </div>
+          <div className="stagger-item">
+            <Input
+              type="password"
+              label="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              minLength={8}
+              className="elegant-hover"
+            />
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm" data-testid="signup-error">
-                {error}
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                    placeholder="Sarah"
-                    required
-                    data-testid="signup-firstname"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input
-                  type="text"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                  placeholder="Moon"
-                  data-testid="signup-lastname"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                  placeholder="you@example.com"
-                  required
-                  data-testid="signup-email"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all"
-                  placeholder="Min. 8 characters"
-                  minLength={8}
-                  required
-                  data-testid="signup-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-accent-500 text-white py-3 rounded-xl font-semibold hover:bg-accent-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-              data-testid="signup-submit-btn"
+          {error && (
+            <div
+              style={{
+                padding: '0.75rem',
+                backgroundColor: colors.error + '15',
+                color: colors.error,
+                borderRadius: borderRadius.md,
+                fontSize: '0.875rem',
+                animation: 'fadeSlideUp 0.4s ease-out',
+              }}
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                'Create account'
-              )}
-            </button>
-          </form>
+              {error}
+            </div>
+          )}
 
-          <p className="mt-6 text-center text-gray-600">
+          <div className="stagger-item">
+            <Button 
+              type="submit" 
+              variant="primary" 
+              size="lg" 
+              className="button-elegant glow-effect ripple-effect"
+              style={{ width: '100%' }}
+            >
+              Create free profile
+            </Button>
+          </div>
+        </form>
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
             Already have an account?{' '}
-            <Link href="/login" className="text-accent-500 font-semibold hover:underline">
+            <Link 
+              href="/login" 
+              className="elegant-hover"
+              style={{ 
+                color: colors.primary[500], 
+                fontWeight: 600, 
+                textDecoration: 'none',
+              }}
+            >
               Sign in
             </Link>
           </p>
+        </div>
+
+        <div
+          style={{
+            marginTop: '2rem',
+            paddingTop: '2rem',
+            borderTop: `1px solid ${colors.gray[200]}`,
+          }}
+        >
+          <Button
+            variant="outline"
+            size="md"
+            className="button-elegant"
+            style={{ width: '100%' }}
+            onClick={handleGoogleSignup}
+          >
+            <span style={{ marginRight: '0.5rem' }}>🔐</span>
+            Continue with Google
+          </Button>
         </div>
       </div>
     </div>
