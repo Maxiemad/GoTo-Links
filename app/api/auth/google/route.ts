@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '@/lib/mongodb'
 import { v4 as uuidv4 } from 'uuid'
 
+export const dynamic = 'force-dynamic'
+
 const SESSION_EXPIRY_DAYS = 7
 
 async function generateUniqueHandle(firstName: string, lastName?: string): Promise<string> {
