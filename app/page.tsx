@@ -155,7 +155,12 @@ export default function HomePage() {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      router.push('/signup')
+      // Pass selected theme to signup page
+      const params = new URLSearchParams()
+      if (selectedTheme) {
+        params.set('theme', selectedTheme)
+      }
+      router.push(`/signup${params.toString() ? '?' + params.toString() : ''}`)
     }, 800)
   }
 
