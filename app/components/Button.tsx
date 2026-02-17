@@ -116,7 +116,7 @@ export const Button: React.FC<ButtonProps> = ({
     const { onClick, type, disabled, ...linkProps } = props as any
     return (
       <Link
-        to={to}
+        href={to}
         style={{
           ...combinedStyles,
           ...(disabled ? { opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' } : {}),
