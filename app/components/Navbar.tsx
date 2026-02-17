@@ -201,8 +201,8 @@ export const Navbar: React.FC = () => {
 
   // Handle scroll to section
   const handleScrollTo = (sectionId: string) => {
-    if (location.pathname !== '/') {
-      navigate('/')
+    if (pathname !== '/') {
+      router.push('/')
       setTimeout(() => {
         const element = document.getElementById(sectionId)
         element?.scrollIntoView({ behavior: 'smooth' })
@@ -252,7 +252,7 @@ export const Navbar: React.FC = () => {
         return // Let browser handle it
       }
       e.preventDefault()
-      navigate(href)
+      router.push(href)
       if (isDesktop) {
         setActiveDropdown(null)
         setActiveTab(null)
