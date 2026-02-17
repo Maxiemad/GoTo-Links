@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma'
 import { validateSession } from '@/lib/auth'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const blockSchema = z.object({
   type: z.enum(['LINK', 'RETREAT', 'TESTIMONIAL', 'BOOK_CALL', 'WHATSAPP', 'TELEGRAM', 'SOCIAL']),
   title: z.string().optional(),
