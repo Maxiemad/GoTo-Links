@@ -456,6 +456,15 @@ html {
   }
 }
 
+/* Hide scrollbar for theme carousel */
+.theme-train-track::-webkit-scrollbar {
+  display: none;
+}
+.theme-train-track {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Made for retreats – orbit ring */
 @keyframes orbitRing {
   from {
