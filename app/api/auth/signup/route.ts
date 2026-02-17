@@ -24,7 +24,7 @@ async function generateUniqueHandle(firstName: string, lastName?: string): Promi
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, firstName, lastName } = body
+    const { email, password, firstName, lastName, theme } = body
     
     if (!email || !password || !firstName) {
       return NextResponse.json(
