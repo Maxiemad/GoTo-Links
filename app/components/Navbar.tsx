@@ -161,8 +161,8 @@ export const Navbar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
-  const navigate = useNavigate()
-  const location = useLocation()
+  const router = useRouter()
+  const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
