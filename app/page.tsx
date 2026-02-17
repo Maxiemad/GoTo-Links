@@ -67,7 +67,11 @@ export default function HomePage() {
   }, [])
 
   // Check for prefers-reduced-motion
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+  
+  useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
 
   // Icons move along the ellipse path (not the ring rotating)
   const ORBIT_RADIUS_X = 340
