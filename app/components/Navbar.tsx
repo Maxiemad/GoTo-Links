@@ -1,5 +1,8 @@
+'use client'
+
 import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
 import { Button } from './Button'
 import { colors, typography, borderRadius, shadows } from '../styles/theme'
 
