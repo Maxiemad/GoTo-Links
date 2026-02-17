@@ -161,9 +161,8 @@ export default function SignupPage() {
             display: 'flex', 
             flexDirection: 'column', 
             gap: '1.5rem',
-            opacity: isVisible || prefersReducedMotion ? 1 : 0,
-            transform: isVisible || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
-            transition: prefersReducedMotion ? 'none' : 'opacity 0.6s ease-out 0.4s, transform 0.6s ease-out 0.4s',
+            opacity: 1,
+            transform: 'translateY(0)',
           }}
         >
           <div 
