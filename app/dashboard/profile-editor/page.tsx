@@ -309,22 +309,134 @@ export default function ProfileEditorPage() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
-                {THEMES.map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => setProfile({ ...profile, theme: theme.id })}
-                    className={`p-3 rounded-xl border-2 transition-all ${
-                      profile.theme === theme.id
-                        ? 'border-accent-500 ring-2 ring-accent-500/20'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className={`w-full h-8 rounded-lg ${theme.bg} mb-2`} />
-                    <span className="text-xs text-gray-600">{theme.name}</span>
-                  </button>
-                ))}
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">Theme</label>
+                {isSavingTheme && (
+                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Saving...
+                  </span>
+                )}
+              </div>
+              {/* Horizontal scrollable theme carousel */}
+              <div 
+                ref={themeScrollRef}
+                className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+                style={{ scrollBehavior: 'smooth' }}
+                data-testid="theme-carousel"
+              >
+                {THEMES_LIST.map((theme) => {
+                  const isSelected = profile.theme === theme.id
+                  return (
+                    <button
+                      key={theme.id}
+                      onClick={() => handleThemeChange(theme.id)}
+                      className={`flex-shrink-0 w-28 p-3 rounded-xl border-2 transition-all relative ${
+                        isSelected
+                          ? 'border-accent-500 ring-2 ring-accent-500/20'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      data-testid={`theme-${theme.id}`}
+                    >
+                      {isSelected && (
+                        <div className="absolute top-1 right-1 w-5 h-5 bg-accent-500 rounded-full flex items-center justify-center">
+                          <Check className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      <div 
+                        className="w-full h-12 rounded-lg mb-2 border border-gray-100"
+                        style={{ 
+                          background: theme.backgroundGradient || theme.background,
+                        }}
+                      >
+                        {/* Mini preview with accent color */}
+                        <div className="flex flex-col items-center justify-center h-full gap-1">
+                          <div 
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: theme.buttonPrimary }}
+                          />
+                          <div 
+                            className="w-8 h-1 rounded"
+                            style={{ backgroundColor: theme.textPrimary, opacity: 0.3 }}
+                          />
+                        </div>
+                      </div>
+                      <span className="text-xs text-gray-600 block truncate">{theme.name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Theme Preview */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Live Preview</h2>
+          <div 
+            className="rounded-2xl overflow-hidden border border-gray-200"
+            style={{ 
+              background: getTheme(profile.theme).backgroundGradient || getTheme(profile.theme).background 
+            }}
+            data-testid="theme-preview"
+          >
+            <div className="p-6 text-center">
+              {/* Avatar preview */}
+              <div 
+                className="w-16 h-16 mx-auto mb-3 rounded-full p-0.5"
+                style={{ 
+                  background: getTheme(profile.theme).headerGradient || 
+                    `linear-gradient(135deg, ${getTheme(profile.theme).buttonPrimary} 0%, ${getTheme(profile.theme).accent} 100%)` 
+                }}
+              >
+                <div 
+                  className="w-full h-full rounded-full flex items-center justify-center text-lg font-bold"
+                  style={{ 
+                    backgroundColor: getTheme(profile.theme).cardBackground,
+                    color: getTheme(profile.theme).textPrimary
+                  }}
+                >
+                  {profile.name?.charAt(0) || 'U'}
+                </div>
+              </div>
+              {/* Name */}
+              <h3 
+                className="font-bold mb-1"
+                style={{ color: getTheme(profile.theme).textPrimary }}
+              >
+                {profile.name || 'Your Name'}
+              </h3>
+              {/* Headline */}
+              <p 
+                className="text-sm mb-3"
+                style={{ color: getTheme(profile.theme).textSecondary }}
+              >
+                {profile.headline || 'Your headline'}
+              </p>
+              {/* Sample link card */}
+              <div 
+                className="rounded-xl p-3 flex items-center gap-3 max-w-xs mx-auto"
+                style={{ 
+                  backgroundColor: getTheme(profile.theme).cardBackground,
+                  border: `1px solid ${getTheme(profile.theme).cardBorder}`,
+                  boxShadow: getTheme(profile.theme).cardShadow
+                }}
+              >
+                <div 
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                  style={{ 
+                    backgroundColor: getTheme(profile.theme).buttonPrimary,
+                    color: getTheme(profile.theme).buttonPrimaryText
+                  }}
+                >
+                  🔗
+                </div>
+                <span 
+                  className="font-medium text-sm"
+                  style={{ color: getTheme(profile.theme).textPrimary }}
+                >
+                  Sample Link
+                </span>
               </div>
             </div>
           </div>
