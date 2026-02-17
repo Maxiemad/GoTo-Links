@@ -1658,13 +1658,13 @@ export default function HomePage() {
             <div>
               <h4 style={{ fontWeight: 600, marginBottom: '0.75rem' }}>Product</h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <Link to="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
+                <Link href="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   About
                 </Link>
-                <Link to="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
+                <Link href="/" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   Pricing
                 </Link>
-                <Link to="/login" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
+                <Link href="/login" className="elegant-hover" style={{ fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                   Login
                 </Link>
               </div>
