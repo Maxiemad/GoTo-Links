@@ -1365,135 +1365,258 @@ export default function HomePage() {
           >
             Choose Theme
           </h2>
-          {/* Horizontal infinite train – moves until user selects a theme */}
+          {/* Horizontal theme carousel with navigation */}
           <div
             style={{
-              overflow: 'hidden',
+              position: 'relative',
               marginBottom: '3rem',
-              marginLeft: '-2rem',
-              marginRight: '-2rem',
             }}
           >
-            <div
-              className="theme-train-track"
+            {/* Left Arrow Button */}
+            <button
+              onClick={() => {
+                const track = document.querySelector('.theme-train-track') as HTMLElement
+                if (track) {
+                  const scrollAmount = 280
+                  track.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+                }
+              }}
               style={{
+                position: 'absolute',
+                left: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: `2px solid ${colors.gray[200]}`,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                cursor: 'pointer',
                 display: 'flex',
-                gap: '1.5rem',
-                width: 'max-content',
-                animation: !selectedTheme && !prefersReducedMotion ? 'themeTrain 80s linear infinite' : 'none',
-                animationPlayState: selectedTheme ? 'paused' : 'running',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.accent[500]
+                e.currentTarget.style.borderColor = colors.accent[500]
+                e.currentTarget.style.color = 'white'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'
+                e.currentTarget.style.borderColor = colors.gray[200]
+                e.currentTarget.style.color = colors.text.primary
+              }}
+              aria-label="Previous themes"
+              data-testid="theme-prev-btn"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+
+            {/* Right Arrow Button */}
+            <button
+              onClick={() => {
+                const track = document.querySelector('.theme-train-track') as HTMLElement
+                if (track) {
+                  const scrollAmount = 280
+                  track.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+                }
+              }}
+              style={{
+                position: 'absolute',
+                right: '0',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                width: '48px',
+                height: '48px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                border: `2px solid ${colors.gray[200]}`,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.accent[500]
+                e.currentTarget.style.borderColor = colors.accent[500]
+                e.currentTarget.style.color = 'white'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.95)'
+                e.currentTarget.style.borderColor = colors.gray[200]
+                e.currentTarget.style.color = colors.text.primary
+              }}
+              aria-label="Next themes"
+              data-testid="theme-next-btn"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+
+            {/* Theme Track Container */}
+            <div
+              style={{
+                overflow: 'hidden',
+                marginLeft: '60px',
+                marginRight: '60px',
+                borderRadius: borderRadius.xl,
               }}
             >
-              {[...Object.entries(themes), ...Object.entries(themes)].map(([key, theme], idx) => {
-                const isSelected = selectedTheme === key
-                const cardVisible = isVisible || prefersReducedMotion
-                const themeBg = typeof theme.background === 'string' && theme.background.startsWith('linear-gradient')
-                  ? theme.background
-                  : theme.background as string
+              <div
+                className="theme-train-track"
+                style={{
+                  display: 'flex',
+                  gap: '1.5rem',
+                  padding: '1rem 0',
+                  overflowX: 'auto',
+                  scrollBehavior: 'smooth',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  animation: !selectedTheme && !prefersReducedMotion ? 'themeTrain 60s linear infinite' : 'none',
+                  animationPlayState: selectedTheme ? 'paused' : 'running',
+                  width: 'max-content',
+                }}
+              >
+                {[...Object.entries(themes), ...Object.entries(themes)].map(([key, theme], idx) => {
+                  const isSelected = selectedTheme === key
+                  const cardVisible = isVisible || prefersReducedMotion
+                  const themeBg = typeof theme.background === 'string' && theme.background.startsWith('linear-gradient')
+                    ? theme.background
+                    : theme.background as string
 
-                return (
-                  <div
-                    key={`${key}-${idx}`}
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`Select ${theme.name} theme`}
-                    onClick={() => handleThemeSelect(key)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        handleThemeSelect(key)
-                      }
-                    }}
-                    style={{
-                      flexShrink: 0,
-                      width: '260px',
-                      minWidth: '260px',
-                      cursor: 'pointer',
-                      opacity: cardVisible ? 1 : 0,
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                      outline: 'none',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!prefersReducedMotion) {
-                        e.currentTarget.style.transform = 'scale(1.03)'
-                        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 2px ' + colors.accent[500] + '40'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!prefersReducedMotion) {
-                        e.currentTarget.style.transform = 'scale(1)'
-                        e.currentTarget.style.boxShadow = isSelected
-                          ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
-                          : '0 10px 20px rgba(0, 0, 0, 0.1)'
-                      }
-                    }}
-                  >
-                    <Card
-                      className="card-elegant"
+                  return (
+                    <div
+                      key={`${key}-${idx}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Select ${theme.name} theme`}
+                      onClick={() => handleThemeSelect(key)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault()
+                          handleThemeSelect(key)
+                        }
+                      }}
+                      data-testid={`theme-card-${key}`}
                       style={{
-                        border: isSelected ? `2px solid ${colors.accent[500]}` : '2px solid transparent',
-                        boxShadow: isSelected
-                          ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
-                          : '0 10px 20px rgba(0, 0, 0, 0.1)',
-                        position: 'relative',
-                        padding: 0,
-                        overflow: 'hidden',
+                        flexShrink: 0,
+                        width: '260px',
+                        minWidth: '260px',
+                        cursor: 'pointer',
+                        opacity: cardVisible ? 1 : 0,
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        outline: 'none',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!prefersReducedMotion) {
+                          e.currentTarget.style.transform = 'scale(1.03)'
+                          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 2px ' + colors.accent[500] + '40'
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!prefersReducedMotion) {
+                          e.currentTarget.style.transform = 'scale(1)'
+                          e.currentTarget.style.boxShadow = isSelected
+                            ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
+                            : '0 10px 20px rgba(0, 0, 0, 0.1)'
+                        }
                       }}
                     >
-                      <div
+                      <Card
+                        className="card-elegant"
                         style={{
-                          height: '180px',
-                          background: themeBg,
+                          border: isSelected ? `2px solid ${colors.accent[500]}` : '2px solid transparent',
+                          boxShadow: isSelected
+                            ? '0 10px 20px rgba(0, 0, 0, 0.1), 0 0 0 2px ' + colors.accent[500]
+                            : '0 10px 20px rgba(0, 0, 0, 0.1)',
                           position: 'relative',
+                          padding: 0,
+                          overflow: 'hidden',
                         }}
                       >
                         <div
                           style={{
-                            position: 'absolute',
-                            bottom: '1rem',
-                            left: '1rem',
-                            right: '1rem',
-                            display: 'flex',
-                            gap: '0.5rem',
-                            justifyContent: 'center',
+                            height: '180px',
+                            background: themeBg,
+                            position: 'relative',
                           }}
                         >
-                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.primary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
-                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.secondary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
-                          <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.accent, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                          <div
+                            style={{
+                              position: 'absolute',
+                              bottom: '1rem',
+                              left: '1rem',
+                              right: '1rem',
+                              display: 'flex',
+                              gap: '0.5rem',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.primary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                            <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.secondary, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                            <div style={{ width: '36px', height: '36px', borderRadius: borderRadius.full, backgroundColor: theme.accent, border: '2px solid rgba(255,255,255,0.5)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }} />
+                          </div>
                         </div>
-                      </div>
-                      <div style={{ padding: '1.25rem' }}>
-                        <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.25rem', color: colors.text.primary }}>
-                          {theme.name}
-                        </h3>
-                      </div>
-                      {isSelected && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            top: '1rem',
-                            right: '1rem',
-                            width: '28px',
-                            height: '28px',
-                            borderRadius: borderRadius.full,
-                            backgroundColor: colors.accent[500],
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
-                            animation: prefersReducedMotion ? 'none' : 'fadeInScale 0.3s ease-out',
-                          }}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        <div style={{ padding: '1.25rem' }}>
+                          <h3 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.25rem', color: colors.text.primary }}>
+                            {theme.name}
+                          </h3>
                         </div>
-                      )}
-                    </Card>
-                  </div>
-                )
-              })}
+                        {/* Checkmark for selected theme */}
+                        {isSelected && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: '1rem',
+                              right: '1rem',
+                              width: '32px',
+                              height: '32px',
+                              borderRadius: borderRadius.full,
+                              backgroundColor: colors.accent[500],
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
+                              animation: prefersReducedMotion ? 'none' : 'fadeInScale 0.3s ease-out',
+                            }}
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          </div>
+                        )}
+                      </Card>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
           </div>
+
+          {/* Selected theme indicator */}
+          {selectedTheme && (
+            <p
+              style={{
+                textAlign: 'center',
+                marginBottom: '1.5rem',
+                color: colors.accent[500],
+                fontWeight: 600,
+                fontSize: '1rem',
+                animation: 'fadeInScale 0.3s ease-out',
+              }}
+            >
+              Selected: {themes[selectedTheme]?.name}
+            </p>
+          )}
           <div style={{ textAlign: 'center' }}>
             <Button
               variant="primary"
