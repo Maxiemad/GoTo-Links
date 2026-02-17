@@ -1,25 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { hashPassword, createSession, generateUniqueHandle } from '@/lib/auth'
-import { z } from 'zod'
+import { getDb, toJSON } from '@/lib/mongodb'
+import bcrypt from 'bcryptjs'
+import { v4 as uuidv4 } from 'uuid'
 
-const signupSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  firstName: z.string().min(1),
-  lastName: z.string().optional(),
-})
+const SESSION_EXPIRY_DAYS = 7
+
+async function generateUniqueHandle(firstName: string, lastName?: string): Promise<string> {
+  const db = await getDb()
+  const base = `${firstName}${lastName || ''}`.toLowerCase().replace(/[^a-z0-9]/g, '')
+  let handle = base
+  let counter = 1
+  
+  while (await db.collection('users').findOne({ handle })) {
+    handle = `${base}${counter}`
+    counter++
+  }
+  
+  return handle
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password, firstName, lastName } = signupSchema.parse(body)
+    const { email, password, firstName, lastName } = body
+    
+    if (!email || !password || !firstName) {
+      return NextResponse.json(
+        { success: false, error: 'Email, password, and first name are required' },
+        { status: 400 }
+      )
+    }
+    
+    if (password.length < 8) {
+      return NextResponse.json(
+        { success: false, error: 'Password must be at least 8 characters' },
+        { status: 400 }
+      )
+    }
+    
+    const db = await getDb()
     
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    })
-    
+    const existingUser = await db.collection('users').findOne({ email })
     if (existingUser) {
       return NextResponse.json(
         { success: false, error: 'Email already registered' },
@@ -31,44 +53,63 @@ export async function POST(request: NextRequest) {
     const handle = await generateUniqueHandle(firstName, lastName)
     
     // Hash password
-    const passwordHash = await hashPassword(password)
+    const passwordHash = await bcrypt.hash(password, 12)
     
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        firstName,
-        lastName,
-        handle,
-        authProvider: 'EMAIL',
-      },
+    const userResult = await db.collection('users').insertOne({
+      email,
+      passwordHash,
+      firstName,
+      lastName: lastName || null,
+      handle,
+      plan: 'FREE',
+      picture: null,
+      authProvider: 'EMAIL',
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     
+    const userId = userResult.insertedId.toString()
+    
     // Create default profile
-    await prisma.profile.create({
-      data: {
-        userId: user.id,
-        name: `${firstName}${lastName ? ' ' + lastName : ''}`,
-        theme: 'zen-minimal',
-      },
+    await db.collection('profiles').insertOne({
+      userId,
+      name: `${firstName}${lastName ? ' ' + lastName : ''}`,
+      headline: null,
+      bio: null,
+      photoUrl: null,
+      videoUrl: null,
+      location: null,
+      theme: 'zen-minimal',
+      customDomain: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     
     // Create session
-    const sessionToken = await createSession(user.id)
+    const sessionToken = `sess_${uuidv4().replace(/-/g, '')}`
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRY_DAYS)
+    
+    await db.collection('sessions').insertOne({
+      userId,
+      sessionToken,
+      expiresAt,
+      createdAt: new Date(),
+    })
     
     // Set cookie
     const response = NextResponse.json({
       success: true,
       data: {
         user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          handle: user.handle,
-          plan: user.plan,
-          picture: user.picture,
+          id: userId,
+          email,
+          firstName,
+          lastName: lastName || null,
+          handle,
+          plan: 'FREE',
+          picture: null,
         },
       },
     })
@@ -78,17 +119,11 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * SESSION_EXPIRY_DAYS,
     })
     
     return response
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
     console.error('Signup error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create account' },

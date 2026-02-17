@@ -1,22 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { verifyPassword, createSession } from '@/lib/auth'
-import { z } from 'zod'
+import { getDb } from '@/lib/mongodb'
+import bcrypt from 'bcryptjs'
+import { v4 as uuidv4 } from 'uuid'
 
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
-})
+const SESSION_EXPIRY_DAYS = 7
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { email, password } = loginSchema.parse(body)
+    const { email, password } = body
+    
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, error: 'Email and password are required' },
+        { status: 400 }
+      )
+    }
+    
+    const db = await getDb()
     
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    })
+    const user = await db.collection('users').findOne({ email })
     
     if (!user || !user.passwordHash) {
       return NextResponse.json(
@@ -26,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify password
-    const isValid = await verifyPassword(password, user.passwordHash)
+    const isValid = await bcrypt.compare(password, user.passwordHash)
     
     if (!isValid) {
       return NextResponse.json(
@@ -36,14 +40,23 @@ export async function POST(request: NextRequest) {
     }
     
     // Create session
-    const sessionToken = await createSession(user.id)
+    const sessionToken = `sess_${uuidv4().replace(/-/g, '')}`
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRY_DAYS)
+    
+    await db.collection('sessions').insertOne({
+      userId: user._id.toString(),
+      sessionToken,
+      expiresAt,
+      createdAt: new Date(),
+    })
     
     // Set cookie
     const response = NextResponse.json({
       success: true,
       data: {
         user: {
-          id: user.id,
+          id: user._id.toString(),
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -59,17 +72,11 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * SESSION_EXPIRY_DAYS,
     })
     
     return response
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
     console.error('Login error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to login' },

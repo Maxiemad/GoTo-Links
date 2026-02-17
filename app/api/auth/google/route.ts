@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { createSession, generateUniqueHandle } from '@/lib/auth'
+import { getDb } from '@/lib/mongodb'
+import { v4 as uuidv4 } from 'uuid'
 
-// REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
+const SESSION_EXPIRY_DAYS = 7
+
+async function generateUniqueHandle(firstName: string, lastName?: string): Promise<string> {
+  const db = await getDb()
+  const base = `${firstName}${lastName || ''}`.toLowerCase().replace(/[^a-z0-9]/g, '')
+  let handle = base
+  let counter = 1
+  
+  while (await db.collection('users').findOne({ handle })) {
+    handle = `${base}${counter}`
+    counter++
+  }
+  
+  return handle
+}
 
 interface EmergentAuthResponse {
   id: string
@@ -42,10 +56,10 @@ export async function POST(request: NextRequest) {
     
     const authData: EmergentAuthResponse = await authResponse.json()
     
+    const db = await getDb()
+    
     // Find or create user
-    let user = await prisma.user.findUnique({
-      where: { email: authData.email },
-    })
+    let user = await db.collection('users').findOne({ email: authData.email })
     
     if (!user) {
       // Parse name
@@ -57,52 +71,75 @@ export async function POST(request: NextRequest) {
       const handle = await generateUniqueHandle(firstName, lastName || undefined)
       
       // Create new user
-      user = await prisma.user.create({
-        data: {
-          email: authData.email,
-          firstName,
-          lastName,
-          handle,
-          picture: authData.picture,
-          googleId: authData.id,
-          authProvider: 'GOOGLE',
-        },
+      const userResult = await db.collection('users').insertOne({
+        email: authData.email,
+        passwordHash: null,
+        firstName,
+        lastName,
+        handle,
+        picture: authData.picture,
+        googleId: authData.id,
+        authProvider: 'GOOGLE',
+        plan: 'FREE',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
       
+      const userId = userResult.insertedId.toString()
+      
       // Create default profile
-      await prisma.profile.create({
-        data: {
-          userId: user.id,
-          name: authData.name,
-          theme: 'zen-minimal',
-          photoUrl: authData.picture,
-        },
+      await db.collection('profiles').insertOne({
+        userId,
+        name: authData.name,
+        headline: null,
+        bio: null,
+        photoUrl: authData.picture,
+        videoUrl: null,
+        location: null,
+        theme: 'zen-minimal',
+        customDomain: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       })
+      
+      user = await db.collection('users').findOne({ _id: userResult.insertedId })
     } else {
       // Update existing user's Google info
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          googleId: authData.id,
-          picture: authData.picture || user.picture,
-        },
-      })
+      await db.collection('users').updateOne(
+        { _id: user._id },
+        { 
+          $set: { 
+            googleId: authData.id,
+            picture: authData.picture || user.picture,
+            updatedAt: new Date(),
+          } 
+        }
+      )
     }
     
-    // Create our own session
-    const sessionToken = await createSession(user.id)
+    // Create session
+    const sessionToken = `sess_${uuidv4().replace(/-/g, '')}`
+    const expiresAt = new Date()
+    expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRY_DAYS)
+    
+    await db.collection('sessions').insertOne({
+      userId: user!._id.toString(),
+      sessionToken,
+      expiresAt,
+      createdAt: new Date(),
+    })
     
     const response = NextResponse.json({
       success: true,
       data: {
         user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          handle: user.handle,
-          plan: user.plan,
-          picture: user.picture,
+          id: user!._id.toString(),
+          email: user!.email,
+          firstName: user!.firstName,
+          lastName: user!.lastName,
+          handle: user!.handle,
+          plan: user!.plan,
+          picture: user!.picture,
         },
       },
     })
@@ -112,7 +149,7 @@ export async function POST(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * SESSION_EXPIRY_DAYS,
     })
     
     return response
