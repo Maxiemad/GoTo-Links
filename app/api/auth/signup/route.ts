@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       photoUrl: null,
       videoUrl: null,
       location: null,
-      theme: 'zen-minimal',
+      theme: theme || 'zen-minimal',
       customDomain: null,
       createdAt: new Date(),
       updatedAt: new Date(),
