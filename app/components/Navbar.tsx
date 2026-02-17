@@ -397,7 +397,7 @@ export const Navbar: React.FC = () => {
       >
         {/* Logo */}
         <Link
-          to="/"
+          href="/"
           style={{
             display: 'flex',
             alignItems: 'center',
