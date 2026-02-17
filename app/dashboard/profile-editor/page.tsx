@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Eye, Loader2, Upload, X } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, GripVertical, Eye, Loader2, Upload, X, Check } from 'lucide-react'
+import { getThemeList, getTheme, ThemeConfig } from '@/lib/themes'
 
 interface Block {
   id: string
@@ -39,14 +40,8 @@ interface User {
   plan: string
 }
 
-const THEMES = [
-  { id: 'zen-minimal', name: 'Zen Minimal', bg: 'bg-white' },
-  { id: 'sacred-earth', name: 'Sacred Earth', bg: 'bg-amber-100' },
-  { id: 'ocean-temple', name: 'Ocean Temple', bg: 'bg-blue-100' },
-  { id: 'forest-calm', name: 'Forest Calm', bg: 'bg-green-100' },
-  { id: 'sunset-glow', name: 'Sunset Glow', bg: 'bg-orange-100' },
-  { id: 'lavender-dreams', name: 'Lavender Dreams', bg: 'bg-purple-100' },
-]
+// Memoized theme list to prevent re-renders from resetting scroll
+const THEMES_LIST = getThemeList()
 
 const BLOCK_TYPES = [
   { id: 'LINK', name: 'Link', icon: '🔗' },
