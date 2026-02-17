@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma'
 import { validateSession } from '@/lib/auth'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const reorderSchema = z.object({
   blockIds: z.array(z.string()),
 })
