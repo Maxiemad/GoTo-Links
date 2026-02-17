@@ -29,7 +29,7 @@ export const FloatingParticles: React.FC<FloatingParticlesProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<Particle[]>([])
   const animationFrameRef = useRef<number>()
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
     if (prefersReducedMotion || !canvasRef.current) return
@@ -182,7 +182,7 @@ export const BreathingCircle: React.FC<BreathingCircleProps> = ({
   duration = 4,
   delay = 0,
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   if (prefersReducedMotion) {
     return (
@@ -227,7 +227,7 @@ export const LotusElement: React.FC<LotusElementProps> = ({
   petals = 8,
   color = colors.secondary[300],
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const svgRef = useRef<SVGSVGElement>(null)
 
   useEffect(() => {
@@ -302,7 +302,7 @@ export const AuroraGlow: React.FC<AuroraGlowProps> = ({
   delay = 0,
   style = {},
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (prefersReducedMotion) return null
   return (
     <div
@@ -336,7 +336,7 @@ export const SoftWaves: React.FC<SoftWavesProps> = ({
   opacity = 0.15,
   style = {},
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (prefersReducedMotion) return null
   return (
     <div
@@ -374,7 +374,7 @@ export const TwinkleDots: React.FC<TwinkleDotsProps> = ({
   size = 4,
   style = {},
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const positions = React.useMemo(
     () =>
       Array.from({ length: count }, () => ({
@@ -428,7 +428,7 @@ export const FloatingOrb: React.FC<FloatingOrbProps> = ({
   variant = 1,
   style = {},
 }) => {
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const c = color || (variant === 1 ? colors.primary[100] : variant === 2 ? colors.secondary[100] : colors.accent[100])
   const anim = variant === 1 ? 'floatOrbSoft1' : variant === 2 ? 'floatOrbSoft2' : 'floatOrbSoft3'
   if (prefersReducedMotion) return null
@@ -469,7 +469,7 @@ export const ParallaxImage: React.FC<ParallaxImageProps> = ({
 }) => {
   const [offset, setOffset] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   useEffect(() => {
     if (prefersReducedMotion) return
