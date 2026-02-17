@@ -1,12 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
-import { z } from 'zod'
+import { getDb, ObjectId } from '@/lib/mongodb'
 
-// GET /api/profile - Get current user's profile
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    handle: user.handle,
+    plan: user.plan,
+    picture: user.picture,
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -15,14 +35,8 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-      include: {
-        blocks: {
-          orderBy: { order: 'asc' },
-        },
-      },
-    })
+    const db = await getDb()
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
     
     if (!profile) {
       return NextResponse.json(
@@ -31,9 +45,46 @@ export async function GET(request: NextRequest) {
       )
     }
     
+    // Get blocks
+    const blocks = await db.collection('blocks')
+      .find({ profileId: profile._id.toString() })
+      .sort({ order: 1 })
+      .toArray()
+    
     return NextResponse.json({
       success: true,
-      data: { profile, user },
+      data: {
+        profile: {
+          id: profile._id.toString(),
+          userId: profile.userId,
+          name: profile.name,
+          headline: profile.headline,
+          bio: profile.bio,
+          photoUrl: profile.photoUrl,
+          videoUrl: profile.videoUrl,
+          location: profile.location,
+          theme: profile.theme,
+          customDomain: profile.customDomain,
+          blocks: blocks.map(b => ({
+            id: b._id.toString(),
+            profileId: b.profileId,
+            type: b.type,
+            order: b.order,
+            isVisible: b.isVisible,
+            title: b.title,
+            url: b.url,
+            description: b.description,
+            dateRange: b.dateRange,
+            location: b.location,
+            price: b.price,
+            authorName: b.authorName,
+            authorPhoto: b.authorPhoto,
+            quote: b.quote,
+            phone: b.phone,
+          })),
+        },
+        user,
+      },
     })
   } catch (error) {
     console.error('Get profile error:', error)
@@ -44,20 +95,9 @@ export async function GET(request: NextRequest) {
   }
 }
 
-const updateProfileSchema = z.object({
-  name: z.string().min(1).optional(),
-  headline: z.string().optional(),
-  bio: z.string().optional(),
-  photoUrl: z.string().url().optional().nullable(),
-  videoUrl: z.string().url().optional().nullable(),
-  location: z.string().optional(),
-  theme: z.string().optional(),
-})
-
-// PUT /api/profile - Update current user's profile
 export async function PUT(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -67,37 +107,73 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json()
-    const data = updateProfileSchema.parse(body)
+    const { name, headline, bio, photoUrl, videoUrl, location, theme } = body
     
     // Check if user has pro plan for video
-    if (data.videoUrl && user.plan !== 'PRO') {
+    if (videoUrl && user.plan !== 'PRO') {
       return NextResponse.json(
         { success: false, error: 'Video hero is a Pro feature' },
         { status: 403 }
       )
     }
     
-    const profile = await prisma.profile.update({
-      where: { userId: user.id },
-      data,
-      include: {
-        blocks: {
-          orderBy: { order: 'asc' },
-        },
-      },
-    })
+    const db = await getDb()
+    
+    const updateData: any = { updatedAt: new Date() }
+    if (name !== undefined) updateData.name = name
+    if (headline !== undefined) updateData.headline = headline
+    if (bio !== undefined) updateData.bio = bio
+    if (photoUrl !== undefined) updateData.photoUrl = photoUrl
+    if (videoUrl !== undefined) updateData.videoUrl = videoUrl
+    if (location !== undefined) updateData.location = location
+    if (theme !== undefined) updateData.theme = theme
+    
+    await db.collection('profiles').updateOne(
+      { userId: user.id },
+      { $set: updateData }
+    )
+    
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
+    const blocks = await db.collection('blocks')
+      .find({ profileId: profile!._id.toString() })
+      .sort({ order: 1 })
+      .toArray()
     
     return NextResponse.json({
       success: true,
-      data: { profile },
+      data: {
+        profile: {
+          id: profile!._id.toString(),
+          userId: profile!.userId,
+          name: profile!.name,
+          headline: profile!.headline,
+          bio: profile!.bio,
+          photoUrl: profile!.photoUrl,
+          videoUrl: profile!.videoUrl,
+          location: profile!.location,
+          theme: profile!.theme,
+          customDomain: profile!.customDomain,
+          blocks: blocks.map(b => ({
+            id: b._id.toString(),
+            profileId: b.profileId,
+            type: b.type,
+            order: b.order,
+            isVisible: b.isVisible,
+            title: b.title,
+            url: b.url,
+            description: b.description,
+            dateRange: b.dateRange,
+            location: b.location,
+            price: b.price,
+            authorName: b.authorName,
+            authorPhoto: b.authorPhoto,
+            quote: b.quote,
+            phone: b.phone,
+          })),
+        },
+      },
     })
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: error.errors[0].message },
-        { status: 400 }
-      )
-    }
     console.error('Update profile error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update profile' },

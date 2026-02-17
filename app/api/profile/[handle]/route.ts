@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDb } from '@/lib/mongodb'
 
-// GET /api/profile/[handle] - Get public profile by handle
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ handle: string }> }
@@ -9,16 +8,8 @@ export async function GET(
   try {
     const { handle } = await params
     
-    const user = await prisma.user.findUnique({
-      where: { handle },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        handle: true,
-        picture: true,
-      },
-    })
+    const db = await getDb()
+    const user = await db.collection('users').findOne({ handle })
     
     if (!user) {
       return NextResponse.json(
@@ -27,15 +18,7 @@ export async function GET(
       )
     }
     
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-      include: {
-        blocks: {
-          where: { isVisible: true },
-          orderBy: { order: 'asc' },
-        },
-      },
-    })
+    const profile = await db.collection('profiles').findOne({ userId: user._id.toString() })
     
     if (!profile) {
       return NextResponse.json(
@@ -44,19 +27,54 @@ export async function GET(
       )
     }
     
+    // Get visible blocks
+    const blocks = await db.collection('blocks')
+      .find({ profileId: profile._id.toString(), isVisible: true })
+      .sort({ order: 1 })
+      .toArray()
+    
     // Track profile view
-    await prisma.analytics.create({
-      data: {
-        userId: user.id,
-        eventType: 'PROFILE_VIEW',
-        referrer: request.headers.get('referer'),
-        userAgent: request.headers.get('user-agent'),
-      },
-    }).catch(() => {}) // Don't fail if analytics fails
+    await db.collection('analytics').insertOne({
+      userId: user._id.toString(),
+      blockId: null,
+      eventType: 'PROFILE_VIEW',
+      referrer: request.headers.get('referer'),
+      userAgent: request.headers.get('user-agent'),
+      createdAt: new Date(),
+    }).catch(() => {})
     
     return NextResponse.json({
       success: true,
-      data: { profile, user },
+      data: {
+        profile: {
+          id: profile._id.toString(),
+          name: profile.name,
+          headline: profile.headline,
+          bio: profile.bio,
+          photoUrl: profile.photoUrl,
+          videoUrl: profile.videoUrl,
+          location: profile.location,
+          theme: profile.theme,
+          blocks: blocks.map(b => ({
+            id: b._id.toString(),
+            type: b.type,
+            title: b.title,
+            url: b.url,
+            description: b.description,
+            dateRange: b.dateRange,
+            location: b.location,
+            price: b.price,
+            authorName: b.authorName,
+            authorPhoto: b.authorPhoto,
+            quote: b.quote,
+            phone: b.phone,
+          })),
+        },
+        user: {
+          handle: user.handle,
+          picture: user.picture,
+        },
+      },
     })
   } catch (error) {
     console.error('Get public profile error:', error)
