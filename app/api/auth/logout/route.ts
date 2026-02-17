@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { deleteSession } from '@/lib/auth'
+import { getDb } from '@/lib/mongodb'
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const sessionToken = cookieStore.get('session_token')?.value
+    const sessionToken = request.cookies.get('session_token')?.value
     
     if (sessionToken) {
-      await deleteSession(sessionToken)
+      const db = await getDb()
+      await db.collection('sessions').deleteOne({ sessionToken })
     }
     
     const response = NextResponse.json({ success: true })
