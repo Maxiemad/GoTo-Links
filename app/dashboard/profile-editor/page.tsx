@@ -58,8 +58,10 @@ export default function ProfileEditorPage() {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isSavingTheme, setIsSavingTheme] = useState(false)
   const [showAddBlock, setShowAddBlock] = useState(false)
   const [editingBlock, setEditingBlock] = useState<Block | null>(null)
+  const themeScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -84,6 +86,37 @@ export default function ProfileEditorPage() {
 
     fetchProfile()
   }, [router])
+
+  // Separate theme update function that persists to DB immediately
+  const handleThemeChange = useCallback(async (themeId: string) => {
+    if (!profile || profile.theme === themeId) return
+    
+    // Update local state immediately for instant UI feedback
+    setProfile(prev => prev ? { ...prev, theme: themeId } : null)
+    setIsSavingTheme(true)
+    
+    try {
+      const res = await fetch('/api/profile/theme', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ theme: themeId }),
+      })
+      
+      const data = await res.json()
+      if (!data.success) {
+        // Revert on error
+        setProfile(prev => prev ? { ...prev, theme: profile.theme } : null)
+        console.error('Failed to update theme:', data.error)
+      }
+    } catch (error) {
+      // Revert on error
+      setProfile(prev => prev ? { ...prev, theme: profile.theme } : null)
+      console.error('Failed to update theme:', error)
+    } finally {
+      setIsSavingTheme(false)
+    }
+  }, [profile])
 
   const handleSaveProfile = async () => {
     if (!profile) return
