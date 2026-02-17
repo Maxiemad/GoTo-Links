@@ -1,5 +1,7 @@
+'use client'
+
 import React from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { colors, borderRadius, shadows } from '../styles/theme'
 
 interface ButtonProps {
