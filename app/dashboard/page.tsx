@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, Link2, Star, Edit, ExternalLink, Sparkles, LogOut, Loader2 } from 'lucide-react'
+import { colors, typography, borderRadius, shadows } from '@/app/styles/theme'
 
 interface User {
   id: string
@@ -31,7 +31,6 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Check auth
         const authRes = await fetch('/api/auth/me', { credentials: 'include' })
         const authData = await authRes.json()
         
@@ -42,7 +41,6 @@ export default function DashboardPage() {
         
         setUser(authData.data.user)
 
-        // Get stats
         const statsRes = await fetch('/api/analytics', { credentials: 'include' })
         const statsData = await statsRes.json()
         
@@ -67,88 +65,180 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-secondary-50 to-white">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading dashboard...</p>
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: `3px solid ${colors.primary[200]}`,
+            borderTopColor: colors.primary[500],
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem',
+          }} />
+          <p style={{ color: colors.text.secondary }}>Loading dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-secondary-50 to-white" data-testid="dashboard">
+    <div style={{
+      minHeight: '100vh',
+      background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+    }} data-testid="dashboard">
       {/* Navigation */}
-      <nav className="bg-white/90 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center gap-2">
-              <img 
-                src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png" 
-                alt="GoToLinks" 
-                className="h-10 w-auto"
-              />
-            </Link>
-            <button 
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-              data-testid="logout-btn"
-            >
-              <LogOut className="w-5 h-5" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </div>
+      <nav style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backdropFilter: 'blur(8px)',
+        borderBottom: `1px solid ${colors.gray[200]}`,
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}>
+        <div style={{
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '0 1rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          height: '64px',
+        }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <img 
+              src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png" 
+              alt="GoToLinks" 
+              style={{ height: '40px', width: 'auto' }}
+            />
+          </Link>
+          <button 
+            onClick={handleLogout}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: colors.text.secondary,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            }}
+            data-testid="logout-btn"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1rem' }}>
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{
+            fontSize: '1.875rem',
+            fontWeight: 700,
+            color: colors.text.primary,
+            marginBottom: '0.5rem',
+            fontFamily: typography.fontFamily.sans,
+          }}>
             Welcome back, {user?.firstName || 'Creator'} 👋
           </h1>
-          <p className="text-gray-600">Here's how your profile is performing</p>
+          <p style={{ color: colors.text.secondary }}>Here&apos;s how your profile is performing</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 shadow-lg" data-testid="stat-views">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
-                <Eye className="w-6 h-6 text-primary-600" />
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '2rem',
+        }}>
+          <div style={{
+            backgroundColor: colors.white,
+            borderRadius: borderRadius['2xl'],
+            padding: '1.5rem',
+            boxShadow: shadows.lg,
+          }} data-testid="stat-views">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: colors.primary[100],
+                borderRadius: borderRadius.xl,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+              }}>
+                👁️
               </div>
               <div>
-                <p className="text-sm text-gray-500">Profile Views</p>
-                <p className="text-2xl font-bold text-gray-800">{stats?.profileViews || 0}</p>
-                <p className="text-xs text-gray-400">Last 7 days</p>
+                <p style={{ fontSize: '0.875rem', color: colors.text.secondary }}>Profile Views</p>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.text.primary }}>{stats?.profileViews || 0}</p>
+                <p style={{ fontSize: '0.75rem', color: colors.gray[400] }}>Last 7 days</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg" data-testid="stat-clicks">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
-                <Link2 className="w-6 h-6 text-secondary-600" />
+          <div style={{
+            backgroundColor: colors.white,
+            borderRadius: borderRadius['2xl'],
+            padding: '1.5rem',
+            boxShadow: shadows.lg,
+          }} data-testid="stat-clicks">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: colors.secondary[100],
+                borderRadius: borderRadius.xl,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+              }}>
+                🔗
               </div>
               <div>
-                <p className="text-sm text-gray-500">Link Clicks</p>
-                <p className="text-2xl font-bold text-gray-800">{stats?.linkClicks || 0}</p>
-                <p className="text-xs text-gray-400">Last 7 days</p>
+                <p style={{ fontSize: '0.875rem', color: colors.text.secondary }}>Link Clicks</p>
+                <p style={{ fontSize: '1.5rem', fontWeight: 700, color: colors.text.primary }}>{stats?.linkClicks || 0}</p>
+                <p style={{ fontSize: '0.75rem', color: colors.gray[400] }}>Last 7 days</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg" data-testid="stat-top">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center">
-                <Star className="w-6 h-6 text-accent-600" />
+          <div style={{
+            backgroundColor: colors.white,
+            borderRadius: borderRadius['2xl'],
+            padding: '1.5rem',
+            boxShadow: shadows.lg,
+          }} data-testid="stat-top">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: colors.accent[100],
+                borderRadius: borderRadius.xl,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+              }}>
+                ⭐
               </div>
               <div>
-                <p className="text-sm text-gray-500">Top Link</p>
-                <p className="text-lg font-bold text-gray-800 truncate max-w-[150px]">
+                <p style={{ fontSize: '0.875rem', color: colors.text.secondary }}>Top Link</p>
+                <p style={{ fontSize: '1rem', fontWeight: 700, color: colors.text.primary, maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {stats?.topClickedLink?.title || 'No data yet'}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p style={{ fontSize: '0.75rem', color: colors.gray[400] }}>
                   {stats?.topClickedLink ? `${stats.topClickedLink.clicks} clicks` : 'Add links to track'}
                 </p>
               </div>
@@ -157,68 +247,154 @@ export default function DashboardPage() {
         </div>
 
         {/* Action Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem',
+        }}>
           <Link 
             href="/dashboard/profile-editor" 
-            className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group"
+            style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius['2xl'],
+              padding: '1.5rem',
+              boxShadow: shadows.lg,
+              textDecoration: 'none',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
             data-testid="edit-profile-card"
           >
-            <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <Edit className="w-6 h-6 text-primary-600" />
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: colors.primary[100],
+              borderRadius: borderRadius.xl,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              fontSize: '1.5rem',
+            }}>
+              ✏️
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Edit your profile</h3>
-            <p className="text-gray-600 text-sm">Update your bio, links, and retreats</p>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: colors.text.primary, marginBottom: '0.5rem' }}>
+              Edit your profile
+            </h3>
+            <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
+              Update your bio, links, and retreats
+            </p>
           </Link>
 
           <Link 
             href={`/profile/${user?.handle}`}
-            className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group"
+            style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius['2xl'],
+              padding: '1.5rem',
+              boxShadow: shadows.lg,
+              textDecoration: 'none',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
             data-testid="preview-profile-card"
           >
-            <div className="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <ExternalLink className="w-6 h-6 text-secondary-600" />
+            <div style={{
+              width: '48px',
+              height: '48px',
+              backgroundColor: colors.secondary[100],
+              borderRadius: borderRadius.xl,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              fontSize: '1.5rem',
+            }}>
+              👁️
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">Preview profile</h3>
-            <p className="text-gray-600 text-sm">See how visitors see your profile</p>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: colors.text.primary, marginBottom: '0.5rem' }}>
+              Preview profile
+            </h3>
+            <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
+              See how visitors see your profile
+            </p>
           </Link>
 
           {user?.plan === 'FREE' && (
             <Link 
               href="/dashboard/upgrade"
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 group border-2 border-accent-500"
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius['2xl'],
+                padding: '1.5rem',
+                boxShadow: shadows.lg,
+                textDecoration: 'none',
+                border: `2px solid ${colors.accent[500]}`,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+              }}
               data-testid="upgrade-card"
             >
-              <div className="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Sparkles className="w-6 h-6 text-accent-600" />
+              <div style={{
+                width: '48px',
+                height: '48px',
+                backgroundColor: colors.accent[100],
+                borderRadius: borderRadius.xl,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1rem',
+                fontSize: '1.5rem',
+              }}>
+                ✨
               </div>
-              <h3 className="text-lg font-bold text-gray-800 mb-2">Upgrade to Pro</h3>
-              <p className="text-gray-600 text-sm">Unlock video heroes, premium themes & more</p>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                Upgrade to Pro
+              </h3>
+              <p style={{ color: colors.text.secondary, fontSize: '0.875rem' }}>
+                Unlock video heroes, premium themes & more
+              </p>
             </Link>
-          )}
-
-          {user?.plan === 'PRO' && (
-            <div className="bg-gradient-to-br from-accent-500 to-primary-500 rounded-2xl p-6 shadow-lg text-white">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="text-lg font-bold mb-2">Pro Member</h3>
-              <p className="text-white/80 text-sm">You have access to all premium features</p>
-            </div>
           )}
         </div>
 
         {/* Quick Link */}
-        <div className="mt-8 bg-white rounded-2xl p-6 shadow-lg">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Your GoToLinks URL</h3>
-          <div className="flex items-center gap-4">
-            <code className="flex-1 bg-gray-100 px-4 py-3 rounded-xl text-gray-700 font-mono text-sm truncate">
+        <div style={{
+          marginTop: '2rem',
+          backgroundColor: colors.white,
+          borderRadius: borderRadius['2xl'],
+          padding: '1.5rem',
+          boxShadow: shadows.lg,
+        }}>
+          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: colors.text.primary, marginBottom: '1rem' }}>
+            Your GoToLinks URL
+          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <code style={{
+              flex: 1,
+              minWidth: '200px',
+              backgroundColor: colors.gray[100],
+              padding: '0.75rem 1rem',
+              borderRadius: borderRadius.xl,
+              color: colors.text.secondary,
+              fontFamily: 'monospace',
+              fontSize: '0.875rem',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
               {typeof window !== 'undefined' ? `${window.location.origin}/profile/${user?.handle}` : `gotolinks.com/profile/${user?.handle}`}
             </code>
             <button 
               onClick={() => {
                 navigator.clipboard.writeText(`${window.location.origin}/profile/${user?.handle}`)
               }}
-              className="bg-accent-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent-600 transition-colors"
+              style={{
+                backgroundColor: colors.accent[500],
+                color: colors.white,
+                padding: '0.75rem 1.5rem',
+                borderRadius: borderRadius.xl,
+                fontWeight: 600,
+                border: 'none',
+                cursor: 'pointer',
+              }}
               data-testid="copy-url-btn"
             >
               Copy
