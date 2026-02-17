@@ -1,10 +1,16 @@
+'use client'
+
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { usePathname } from 'next/navigation'
 
 export const usePageTransition = () => {
-  const location = useLocation()
+  const pathname = usePathname()
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -15,7 +21,7 @@ export const usePageTransition = () => {
     }, 300)
 
     return () => clearTimeout(timer)
-  }, [location.pathname, prefersReducedMotion])
+  }, [pathname, prefersReducedMotion])
 
   return isTransitioning
 }
