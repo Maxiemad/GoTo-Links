@@ -135,7 +135,7 @@ export default function HomePage() {
           if (entry.isIntersecting) {
             const id = entry.target.getAttribute('data-section-id')
             if (id) {
-              setVisibleSections((prev) => new Set([...prev, id]))
+              setVisibleSections((prev) => new Set([...Array.from(prev), id]))
             }
           }
         })
