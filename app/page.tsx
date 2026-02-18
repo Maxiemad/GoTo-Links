@@ -1620,7 +1620,7 @@ export default function HomePage() {
                 animation: 'fadeInScale 0.3s ease-out',
               }}
             >
-              Selected: {themes[selectedTheme]?.name}
+              Selected: {selectedTheme && themes[selectedTheme].name}
             </p>
           )}
           <div style={{ textAlign: 'center' }}>
