@@ -147,7 +147,7 @@ export default function HomePage() {
     return () => observer.disconnect()
   }, [])
 
-  const handleThemeSelect = (themeKey: string) => {
+  const handleThemeSelect = (themeKey: ThemeKey) => {
     setSelectedTheme(themeKey)
   }
 
