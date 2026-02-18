@@ -8,14 +8,14 @@ import { Button } from './components/Button'
 import { Card } from './components/Card'
 import { Navbar } from './components/Navbar'
 import { FloatingParticles, BreathingCircle, LotusElement, AuroraGlow, SoftWaves, TwinkleDots, FloatingOrb } from './components/AnimationSystem'
-import { colors, typography, borderRadius, themes } from './styles/theme'
+import { colors, typography, borderRadius, themes, ThemeKey } from './styles/theme'
 
 export default function HomePage() {
   const router = useRouter()
-  const [selectedTheme, setSelectedTheme] = useState<string | null>(null)
+  const [selectedTheme, setSelectedTheme] = useState<ThemeKey | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
-  const [lottieData, setLottieData] = useState<any>(null)
+  const [lottieData, setLottieData] = useState<object | null>(null)
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [isHoveringCTA, setIsHoveringCTA] = useState(false)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
