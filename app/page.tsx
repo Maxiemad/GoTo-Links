@@ -1491,7 +1491,8 @@ export default function HomePage() {
                   width: 'max-content',
                 }}
               >
-                {[...Object.entries(themes), ...Object.entries(themes)].map(([key, theme], idx) => {
+                {([...Object.keys(themes), ...Object.keys(themes)] as ThemeKey[]).map((key, idx) => {
+                  const theme = themes[key]
                   const isSelected = selectedTheme === key
                   const cardVisible = isVisible || prefersReducedMotion
                   const themeBg = typeof theme.background === 'string' && theme.background.startsWith('linear-gradient')
