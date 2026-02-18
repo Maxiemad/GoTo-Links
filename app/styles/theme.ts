@@ -177,7 +177,10 @@ export const themes = {
     text: '#2C3539',
     accent: '#6E7E87',
   },
-}
+} as const
+
+// Type for theme keys
+export type ThemeKey = keyof typeof themes
 
 export const typography = {
   fontFamily: {
