@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 
 class AuthAPITester:
-    def __init__(self, base_url="https://theme-fix-preview.preview.emergentagent.com"):
+    def __init__(self, base_url="https://goto-links-preview.preview.emergentagent.com"):
         self.base_url = base_url
         self.session = requests.Session()
         self.tests_run = 0

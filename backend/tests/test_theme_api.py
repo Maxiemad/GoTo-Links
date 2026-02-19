@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://theme-fix-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://goto-links-preview.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "test@example.com"
