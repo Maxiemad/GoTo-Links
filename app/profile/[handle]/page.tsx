@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { MapPin, ExternalLink, Calendar, MessageCircle, Phone, Send } from 'lucide-react'
-import { getTheme, ThemeConfig } from '@/lib/themes'
+import { getTheme, ThemeConfig } from '../../../lib/themes'
 
 interface Block {
   id: string

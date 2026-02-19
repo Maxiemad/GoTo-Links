@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb, ObjectId } from '@/lib/mongodb'
-import { themes } from '@/lib/themes'
+import { themes } from '../../../../lib/themes'
 
 export const dynamic = 'force-dynamic'
 

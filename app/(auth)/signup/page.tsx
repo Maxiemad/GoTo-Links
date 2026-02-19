@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { colors, typography, borderRadius } from '@/app/styles/theme'
+import { colors, typography, borderRadius } from '../../styles/theme'
 
 function SignupForm() {
   const [firstName, setFirstName] = useState('')

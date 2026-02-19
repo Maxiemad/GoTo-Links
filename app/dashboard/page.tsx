@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { colors, typography, borderRadius, shadows } from '@/app/styles/theme'
+import { colors, typography, borderRadius, shadows } from '../styles/theme'
 
 interface User {
   id: string

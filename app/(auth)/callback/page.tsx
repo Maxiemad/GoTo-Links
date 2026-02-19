@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { colors } from '@/app/styles/theme'
+import { colors } from '../../styles/theme'
 
 export default function CallbackPage() {
   const router = useRouter()
