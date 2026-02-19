@@ -1,13 +1,14 @@
 # Backend proxy for Next.js API routes
 # Routes all /api/* requests to Next.js running on port 3000
 
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
 import httpx
 
 app = FastAPI()
 
-NEXTJS_URL = "http://localhost:3000"
+NEXTJS_URL = os.getenv('NEXTJS_URL', 'http://localhost:3000')
 
 @app.api_route("/api/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy_to_nextjs(request: Request, path: str):
