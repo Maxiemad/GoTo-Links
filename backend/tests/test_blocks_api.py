@@ -11,7 +11,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://goto-links-preview.preview.emergentagent.com')
+BASE_URL = os.environ.get('NEXT_PUBLIC_APP_URL', 'https://bio-links-app.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "blocktest@example.com"
