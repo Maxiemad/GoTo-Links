@@ -31,7 +31,8 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 - ✅ No hardcoded URLs or credentials
 - ✅ Environment variables properly configured
 - ✅ package-lock.json removed (using yarn only)
-- ✅ tsconfig.json has `baseUrl: "."` for path alias resolution (`@/*`)
+- ✅ tsconfig.json has `baseUrl: "."` for path alias resolution
+- ✅ **All `@/` path aliases converted to relative imports** (Docker/Vercel compatible)
 - ✅ Deployment agent verification PASSED
 
 ## What's Been Implemented
