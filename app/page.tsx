@@ -1424,13 +1424,7 @@ export default function HomePage() {
           >
             {/* Left Arrow Button */}
             <button
-              onClick={() => {
-                const track = document.querySelector('.theme-train-track') as HTMLElement
-                if (track) {
-                  const scrollAmount = 280
-                  track.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
-                }
-              }}
+              onClick={() => scrollThemes('left')}
               style={{
                 position: 'absolute',
                 left: '0',
@@ -1469,13 +1463,7 @@ export default function HomePage() {
 
             {/* Right Arrow Button */}
             <button
-              onClick={() => {
-                const track = document.querySelector('.theme-train-track') as HTMLElement
-                if (track) {
-                  const scrollAmount = 280
-                  track.scrollBy({ left: scrollAmount, behavior: 'smooth' })
-                }
-              }}
+              onClick={() => scrollThemes('right')}
               style={{
                 position: 'absolute',
                 right: '0',
@@ -1522,6 +1510,7 @@ export default function HomePage() {
               }}
             >
               <div
+                ref={themeTrackRef}
                 className="theme-train-track"
                 style={{
                   display: 'flex',
@@ -1530,13 +1519,9 @@ export default function HomePage() {
                   overflowX: 'auto',
                   scrollBehavior: 'smooth',
                   scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  animation: !selectedTheme && !prefersReducedMotion ? 'themeTrain 60s linear infinite' : 'none',
-                  animationPlayState: selectedTheme ? 'paused' : 'running',
-                  width: 'max-content',
                 }}
               >
-                {([...Object.keys(themes), ...Object.keys(themes)] as ThemeKey[]).map((key, idx) => {
+                {THEME_KEYS.map((key) => {
                   const theme = themes[key]
                   const isSelected = selectedTheme === key
                   const cardVisible = isVisible || prefersReducedMotion
@@ -1546,7 +1531,7 @@ export default function HomePage() {
 
                   return (
                     <div
-                      key={`${key}-${idx}`}
+                      key={key}
                       role="button"
                       tabIndex={0}
                       aria-label={`Select ${theme.name} theme`}
