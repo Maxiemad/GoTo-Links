@@ -15,7 +15,10 @@ const THEME_KEYS = Object.keys(themes) as ThemeKey[]
 
 export default function HomePage() {
   const router = useRouter()
+  // Separate states: selectedTheme for selection, isAutoScrolling for animation control
   const [selectedTheme, setSelectedTheme] = useState<ThemeKey | null>(null)
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true)
+  const [isHovering, setIsHovering] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [lottieData, setLottieData] = useState<object | null>(null)
@@ -30,25 +33,34 @@ export default function HomePage() {
   const orbitStartRef = useRef<number | null>(null)
   const orbitIconRefs = useRef<(HTMLDivElement | null)[]>([])
   const autoScrollRef = useRef<number | null>(null)
+  const scrollPosRef = useRef(0)
 
-  // Auto-scroll the theme carousel
+  // Auto-scroll effect - independent of theme selection
   useEffect(() => {
-    if (selectedTheme || !themeTrackRef.current) return
-    
     const track = themeTrackRef.current
-    let scrollPos = 0
-    const scrollSpeed = 0.5 // pixels per frame
+    if (!track) return
+    
+    const scrollSpeed = 0.5
     
     const animate = () => {
-      if (!track || selectedTheme) return
-      scrollPos += scrollSpeed
+      if (!track) return
       
-      // Reset scroll when reaching the end
-      if (scrollPos >= track.scrollWidth - track.clientWidth) {
-        scrollPos = 0
+      // Only auto-scroll if enabled and not hovering
+      if (isAutoScrolling && !isHovering) {
+        scrollPosRef.current += scrollSpeed
+        
+        // Reset scroll when reaching the end
+        const maxScroll = track.scrollWidth - track.clientWidth
+        if (scrollPosRef.current >= maxScroll) {
+          scrollPosRef.current = 0
+        }
+        
+        track.scrollLeft = scrollPosRef.current
+      } else {
+        // Sync ref with actual scroll position when paused
+        scrollPosRef.current = track.scrollLeft
       }
       
-      track.scrollLeft = scrollPos
       autoScrollRef.current = requestAnimationFrame(animate)
     }
     
@@ -59,16 +71,36 @@ export default function HomePage() {
         cancelAnimationFrame(autoScrollRef.current)
       }
     }
-  }, [selectedTheme])
+  }, [isAutoScrolling, isHovering])
 
-  // Scroll navigation handlers
+  // Scroll navigation handlers - independent of selection
   const scrollThemes = useCallback((direction: 'left' | 'right') => {
-    if (!themeTrackRef.current) return
-    const scrollAmount = 280 + 24 // card width + gap
-    themeTrackRef.current.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
+    const track = themeTrackRef.current
+    if (!track) return
+    
+    // Pause auto-scroll temporarily when using buttons
+    setIsAutoScrolling(false)
+    
+    const scrollAmount = 284 // card width (260) + gap (24)
+    const newScrollPos = track.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount)
+    
+    track.scrollTo({
+      left: newScrollPos,
       behavior: 'smooth'
     })
+    
+    // Resume auto-scroll after a delay
+    setTimeout(() => {
+      if (themeTrackRef.current) {
+        scrollPosRef.current = themeTrackRef.current.scrollLeft
+      }
+      setIsAutoScrolling(true)
+    }, 2000)
+  }, [])
+
+  // Handle theme selection - only updates selectedTheme state
+  const handleThemeSelect = useCallback((themeKey: ThemeKey) => {
+    setSelectedTheme(themeKey)
   }, [])
 
   const scrollToDemo = () => {
