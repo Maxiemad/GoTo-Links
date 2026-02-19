@@ -518,13 +518,30 @@ export default function ProfileEditorPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {profile.blocks.map((block) => (
+              {profile.blocks.map((block, index) => (
                 <div
                   key={block.id}
                   className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
                   data-testid={`block-${block.id}`}
                 >
-                  <GripVertical className="w-5 h-5 text-gray-400 cursor-grab" />
+                  <div className="flex flex-col gap-1">
+                    <button
+                      onClick={() => handleReorderBlock(block.id, 'up')}
+                      disabled={index === 0}
+                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                      data-testid={`block-${block.id}-up`}
+                    >
+                      <ChevronUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleReorderBlock(block.id, 'down')}
+                      disabled={index === profile.blocks.length - 1}
+                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                      data-testid={`block-${block.id}-down`}
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                  </div>
                   <div className="text-2xl">{BLOCK_TYPES.find(t => t.id === block.type)?.icon || '📎'}</div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-800 truncate">{block.title || 'Untitled'}</p>
@@ -533,12 +550,14 @@ export default function ProfileEditorPage() {
                   <button
                     onClick={() => setEditingBlock(block)}
                     className="text-gray-500 hover:text-gray-700"
+                    data-testid={`block-${block.id}-edit`}
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeleteBlock(block.id)}
                     className="text-red-500 hover:text-red-700"
+                    data-testid={`block-${block.id}-delete`}
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
