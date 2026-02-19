@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Lottie from 'lottie-react'
@@ -9,6 +9,9 @@ import { Card } from './components/Card'
 import { Navbar } from './components/Navbar'
 import { FloatingParticles, BreathingCircle, LotusElement, AuroraGlow, SoftWaves, TwinkleDots, FloatingOrb } from './components/AnimationSystem'
 import { colors, typography, borderRadius, themes, ThemeKey } from './styles/theme'
+
+// Get theme keys as typed array
+const THEME_KEYS = Object.keys(themes) as ThemeKey[]
 
 export default function HomePage() {
   const router = useRouter()
@@ -20,11 +23,53 @@ export default function HomePage() {
   const [isHoveringCTA, setIsHoveringCTA] = useState(false)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
   const themeSectionRef = useRef<HTMLDivElement>(null)
+  const themeTrackRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const howItWorksRef = useRef<HTMLDivElement>(null)
   const orbitAngleRef = useRef(0)
   const orbitStartRef = useRef<number | null>(null)
   const orbitIconRefs = useRef<(HTMLDivElement | null)[]>([])
+  const autoScrollRef = useRef<number | null>(null)
+
+  // Auto-scroll the theme carousel
+  useEffect(() => {
+    if (selectedTheme || !themeTrackRef.current) return
+    
+    const track = themeTrackRef.current
+    let scrollPos = 0
+    const scrollSpeed = 0.5 // pixels per frame
+    
+    const animate = () => {
+      if (!track || selectedTheme) return
+      scrollPos += scrollSpeed
+      
+      // Reset scroll when reaching the end
+      if (scrollPos >= track.scrollWidth - track.clientWidth) {
+        scrollPos = 0
+      }
+      
+      track.scrollLeft = scrollPos
+      autoScrollRef.current = requestAnimationFrame(animate)
+    }
+    
+    autoScrollRef.current = requestAnimationFrame(animate)
+    
+    return () => {
+      if (autoScrollRef.current) {
+        cancelAnimationFrame(autoScrollRef.current)
+      }
+    }
+  }, [selectedTheme])
+
+  // Scroll navigation handlers
+  const scrollThemes = useCallback((direction: 'left' | 'right') => {
+    if (!themeTrackRef.current) return
+    const scrollAmount = 280 + 24 // card width + gap
+    themeTrackRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    })
+  }, [])
 
   const scrollToDemo = () => {
     const demo = document.getElementById('demo')
