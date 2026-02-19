@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown } from 'lucide-react'
 import { getThemeList, getTheme, ThemeConfig } from '@/lib/themes'
 
 interface Block {
