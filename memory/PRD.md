@@ -23,6 +23,23 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 - **File Uploads**: Cloudinary - Scaffolded
 - **Deployment**: Vercel-ready structure ✅
 
+### Project Structure (Pure Next.js App Router)
+```
+/app                    # Root project directory
+├── app/               # Next.js App Router pages & API routes
+│   ├── (auth)/        # Auth pages (login, signup, callback)
+│   ├── (dashboard)/   # Protected dashboard routes
+│   ├── api/           # API routes (auth, blocks, profile, etc.)
+│   └── profile/       # Public profile page
+├── lib/               # Shared utilities (mongodb, auth, themes)
+├── components/        # UI components
+├── backend/           # FastAPI proxy (minimal, routes to Next.js)
+├── .env.local         # All environment variables (MongoDB, JWT, Stripe, etc.)
+└── package.json       # Dependencies
+```
+
+**Note:** No separate frontend/backend folder structure. This is a pure Next.js fullstack app.
+
 ## Deployment Readiness ✅ (Feb 19, 2026 - Updated)
 - ✅ Build passes successfully (`npm run build` completes without errors)
 - ✅ All Prisma dependencies removed
