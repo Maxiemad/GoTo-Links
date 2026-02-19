@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb, ObjectId } from '@/lib/mongodb'
-import { createProCheckoutSession, PRO_PLAN_AMOUNT } from '@/lib/stripe'
+import { getDb, ObjectId } from '../../../../lib/mongodb'
+import { createProCheckoutSession, PRO_PLAN_AMOUNT } from '../../../../lib/stripe'
 
 export const dynamic = 'force-dynamic'
 

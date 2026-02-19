@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb, ObjectId } from '@/lib/mongodb'
-import { getCheckoutSession } from '@/lib/stripe'
+import { getDb, ObjectId } from '../../../../../lib/mongodb'
+import { getCheckoutSession } from '../../../../../lib/stripe'
 
 export const dynamic = 'force-dynamic'
 
