@@ -224,10 +224,6 @@ export default function HomePage() {
     return () => observer.disconnect()
   }, [])
 
-  const handleThemeSelect = (themeKey: ThemeKey) => {
-    setSelectedTheme(themeKey)
-  }
-
   const handleCreateAndStyle = () => {
     setIsLoading(true)
     setTimeout(() => {
