@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSession } from '@/lib/auth'
-import { generateSignature } from '@/lib/cloudinary'
+import { validateSession } from '../../../../lib/auth'
+import { generateSignature } from '../../../../lib/cloudinary'
 
 export const dynamic = 'force-dynamic'
 
