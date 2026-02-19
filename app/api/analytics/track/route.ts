@@ -1,42 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { getDb, ObjectId } from '@/lib/mongodb'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
 const trackSchema = z.object({
-  blockId: z.string(),
-  eventType: z.enum(['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK']),
+  profileId: z.string(),
+  blockId: z.string().optional(),
+  eventType: z.enum(['VIEW', 'CLICK']),
 })
 
-// POST /api/analytics/track - Track a click event
+// POST /api/analytics/track - Track a view or click event
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { blockId, eventType } = trackSchema.parse(body)
+    const { profileId, blockId, eventType } = trackSchema.parse(body)
     
-    // Get block to find userId
-    const block = await prisma.block.findUnique({
-      where: { id: blockId },
-      include: { profile: true },
+    const db = await getDb()
+    
+    // Verify profile exists
+    const profile = await db.collection('profiles').findOne({ 
+      $or: [
+        { _id: new ObjectId(profileId) },
+        { userId: profileId }
+      ]
     })
     
-    if (!block) {
+    if (!profile) {
       return NextResponse.json(
-        { success: false, error: 'Block not found' },
+        { success: false, error: 'Profile not found' },
         { status: 404 }
       )
     }
     
+    // If blockId provided, verify it exists
+    if (blockId) {
+      const block = await db.collection('blocks').findOne({ 
+        _id: new ObjectId(blockId),
+        profileId: profile._id.toString()
+      })
+      
+      if (!block) {
+        return NextResponse.json(
+          { success: false, error: 'Block not found' },
+          { status: 404 }
+        )
+      }
+    }
+    
     // Create analytics event
-    await prisma.analytics.create({
-      data: {
-        userId: block.profile.userId,
-        blockId,
-        eventType,
-        referrer: request.headers.get('referer'),
-        userAgent: request.headers.get('user-agent'),
-      },
+    await db.collection('analytics').insertOne({
+      profileId: profile._id.toString(),
+      userId: profile.userId,
+      blockId: blockId || null,
+      eventType,
+      referrer: request.headers.get('referer') || null,
+      userAgent: request.headers.get('user-agent') || null,
+      timestamp: new Date(),
+      createdAt: new Date(),
     })
     
     return NextResponse.json({ success: true })
