@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { cookies } from 'next/headers'
-import prisma from './prisma'
+import { getDb, ObjectId } from './mongodb'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-change-in-production'
 const SESSION_EXPIRY_DAYS = parseInt(process.env.SESSION_EXPIRY_DAYS || '7')
@@ -57,12 +57,12 @@ export async function createSession(userId: string): Promise<string> {
   const expiresAt = new Date()
   expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRY_DAYS)
   
-  await prisma.session.create({
-    data: {
-      userId,
-      sessionToken,
-      expiresAt,
-    },
+  const db = await getDb()
+  await db.collection('sessions').insertOne({
+    userId,
+    sessionToken,
+    expiresAt,
+    createdAt: new Date(),
   })
   
   return sessionToken
@@ -78,23 +78,27 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       return null
     }
     
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: true },
-    })
+    const db = await getDb()
+    const session = await db.collection('sessions').findOne({ sessionToken })
     
-    if (!session || session.expiresAt < new Date()) {
+    if (!session || new Date(session.expiresAt) < new Date()) {
+      return null
+    }
+    
+    const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+    
+    if (!user) {
       return null
     }
     
     return {
-      id: session.user.id,
-      email: session.user.email,
-      firstName: session.user.firstName,
-      lastName: session.user.lastName,
-      handle: session.user.handle,
-      plan: session.user.plan,
-      picture: session.user.picture,
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      handle: user.handle,
+      plan: user.plan || 'FREE',
+      picture: user.picture || null,
     }
   } catch (error) {
     console.error('Error getting current user:', error)
@@ -130,23 +134,27 @@ export async function validateSession(request: Request): Promise<UserSession | n
       return null
     }
     
-    const session = await prisma.session.findUnique({
-      where: { sessionToken },
-      include: { user: true },
-    })
+    const db = await getDb()
+    const session = await db.collection('sessions').findOne({ sessionToken })
     
-    if (!session || session.expiresAt < new Date()) {
+    if (!session || new Date(session.expiresAt) < new Date()) {
+      return null
+    }
+    
+    const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+    
+    if (!user) {
       return null
     }
     
     return {
-      id: session.user.id,
-      email: session.user.email,
-      firstName: session.user.firstName,
-      lastName: session.user.lastName,
-      handle: session.user.handle,
-      plan: session.user.plan,
-      picture: session.user.picture,
+      id: user._id.toString(),
+      email: user.email,
+      firstName: user.firstName || null,
+      lastName: user.lastName || null,
+      handle: user.handle,
+      plan: user.plan || 'FREE',
+      picture: user.picture || null,
     }
   } catch (error) {
     console.error('Error validating session:', error)
@@ -156,9 +164,8 @@ export async function validateSession(request: Request): Promise<UserSession | n
 
 // Delete session (logout)
 export async function deleteSession(sessionToken: string): Promise<void> {
-  await prisma.session.delete({
-    where: { sessionToken },
-  }).catch(() => {})
+  const db = await getDb()
+  await db.collection('sessions').deleteOne({ sessionToken }).catch(() => {})
 }
 
 // Generate unique handle from name
@@ -167,7 +174,8 @@ export async function generateUniqueHandle(firstName: string, lastName?: string)
   let handle = base
   let counter = 1
   
-  while (await prisma.user.findUnique({ where: { handle } })) {
+  const db = await getDb()
+  while (await db.collection('users').findOne({ handle })) {
     handle = `${base}${counter}`
     counter++
   }
