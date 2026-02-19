@@ -1,19 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
+import { getDb, ObjectId } from '@/lib/mongodb'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    handle: user.handle,
+  }
+}
+
 const updateBlockSchema = z.object({
   title: z.string().optional(),
-  url: z.string().url().optional(),
+  url: z.string().optional(),
   description: z.string().optional(),
   dateRange: z.string().optional(),
   location: z.string().optional(),
   price: z.number().optional(),
   authorName: z.string().optional(),
-  authorPhoto: z.string().url().optional(),
+  authorPhoto: z.string().optional(),
   quote: z.string().optional(),
   phone: z.string().optional(),
   isVisible: z.boolean().optional(),
@@ -28,9 +46,17 @@ export async function GET(
   try {
     const { id } = await params
     
-    const block = await prisma.block.findUnique({
-      where: { id },
-    })
+    const db = await getDb()
+    
+    let block
+    try {
+      block = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Invalid block ID' },
+        { status: 400 }
+      )
+    }
     
     if (!block) {
       return NextResponse.json(
@@ -41,7 +67,27 @@ export async function GET(
     
     return NextResponse.json({
       success: true,
-      data: { block },
+      data: {
+        block: {
+          id: block._id.toString(),
+          profileId: block.profileId,
+          type: block.type,
+          title: block.title,
+          url: block.url,
+          description: block.description,
+          dateRange: block.dateRange,
+          location: block.location,
+          price: block.price,
+          authorName: block.authorName,
+          authorPhoto: block.authorPhoto,
+          quote: block.quote,
+          phone: block.phone,
+          isVisible: block.isVisible,
+          order: block.order,
+          createdAt: block.createdAt,
+          updatedAt: block.updatedAt,
+        }
+      },
     })
   } catch (error) {
     console.error('Get block error:', error)
@@ -58,7 +104,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -71,30 +117,81 @@ export async function PUT(
     const body = await request.json()
     const data = updateBlockSchema.parse(body)
     
-    // Verify ownership
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-    })
+    const db = await getDb()
     
-    const existingBlock = await prisma.block.findUnique({
-      where: { id },
-    })
+    // Get user's profile
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
     
-    if (!existingBlock || existingBlock.profileId !== profile?.id) {
+    if (!profile) {
+      return NextResponse.json(
+        { success: false, error: 'Profile not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Verify block exists and belongs to user's profile
+    let existingBlock
+    try {
+      existingBlock = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Invalid block ID' },
+        { status: 400 }
+      )
+    }
+    
+    if (!existingBlock || existingBlock.profileId !== profile._id.toString()) {
       return NextResponse.json(
         { success: false, error: 'Block not found' },
         { status: 404 }
       )
     }
     
-    const block = await prisma.block.update({
-      where: { id },
-      data,
-    })
+    // Update block
+    const updateData: Record<string, unknown> = { updatedAt: new Date() }
+    if (data.title !== undefined) updateData.title = data.title
+    if (data.url !== undefined) updateData.url = data.url
+    if (data.description !== undefined) updateData.description = data.description
+    if (data.dateRange !== undefined) updateData.dateRange = data.dateRange
+    if (data.location !== undefined) updateData.location = data.location
+    if (data.price !== undefined) updateData.price = data.price
+    if (data.authorName !== undefined) updateData.authorName = data.authorName
+    if (data.authorPhoto !== undefined) updateData.authorPhoto = data.authorPhoto
+    if (data.quote !== undefined) updateData.quote = data.quote
+    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.isVisible !== undefined) updateData.isVisible = data.isVisible
+    if (data.order !== undefined) updateData.order = data.order
+    
+    await db.collection('blocks').updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    )
+    
+    const block = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
     
     return NextResponse.json({
       success: true,
-      data: { block },
+      data: {
+        block: {
+          id: block!._id.toString(),
+          profileId: block!.profileId,
+          type: block!.type,
+          title: block!.title,
+          url: block!.url,
+          description: block!.description,
+          dateRange: block!.dateRange,
+          location: block!.location,
+          price: block!.price,
+          authorName: block!.authorName,
+          authorPhoto: block!.authorPhoto,
+          quote: block!.quote,
+          phone: block!.phone,
+          isVisible: block!.isVisible,
+          order: block!.order,
+          createdAt: block!.createdAt,
+          updatedAt: block!.updatedAt,
+        }
+      },
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -117,7 +214,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -128,29 +225,43 @@ export async function DELETE(
     
     const { id } = await params
     
-    // Verify ownership
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-    })
+    const db = await getDb()
     
-    const existingBlock = await prisma.block.findUnique({
-      where: { id },
-    })
+    // Get user's profile
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
     
-    if (!existingBlock || existingBlock.profileId !== profile?.id) {
+    if (!profile) {
+      return NextResponse.json(
+        { success: false, error: 'Profile not found' },
+        { status: 404 }
+      )
+    }
+    
+    // Verify block exists and belongs to user's profile
+    let existingBlock
+    try {
+      existingBlock = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Invalid block ID' },
+        { status: 400 }
+      )
+    }
+    
+    if (!existingBlock || existingBlock.profileId !== profile._id.toString()) {
       return NextResponse.json(
         { success: false, error: 'Block not found' },
         { status: 404 }
       )
     }
     
-    await prisma.block.delete({
-      where: { id },
-    })
+    // Delete block
+    await db.collection('blocks').deleteOne({ _id: new ObjectId(id) })
     
-    return NextResponse.json({
-      success: true,
-    })
+    // Also delete related analytics
+    await db.collection('analytics').deleteMany({ blockId: id })
+    
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Delete block error:', error)
     return NextResponse.json(
