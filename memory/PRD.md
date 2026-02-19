@@ -15,12 +15,12 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 ## Architecture
 
 ### Tech Stack
-- **Frontend**: Next.js 14 (App Router), React 18 - **ORIGINAL UI PRESERVED**
+- **Frontend**: Next.js 14.2.35 (App Router), React 18 - **ORIGINAL UI PRESERVED**
 - **Backend**: FastAPI proxy + Next.js API Routes
 - **Database**: MongoDB (local) - can be swapped for Supabase later
 - **Authentication**: JWT + Google OAuth (Emergent Auth) - **WORKING**
-- **Payments**: Stripe (test mode)
-- **File Uploads**: Cloudinary (scaffolded)
+- **Payments**: Stripe (test mode) - Scaffolded
+- **File Uploads**: Cloudinary - Scaffolded
 - **Deployment**: Vercel-ready structure
 
 ## What's Been Implemented
@@ -41,34 +41,95 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 - [x] Public profile dynamically applies saved theme
 - [x] Themes: zen-minimal, sacred-earth, ocean-temple, forest-calm, sunset-glow, lavender-dreams, midnight-bloom, rose-quartz
 
+### Block Management CRUD - FULLY WORKING ✅ (Feb 19, 2026)
+- [x] Create blocks (Link, Retreat, Testimonial, Book Call, WhatsApp, Telegram)
+- [x] Read blocks (GET all, GET single)
+- [x] Update blocks (title, url, description, visibility, etc.)
+- [x] Delete blocks (with cascade delete of analytics)
+- [x] Reorder blocks (persisted order in MongoDB)
+- [x] Dashboard UI with up/down reorder buttons
+- [x] Public profile renders blocks dynamically sorted by order
+- [x] Only visible blocks (isVisible=true) shown on public profile
+- [x] Comprehensive backend tests: `/app/backend/tests/test_blocks_api.py`
+
 ### API Routes Implemented (MongoDB Backend)
+**Auth:**
 - `POST /api/auth/signup` - Email registration ✅
 - `POST /api/auth/login` - Email login ✅
 - `POST /api/auth/logout` - Session logout ✅
 - `GET /api/auth/me` - Get current user ✅
 - `POST /api/auth/google` - Google OAuth callback ✅
-- `GET /api/profile` - Get user's profile ✅
+
+**Profile:**
+- `GET /api/profile` - Get user's profile with blocks ✅
 - `PUT /api/profile` - Update profile ✅
 - `PATCH /api/profile/theme` - Update theme ✅
-- `GET /api/profile/[handle]` - Get public profile ✅
-- `GET /api/analytics` - Get analytics ✅
+- `GET /api/profile/[handle]` - Get public profile with blocks ✅
+
+**Blocks:**
+- `GET /api/blocks` - Get all user's blocks ✅
+- `POST /api/blocks` - Create new block ✅
+- `GET /api/blocks/[id]` - Get single block ✅
+- `PUT /api/blocks/[id]` - Update block ✅
+- `DELETE /api/blocks/[id]` - Delete block ✅
+- `POST /api/blocks/reorder` - Reorder blocks ✅
+
+**Analytics (uses Prisma - needs migration):**
+- `GET /api/analytics` - Get analytics data
+- `POST /api/analytics/track` - Track events
 
 ## Test Credentials
-- Email: test@example.com
-- Password: password123
-- Handle: testuser
+- Email: blocktest@example.com
+- Password: Test1234!
+- Handle: blocktester
+
+## Database Schema (MongoDB)
+
+### users
+```json
+{ _id, email, password, firstName, lastName, handle, plan, picture, theme }
+```
+
+### profiles
+```json
+{ _id, userId, name, headline, bio, photoUrl, videoUrl, location, theme, customDomain }
+```
+
+### blocks
+```json
+{ _id, profileId, type, order, isVisible, title, url, description, dateRange, location, price, authorName, authorPhoto, quote, phone, createdAt, updatedAt }
+```
+
+### sessions
+```json
+{ _id, userId, sessionToken, expiresAt }
+```
+
+### analytics
+```json
+{ _id, userId, blockId, eventType, referrer, userAgent, createdAt }
+```
 
 ## Completed Tasks
 1. ✅ Migrate from Vite to Next.js
 2. ✅ Implement authentication (JWT + Google OAuth)
 3. ✅ Fix theme selection system with database persistence
 4. ✅ Add live theme preview in dashboard
+5. ✅ Complete blocks CRUD API (MongoDB) - add, edit, delete, reorder blocks
+6. ✅ Profile editor form functionality - save name, headline, bio, location
+7. ✅ Public profile renders blocks dynamically
 
 ## Next Tasks (Priority Order)
-1. Complete blocks CRUD API (MongoDB) - add, edit, delete blocks
-2. Profile editor form functionality - save name, headline, bio, location
+1. Complete Analytics System - migrate from Prisma to MongoDB
+2. Secure Auth Middleware - protect dashboard routes  
 3. Test Stripe payment flow
 4. Add Cloudinary image uploads
 5. Migrate to Supabase when credentials provided
 6. Deploy to Vercel
 
+## Future/Backlog
+- Remove unused Prisma code
+- Implement Google OAuth for production
+- Add social media blocks (Instagram, YouTube, Twitter)
+- Video hero feature for Pro users
+- Custom domains for Pro users
