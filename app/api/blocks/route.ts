@@ -1,29 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
+import { getDb, ObjectId } from '@/lib/mongodb'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    handle: user.handle,
+  }
+}
+
 const blockSchema = z.object({
   type: z.enum(['LINK', 'RETREAT', 'TESTIMONIAL', 'BOOK_CALL', 'WHATSAPP', 'TELEGRAM', 'SOCIAL']),
   title: z.string().optional(),
-  url: z.string().url().optional(),
+  url: z.string().optional(),
   description: z.string().optional(),
   dateRange: z.string().optional(),
   location: z.string().optional(),
   price: z.number().optional(),
   authorName: z.string().optional(),
-  authorPhoto: z.string().url().optional(),
+  authorPhoto: z.string().optional(),
   quote: z.string().optional(),
   phone: z.string().optional(),
-  isVisible: z.boolean().optional(),
+  isVisible: z.boolean().optional().default(true),
 })
 
 // GET /api/blocks - Get all blocks for current user's profile
 export async function GET(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -32,9 +50,9 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-    })
+    const db = await getDb()
+    
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
     
     if (!profile) {
       return NextResponse.json(
@@ -43,14 +61,34 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const blocks = await prisma.block.findMany({
-      where: { profileId: profile.id },
-      orderBy: { order: 'asc' },
-    })
+    const blocks = await db.collection('blocks')
+      .find({ profileId: profile._id.toString() })
+      .sort({ order: 1 })
+      .toArray()
+    
+    const formattedBlocks = blocks.map(block => ({
+      id: block._id.toString(),
+      profileId: block.profileId,
+      type: block.type,
+      title: block.title,
+      url: block.url,
+      description: block.description,
+      dateRange: block.dateRange,
+      location: block.location,
+      price: block.price,
+      authorName: block.authorName,
+      authorPhoto: block.authorPhoto,
+      quote: block.quote,
+      phone: block.phone,
+      isVisible: block.isVisible,
+      order: block.order,
+      createdAt: block.createdAt,
+      updatedAt: block.updatedAt,
+    }))
     
     return NextResponse.json({
       success: true,
-      data: { blocks },
+      data: { blocks: formattedBlocks },
     })
   } catch (error) {
     console.error('Get blocks error:', error)
@@ -64,7 +102,7 @@ export async function GET(request: NextRequest) {
 // POST /api/blocks - Create a new block
 export async function POST(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -76,9 +114,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = blockSchema.parse(body)
     
-    const profile = await prisma.profile.findUnique({
-      where: { userId: user.id },
-    })
+    const db = await getDb()
+    
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
     
     if (!profile) {
       return NextResponse.json(
@@ -87,23 +125,62 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    const profileId = profile._id.toString()
+    
     // Get max order
-    const maxOrder = await prisma.block.aggregate({
-      where: { profileId: profile.id },
-      _max: { order: true },
+    const maxOrderBlock = await db.collection('blocks')
+      .find({ profileId })
+      .sort({ order: -1 })
+      .limit(1)
+      .toArray()
+    
+    const maxOrder = maxOrderBlock.length > 0 ? maxOrderBlock[0].order : -1
+    
+    const now = new Date()
+    const result = await db.collection('blocks').insertOne({
+      profileId,
+      type: data.type,
+      title: data.title || null,
+      url: data.url || null,
+      description: data.description || null,
+      dateRange: data.dateRange || null,
+      location: data.location || null,
+      price: data.price || null,
+      authorName: data.authorName || null,
+      authorPhoto: data.authorPhoto || null,
+      quote: data.quote || null,
+      phone: data.phone || null,
+      isVisible: data.isVisible ?? true,
+      order: maxOrder + 1,
+      createdAt: now,
+      updatedAt: now,
     })
     
-    const block = await prisma.block.create({
-      data: {
-        profileId: profile.id,
-        order: (maxOrder._max.order ?? -1) + 1,
-        ...data,
-      },
-    })
+    const block = await db.collection('blocks').findOne({ _id: result.insertedId })
     
     return NextResponse.json({
       success: true,
-      data: { block },
+      data: {
+        block: {
+          id: block!._id.toString(),
+          profileId: block!.profileId,
+          type: block!.type,
+          title: block!.title,
+          url: block!.url,
+          description: block!.description,
+          dateRange: block!.dateRange,
+          location: block!.location,
+          price: block!.price,
+          authorName: block!.authorName,
+          authorPhoto: block!.authorPhoto,
+          quote: block!.quote,
+          phone: block!.phone,
+          isVisible: block!.isVisible,
+          order: block!.order,
+          createdAt: block!.createdAt,
+          updatedAt: block!.updatedAt,
+        }
+      },
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
