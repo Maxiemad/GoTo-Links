@@ -1536,6 +1536,8 @@ export default function HomePage() {
                 marginRight: '60px',
                 borderRadius: borderRadius.xl,
               }}
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
             >
               <div
                 ref={themeTrackRef}
