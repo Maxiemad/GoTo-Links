@@ -37,48 +37,46 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '7d'
-    
-    // Calculate date range
-    const now = new Date()
-    let startDate: Date
-    
-    switch (period) {
-      case '30d':
-        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-        break
-      case 'all':
-        startDate = new Date(0)
-        break
-      default: // 7d
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-    }
-    
     const db = await getDb()
     
-    // Get profile views
+    // Get profile
+    const profile = await db.collection('profiles').findOne({ userId: user.id })
+    
+    if (!profile) {
+      return NextResponse.json(
+        { success: false, error: 'Profile not found' },
+        { status: 404 }
+      )
+    }
+    
+    const profileId = profile._id.toString()
+    
+    // Calculate date 7 days ago
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    
+    // Get profile views in last 7 days
     const profileViews = await db.collection('analytics').countDocuments({
-      userId: user.id,
-      eventType: 'PROFILE_VIEW',
-      createdAt: { $gte: startDate },
+      profileId,
+      eventType: 'VIEW',
+      timestamp: { $gte: sevenDaysAgo }
     })
     
-    // Get link clicks
+    // Get link clicks in last 7 days
     const linkClicks = await db.collection('analytics').countDocuments({
-      userId: user.id,
-      eventType: { $in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
-      createdAt: { $gte: startDate },
+      profileId,
+      eventType: 'CLICK',
+      timestamp: { $gte: sevenDaysAgo }
     })
     
-    // Get top clicked link
-    const topClickedData = await db.collection('analytics').aggregate([
+    // Get top clicked block
+    const topClickedAgg = await db.collection('analytics').aggregate([
       {
         $match: {
-          userId: user.id,
+          profileId,
+          eventType: 'CLICK',
           blockId: { $ne: null },
-          eventType: { $in: ['LINK_CLICK', 'RETREAT_CLICK', 'BOOK_CALL_CLICK', 'SOCIAL_CLICK'] },
-          createdAt: { $gte: startDate },
+          timestamp: { $gte: sevenDaysAgo }
         }
       },
       {
@@ -92,15 +90,38 @@ export async function GET(request: NextRequest) {
     ]).toArray()
     
     let topClickedLink = null
-    if (topClickedData.length > 0 && topClickedData[0]._id) {
-      const block = await db.collection('blocks').findOne({ _id: new ObjectId(topClickedData[0]._id) })
+    if (topClickedAgg.length > 0) {
+      const block = await db.collection('blocks').findOne({ 
+        _id: new ObjectId(topClickedAgg[0]._id) 
+      })
       if (block) {
         topClickedLink = {
-          title: block.title || 'Untitled',
-          clicks: topClickedData[0].count,
+          id: block._id.toString(),
+          title: block.title,
+          clicks: topClickedAgg[0].count
         }
       }
     }
+    
+    // Get daily views for chart (last 7 days)
+    const dailyViews = await db.collection('analytics').aggregate([
+      {
+        $match: {
+          profileId,
+          eventType: 'VIEW',
+          timestamp: { $gte: sevenDaysAgo }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: '%Y-%m-%d', date: '$timestamp' }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]).toArray()
     
     return NextResponse.json({
       success: true,
@@ -109,9 +130,10 @@ export async function GET(request: NextRequest) {
           profileViews,
           linkClicks,
           topClickedLink,
-          period,
+          period: '7d'
         },
-      },
+        dailyViews: dailyViews.map(d => ({ date: d._id, views: d.count }))
+      }
     })
   } catch (error) {
     console.error('Get analytics error:', error)
