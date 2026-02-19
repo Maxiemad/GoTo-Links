@@ -26,10 +26,11 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 ## Deployment Readiness ✅ (Feb 19, 2026)
 - ✅ Build passes successfully
 - ✅ All Prisma dependencies removed
-- ✅ MongoDB-only architecture
+- ✅ MongoDB-only architecture (mongodb@6.12.0 - compatible with Node 20.18.1)
 - ✅ No hardcoded URLs or credentials
 - ✅ Environment variables properly configured
 - ✅ Supervisor configuration valid
+- ✅ package-lock.json removed (using yarn only)
 
 ## What's Been Implemented
 
