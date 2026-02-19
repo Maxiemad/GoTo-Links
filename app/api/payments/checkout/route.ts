@@ -1,14 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
+import { getDb, ObjectId } from '@/lib/mongodb'
 import { createProCheckoutSession, PRO_PLAN_AMOUNT } from '@/lib/stripe'
 
 export const dynamic = 'force-dynamic'
 
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    plan: user.plan || 'FREE',
+  }
+}
+
 // POST /api/payments/checkout - Create checkout session for Pro upgrade
 export async function POST(request: NextRequest) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -42,16 +60,17 @@ export async function POST(request: NextRequest) {
       cancelUrl: `${originUrl}/dashboard`,
     })
     
-    // Create payment record
-    await prisma.payment.create({
-      data: {
-        userId: user.id,
-        stripeSessionId: sessionId,
-        amount: PRO_PLAN_AMOUNT,
-        currency: 'usd',
-        status: 'PENDING',
-        metadata: { planType: 'PRO' },
-      },
+    // Create payment record in MongoDB
+    const db = await getDb()
+    await db.collection('payments').insertOne({
+      userId: user.id,
+      stripeSessionId: sessionId,
+      amount: PRO_PLAN_AMOUNT,
+      currency: 'usd',
+      status: 'PENDING',
+      metadata: { planType: 'PRO' },
+      createdAt: new Date(),
+      updatedAt: new Date(),
     })
     
     return NextResponse.json({

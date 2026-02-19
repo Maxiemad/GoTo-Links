@@ -1,9 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { validateSession } from '@/lib/auth'
+import { getDb, ObjectId } from '@/lib/mongodb'
 import { getCheckoutSession } from '@/lib/stripe'
 
 export const dynamic = 'force-dynamic'
+
+async function getSessionUser(request: NextRequest) {
+  const sessionToken = request.cookies.get('session_token')?.value
+  if (!sessionToken) return null
+  
+  const db = await getDb()
+  const session = await db.collection('sessions').findOne({ sessionToken })
+  
+  if (!session || new Date(session.expiresAt) < new Date()) return null
+  
+  const user = await db.collection('users').findOne({ _id: new ObjectId(session.userId) })
+  if (!user) return null
+  
+  return {
+    id: user._id.toString(),
+    email: user.email,
+    plan: user.plan || 'FREE',
+  }
+}
 
 // GET /api/payments/status/[sessionId] - Get payment status
 export async function GET(
@@ -11,7 +29,7 @@ export async function GET(
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
-    const user = await validateSession(request)
+    const user = await getSessionUser(request)
     
     if (!user) {
       return NextResponse.json(
@@ -22,10 +40,10 @@ export async function GET(
     
     const { sessionId } = await params
     
+    const db = await getDb()
+    
     // Verify ownership
-    const payment = await prisma.payment.findUnique({
-      where: { stripeSessionId: sessionId },
-    })
+    const payment = await db.collection('payments').findOne({ stripeSessionId: sessionId })
     
     if (!payment || payment.userId !== user.id) {
       return NextResponse.json(
@@ -43,21 +61,21 @@ export async function GET(
       newStatus = 'COMPLETED'
       
       // Upgrade user to Pro
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { plan: 'PRO' },
-      })
+      await db.collection('users').updateOne(
+        { _id: new ObjectId(user.id) },
+        { $set: { plan: 'PRO', updatedAt: new Date() } }
+      )
       
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: 'COMPLETED' },
-      })
+      await db.collection('payments').updateOne(
+        { _id: payment._id },
+        { $set: { status: 'COMPLETED', updatedAt: new Date() } }
+      )
     } else if (stripeStatus.status === 'expired' && payment.status === 'PENDING') {
       newStatus = 'EXPIRED'
-      await prisma.payment.update({
-        where: { id: payment.id },
-        data: { status: 'EXPIRED' },
-      })
+      await db.collection('payments').updateOne(
+        { _id: payment._id },
+        { $set: { status: 'EXPIRED', updatedAt: new Date() } }
+      )
     }
     
     return NextResponse.json({
