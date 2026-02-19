@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, GripVertical, Eye, Loader2, Upload, X, Check } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, GripVertical, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown } from 'lucide-react'
 import { getThemeList, getTheme, ThemeConfig } from '@/lib/themes'
 
 interface Block {
@@ -211,6 +211,62 @@ export default function ProfileEditorPage() {
       }
     } catch (error) {
       console.error('Failed to delete block:', error)
+    }
+  }
+
+  const handleReorderBlock = async (blockId: string, direction: 'up' | 'down') => {
+    if (!profile) return
+    
+    const currentIndex = profile.blocks.findIndex(b => b.id === blockId)
+    if (currentIndex === -1) return
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
+    if (newIndex < 0 || newIndex >= profile.blocks.length) return
+    
+    // Create new order
+    const newBlocks = [...profile.blocks]
+    const [movedBlock] = newBlocks.splice(currentIndex, 1)
+    newBlocks.splice(newIndex, 0, movedBlock)
+    
+    // Update order property
+    const reorderedBlocks = newBlocks.map((block, index) => ({
+      ...block,
+      order: index,
+    }))
+    
+    // Update local state immediately for instant feedback
+    setProfile({
+      ...profile,
+      blocks: reorderedBlocks,
+    })
+    
+    // Persist to backend
+    try {
+      const res = await fetch('/api/blocks/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          blockIds: reorderedBlocks.map(b => b.id),
+        }),
+      })
+      
+      const data = await res.json()
+      if (!data.success) {
+        // Revert on error
+        setProfile({
+          ...profile,
+          blocks: profile.blocks,
+        })
+        console.error('Failed to reorder blocks:', data.error)
+      }
+    } catch (error) {
+      // Revert on error
+      setProfile({
+        ...profile,
+        blocks: profile.blocks,
+      })
+      console.error('Failed to reorder blocks:', error)
     }
   }
 
