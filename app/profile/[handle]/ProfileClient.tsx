@@ -420,7 +420,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
                 fontFamily: themeConfig.fontPairing.body,
               }}
             >
-              ✨ Powered by GoToLinks
+              <span className="inline-flex items-center gap-1"><SparkleIcon3D size={16} /> Powered by GoToLinks</span>
             </Link>
           </div>
         </div>
