@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     await db.collection('profiles').updateOne(
       { _id: profile._id },
       { 
-        $push: { sections: newSection },
+        $push: { sections: newSection } as any,
         $set: { updatedAt: new Date() }
       }
     )
