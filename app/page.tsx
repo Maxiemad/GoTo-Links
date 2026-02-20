@@ -239,14 +239,14 @@ export default function HomePage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'transparent' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'transparent' }} className="parallax-3d-container">
       {/* Navigation */}
       <Navbar />
 
-      {/* Hero Section with Gradient Background */}
+      {/* Hero Section with Gradient Background and 3D Effects */}
       <section
         ref={heroRef}
-        className="hero-section"
+        className="hero-section hero-3d"
         style={{
           padding: '6rem 2rem',
           maxWidth: '1200px',
@@ -273,6 +273,16 @@ export default function HomePage() {
             pointerEvents: 'none',
           }}
         />
+
+        {/* 3D Floating Shapes with Parallax */}
+        {!prefersReducedMotion && (
+          <>
+            <FloatingShape color={colors.primary[300]} size={180} blur={80} top="5%" left="5%" depth={0.3} delay={0} />
+            <FloatingShape color={colors.secondary[300]} size={150} blur={70} top="60%" right="8%" depth={0.5} delay={2} />
+            <FloatingShape color={colors.accent[300]} size={120} blur={60} bottom="10%" left="15%" depth={0.7} delay={4} />
+            <FloatingShape color={colors.primary[200]} size={200} blur={90} top="30%" right="2%" depth={0.2} delay={1} />
+          </>
+        )}
 
         {/* Floating Particles */}
         <FloatingParticles count={40} intensity="medium" sacredGeometry={true} />
