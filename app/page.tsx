@@ -9,6 +9,20 @@ import { Card } from './components/Card'
 import { Navbar } from './components/Navbar'
 import { FloatingParticles, BreathingCircle, LotusElement, AuroraGlow, SoftWaves, TwinkleDots, FloatingOrb } from './components/AnimationSystem'
 import { Tilt3DCard, Hero3DCard, FloatingShape, ParallaxLayer } from './components/Effects3D'
+import { 
+  YogaIcon3D, 
+  LeafIcon3D, 
+  SparkleIcon3D, 
+  FlowerIcon3D, 
+  CandleIcon3D, 
+  WaveIcon3D,
+  VideoIcon3D,
+  RetreatIcon3D,
+  QuoteIcon3D,
+  LinkIcon3D,
+  PhoneIcon3D,
+  StarIcon3D
+} from './components/Icons3D'
 import { colors, typography, borderRadius, themes, ThemeKey } from './styles/theme'
 
 // Get theme keys as typed array
