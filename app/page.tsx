@@ -638,11 +638,13 @@ export default function HomePage() {
                 animation: 'booking',
               },
             ].map((feature, idx) => (
-              <Card 
+              <Tilt3DCard
                 key={idx}
-                className={`feature-card card-elegant stagger-item ${visibleSections.has('features') || prefersReducedMotion ? 'visible' : ''}`}
+                maxTilt={4}
+                scale={1.03}
+                glare={true}
+                className={`feature-card-3d glare-3d stagger-item ${visibleSections.has('features') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
-                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                   animation: visibleSections.has('features') || prefersReducedMotion 
                     ? `fadeInUp 0.6s ease ${idx * 0.1}s both` 
                     : 'none',
@@ -651,9 +653,15 @@ export default function HomePage() {
                     ? 'translateY(0)' 
                     : 'translateY(30px)',
                   cursor: 'default',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
                 }}
               >
+                <Card 
+                  className="h-full"
+                  style={{
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
+                    height: '100%',
+                  }}
+                >
                 <div 
                   style={{ 
                     width: '80px',
