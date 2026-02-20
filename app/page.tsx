@@ -1102,7 +1102,7 @@ export default function HomePage() {
             ); })}
           </div>
 
-          {/* Trust Stats */}
+          {/* Trust Stats with 3D */}
           <div
             className="stagger-item"
             style={{
@@ -1117,18 +1117,22 @@ export default function HomePage() {
             }}
           >
             {['3 easy steps', '1 powerful wellness link', 'Unlimited sharing'].map((stat, idx) => (
-              <div
+              <Tilt3DCard
                 key={idx}
-                className="card-elegant"
-                style={{
-                  padding: '1.5rem',
-                  borderRadius: borderRadius.xl,
-                  backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.02)',
-                }}
+                maxTilt={6}
+                scale={1.05}
+                glare={true}
               >
-                <div className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
+                <div
+                  className="shadow-3d"
+                  style={{
+                    padding: '1.5rem',
+                    borderRadius: borderRadius.xl,
+                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <div className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
                   {stat}
                 </div>
               </div>
