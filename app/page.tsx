@@ -1022,82 +1022,77 @@ export default function HomePage() {
               const startX = fromLeft ? -120 : 120
               const delay = idx * 0.2
               return (
-              <div
+              <Tilt3DCard
                 key={idx}
-                className={`card-elegant stagger-item ${isVisible ? 'visible' : ''}`}
+                maxTilt={5}
+                scale={1.03}
+                glare={true}
+                className={`stagger-item ${isVisible ? 'visible' : ''}`}
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '2rem',
-                  borderRadius: borderRadius.xl,
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.02)',
-                  border: `1px solid rgba(255, 255, 255, 0.5)`,
                   opacity: isVisible ? 1 : 0,
                   transform: isVisible ? 'translateX(0)' : `translateX(${startX}px)`,
                   transition: prefersReducedMotion
                     ? 'none'
-                    : `opacity 0.6s ease-out ${delay}s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s, transform 0.25s ease, box-shadow 0.25s ease`,
-                  cursor: 'default',
-                }}
-                onMouseEnter={(e) => {
-                  if (!prefersReducedMotion) {
-                    e.currentTarget.style.transform = isVisible ? 'scale(1.04)' : `translateX(${startX}px)`
-                    e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.04)'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!prefersReducedMotion) {
-                    e.currentTarget.style.transform = isVisible ? 'translateX(0)' : `translateX(${startX}px)`
-                    e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.02)'
-                  }
+                    : `opacity 0.6s ease-out ${delay}s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s`,
                 }}
               >
                 <div
+                  className="shadow-3d"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '1.5rem',
-                    flexWrap: 'wrap',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '2rem',
+                    borderRadius: borderRadius.xl,
+                    border: `1px solid rgba(255, 255, 255, 0.5)`,
+                    cursor: 'default',
                   }}
                 >
                   <div
-                    className="step-number"
                     style={{
-                      width: '50px',
-                      height: '50px',
-                      borderRadius: borderRadius.full,
-                      background: `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.secondary[500]} 100%)`,
-                      color: colors.white,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '1.5rem',
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      boxShadow: '0 4px 12px rgba(255, 112, 67, 0.3)',
+                      gap: '1.5rem',
+                      flexWrap: 'wrap',
                     }}
                   >
-                    {step.number}
-                  </div>
-                  <div style={{ flex: 1, minWidth: '200px', textAlign: 'left' }}>
-                    <h3
+                    <div
+                      className="step-number button-3d"
                       style={{
-                        fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
-                        fontWeight: 600,
-                        marginBottom: '0.5rem',
-                        color: colors.text.primary,
+                        width: '50px',
+                        height: '50px',
+                        borderRadius: borderRadius.full,
+                        background: `linear-gradient(135deg, ${colors.primary[500]} 0%, ${colors.secondary[500]} 100%)`,
+                        color: colors.white,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1.5rem',
+                        fontWeight: 700,
+                        flexShrink: 0,
+                        boxShadow: '0 4px 12px rgba(255, 112, 67, 0.3)',
                       }}
                     >
-                      {step.title}
-                    </h3>
-                    <p
-                      style={{
-                        color: colors.text.secondary,
-                        lineHeight: 1.6,
-                        fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
-                      }}
-                    >
+                      {step.number}
+                    </div>
+                    <div style={{ flex: 1, minWidth: '200px', textAlign: 'left' }}>
+                      <h3
+                        style={{
+                          fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
+                          fontWeight: 600,
+                          marginBottom: '0.5rem',
+                          color: colors.text.primary,
+                        }}
+                      >
+                        {step.title}
+                      </h3>
+                      <p
+                        style={{
+                          color: colors.text.secondary,
+                          lineHeight: 1.6,
+                          fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
+                        }}
+                      >
                       {step.description}
                     </p>
                   </div>
