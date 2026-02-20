@@ -5,6 +5,40 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from './Button'
 import { colors, typography, borderRadius, shadows } from '../styles/theme'
+import { 
+  LinkIcon3D, 
+  VideoIcon3D, 
+  YogaIcon3D, 
+  RetreatIcon3D, 
+  StarIcon3D,
+  SparkleIcon3D,
+  PhoneIcon3D
+} from './Icons3D'
+
+// Helper to render 3D icons based on emoji key
+const IconRenderer = ({ emoji, size = 24 }: { emoji: string; size?: number }) => {
+  switch (emoji) {
+    case '🔗':
+    case '📎':
+      return <LinkIcon3D size={size} />
+    case '📊':
+      return <StarIcon3D size={size} />
+    case '🎨':
+      return <SparkleIcon3D size={size} />
+    case '🎥':
+      return <VideoIcon3D size={size} />
+    case '🧘':
+    case '🧑‍🏫':
+      return <YogaIcon3D size={size} />
+    case '🏕':
+    case '🏕️':
+      return <RetreatIcon3D size={size} />
+    case '🏢':
+      return <PhoneIcon3D size={size} />
+    default:
+      return <span style={{ fontSize: size * 0.8 }}>{emoji}</span>
+  }
+}
 
 interface NavItem {
   label: string
