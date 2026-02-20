@@ -7,6 +7,7 @@ import { Section } from '../../../lib/sections'
 import { AnimatedBackground, GlowAura, AnimatedBlock } from '../../components/ThemeAnimations'
 import { SectionRenderer } from '../../components/SectionRenderer'
 import { Tilt3DCard, DepthGlow } from '../../components/Effects3D'
+import { RetreatIcon3D, QuoteIcon3D, SparkleIcon3D } from '../../components/Icons3D'
 
 interface Block {
   id: string
