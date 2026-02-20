@@ -16,6 +16,7 @@ import {
   isVideoSection,
   isTestimonialsSection,
 } from '../../lib/sections'
+import { RetreatIcon3D, QuoteIcon3D, VideoIcon3D } from './Icons3D'
 
 // ============================================
 // ABOUT ME SECTION
