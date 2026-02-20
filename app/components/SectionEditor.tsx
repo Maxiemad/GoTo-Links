@@ -689,6 +689,10 @@ export default function SectionEditor({ profileTheme }: SectionEditorProps) {
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingSection, setEditingSection] = useState<Section | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  
+  // Drag and drop state
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
   const theme = getTheme(profileTheme)
 
