@@ -116,9 +116,12 @@ export async function POST(request: NextRequest) {
       },
     })
     
+    // Determine if we're in production (HTTPS)
+    const isProduction = process.env.NODE_ENV === 'production'
+    
     response.cookies.set('session_token', sessionToken, {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       sameSite: 'lax',
       path: '/',
       maxAge: 60 * 60 * 24 * SESSION_EXPIRY_DAYS,
