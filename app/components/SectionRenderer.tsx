@@ -518,7 +518,7 @@ export function VideoSection({ data, theme, index }: VideoSectionProps) {
             fontFamily: theme.fontPairing.heading,
           }}
         >
-          🎥 {data.title}
+          <span className="inline-flex items-center gap-2"><VideoIcon3D size={20} /> {data.title}</span>
         </h3>
       )}
 
