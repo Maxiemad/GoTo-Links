@@ -1098,6 +1098,7 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+              </Tilt3DCard>
             ); })}
           </div>
 
