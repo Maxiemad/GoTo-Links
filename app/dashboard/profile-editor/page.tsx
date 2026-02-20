@@ -681,7 +681,7 @@ export default function ProfileEditorPage() {
                   onClick={() => handleAddBlock(type.id)}
                   className="p-4 border border-gray-200 rounded-xl hover:border-primary-500 hover:bg-primary-50 transition-all text-left"
                 >
-                  <div className="text-2xl mb-2">{type.icon}</div>
+                  <div className="text-2xl mb-2"><BlockTypeIcon type={type.id} size={32} /></div>
                   <div className="font-medium text-gray-800">{type.name}</div>
                 </button>
               ))}
