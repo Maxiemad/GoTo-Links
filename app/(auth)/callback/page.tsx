@@ -27,19 +27,23 @@ export default function CallbackPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ sessionId }),
+          credentials: 'include', // Important for cookies
         })
 
         const data = await res.json()
+        console.log('Auth response:', data)
 
         if (data.success) {
+          // Small delay to ensure cookie is set
+          await new Promise(resolve => setTimeout(resolve, 100))
           router.push('/dashboard')
         } else {
           console.error('Auth failed:', data.error)
-          router.push('/login')
+          router.push('/login?error=' + encodeURIComponent(data.error || 'auth_failed'))
         }
       } catch (error) {
         console.error('Auth error:', error)
-        router.push('/login')
+        router.push('/login?error=network_error')
       }
     }
 
