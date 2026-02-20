@@ -76,12 +76,12 @@ const THEMES_LIST = getThemeList()
 type EditorTab = 'profile' | 'blocks' | 'sections'
 
 const BLOCK_TYPES = [
-  { id: 'LINK', name: 'Link', icon: '🔗' },
-  { id: 'RETREAT', name: 'Retreat', icon: '🏕️' },
-  { id: 'TESTIMONIAL', name: 'Testimonial', icon: '💬' },
-  { id: 'BOOK_CALL', name: 'Book a Call', icon: '📞' },
-  { id: 'WHATSAPP', name: 'WhatsApp', icon: '💚' },
-  { id: 'TELEGRAM', name: 'Telegram', icon: '✈️' },
+  { id: 'LINK', name: 'Link' },
+  { id: 'RETREAT', name: 'Retreat' },
+  { id: 'TESTIMONIAL', name: 'Testimonial' },
+  { id: 'BOOK_CALL', name: 'Book a Call' },
+  { id: 'WHATSAPP', name: 'WhatsApp' },
+  { id: 'TELEGRAM', name: 'Telegram' },
 ]
 
 export default function ProfileEditorPage() {
