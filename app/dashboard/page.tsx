@@ -344,7 +344,7 @@ export default function DashboardPage() {
                 marginBottom: '1rem',
                 fontSize: '1.5rem',
               }}>
-                ✨
+                <SparkleIcon3D size={28} />
               </div>
               <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: colors.text.primary, marginBottom: '0.5rem' }}>
                 Upgrade to Pro
