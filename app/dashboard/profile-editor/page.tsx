@@ -65,6 +65,7 @@ export default function ProfileEditorPage() {
   const [isSavingTheme, setIsSavingTheme] = useState(false)
   const [showAddBlock, setShowAddBlock] = useState(false)
   const [editingBlock, setEditingBlock] = useState<Block | null>(null)
+  const [activeTab, setActiveTab] = useState<EditorTab>('profile')
   const themeScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
