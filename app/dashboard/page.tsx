@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, MousePointer, Trophy, Edit3, ExternalLink, Zap, Copy, Check, TrendingUp, Users, BarChart3, Sparkles } from 'lucide-react'
+import { Eye, MousePointer, Trophy, Edit3, ExternalLink, Zap, Copy, Check, TrendingUp, Sparkles, Leaf, Heart } from 'lucide-react'
 import { colors, typography, borderRadius, shadows } from '../styles/theme'
 import { Tilt3DCard } from '../components/Effects3D'
 
@@ -24,6 +24,41 @@ interface Stats {
   period: string
 }
 
+// 3D Waving Hand Icon
+const WavingHandIcon = ({ size = 32 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" className="inline-block animate-bounce" style={{ animationDuration: '2s' }}>
+    <defs>
+      <linearGradient id="hand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FBBF24" />
+        <stop offset="100%" stopColor="#F59E0B" />
+      </linearGradient>
+      <filter id="hand-shadow">
+        <feDropShadow dx="1" dy="2" stdDeviation="2" floodColor="#F59E0B" floodOpacity="0.3"/>
+      </filter>
+    </defs>
+    <g filter="url(#hand-shadow)">
+      <path d="M25 14c-1-3-4-4-6-2l-1 2c-1-3-4-4-6-2-2 2-2 5-1 7l1 3c-2-2-5-2-6 0-2 2-1 5 1 7l12 12c4 4 10 4 14 0 4-4 4-10 0-14l-6-11c-1-2-4-3-6-1l2 4" fill="url(#hand-grad)" />
+    </g>
+  </svg>
+)
+
+// Lotus/Wellness Icon for branding
+const LotusIcon = ({ size = 24, className = '' }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 48 48" className={className}>
+    <defs>
+      <linearGradient id="lotus-brand" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF7043" />
+        <stop offset="100%" stopColor="#FF5722" />
+      </linearGradient>
+    </defs>
+    <path d="M24 8c-4 8-12 14-12 22 8-4 12-10 12-22z" fill="url(#lotus-brand)" opacity="0.7"/>
+    <path d="M24 8c4 8 12 14 12 22-8-4-12-10-12-22z" fill="url(#lotus-brand)" opacity="0.7"/>
+    <path d="M24 12c-2 6-6 10-6 16 4-2 6-8 6-16z" fill="url(#lotus-brand)"/>
+    <path d="M24 12c2 6 6 10 6 16-4-2-6-8-6-16z" fill="url(#lotus-brand)"/>
+    <ellipse cx="24" cy="38" rx="14" ry="4" fill="url(#lotus-brand)" opacity="0.3"/>
+  </svg>
+)
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
@@ -33,7 +68,7 @@ export default function DashboardPage() {
   const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000)
     return () => clearInterval(timer)
   }, [])
 
@@ -88,16 +123,24 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-      }}>
+      <div 
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 50%, #FFF5F0 100%)` }}
+      >
         <div className="text-center">
           <div className="relative w-20 h-20 mx-auto mb-6">
-            <div className="absolute inset-0 rounded-full border-4 border-purple-500/20"></div>
-            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-4 border-transparent border-t-pink-500 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '0.8s' }}></div>
+            <div 
+              className="absolute inset-0 rounded-full animate-ping opacity-20"
+              style={{ backgroundColor: colors.primary[400] }}
+            ></div>
+            <div 
+              className="absolute inset-0 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: colors.primary[100] }}
+            >
+              <LotusIcon size={40} />
+            </div>
           </div>
-          <p className="text-white/60 text-lg">Loading your dashboard...</p>
+          <p style={{ color: colors.text.secondary }}>Loading your sanctuary...</p>
         </div>
       </div>
     )
@@ -107,50 +150,70 @@ export default function DashboardPage() {
 
   return (
     <div 
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-      }}
+      className="min-h-screen relative"
+      style={{ background: `linear-gradient(180deg, ${colors.primary[50]} 0%, #FFFAF8 50%, ${colors.secondary[50]} 100%)` }}
       data-testid="dashboard"
     >
-      {/* Animated Background Elements */}
+      {/* Decorative Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Floating orbs */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
-        
-        {/* Grid pattern */}
+        {/* Soft gradient orbs */}
         <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-          }}
+          className="absolute -top-20 -right-20 w-96 h-96 rounded-full blur-3xl opacity-30"
+          style={{ background: `radial-gradient(circle, ${colors.primary[200]} 0%, transparent 70%)` }}
         ></div>
+        <div 
+          className="absolute top-1/3 -left-20 w-80 h-80 rounded-full blur-3xl opacity-20"
+          style={{ background: `radial-gradient(circle, ${colors.secondary[200]} 0%, transparent 70%)` }}
+        ></div>
+        <div 
+          className="absolute bottom-0 right-1/4 w-72 h-72 rounded-full blur-3xl opacity-20"
+          style={{ background: `radial-gradient(circle, ${colors.accent[200]} 0%, transparent 70%)` }}
+        ></div>
+        
+        {/* Floating leaves decoration */}
+        <div className="absolute top-20 left-10 opacity-10">
+          <Leaf size={60} style={{ color: colors.secondary[400] }} className="animate-pulse" />
+        </div>
+        <div className="absolute top-40 right-20 opacity-10" style={{ animationDelay: '1s' }}>
+          <Leaf size={40} style={{ color: colors.primary[400] }} className="animate-pulse" />
+        </div>
+        <div className="absolute bottom-40 left-1/4 opacity-10" style={{ animationDelay: '2s' }}>
+          <Heart size={30} style={{ color: colors.accent[400] }} className="animate-pulse" />
+        </div>
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 border-b border-white/10" style={{ backdropFilter: 'blur(20px)', backgroundColor: 'rgba(255,255,255,0.03)' }}>
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-16">
+      <nav 
+        className="relative z-50 border-b"
+        style={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(20px)',
+          borderColor: colors.gray[200],
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-6 flex justify-between items-center h-16">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25 group-hover:shadow-purple-500/40 transition-shadow">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-white font-semibold text-lg hidden sm:block">GoToLinks</span>
+            <img 
+              src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png" 
+              alt="GoToLinks" 
+              className="h-10 w-auto"
+            />
           </Link>
           
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-              <span className="text-white/60 text-sm">{user?.plan === 'PRO' ? 'Pro Plan' : 'Free Plan'}</span>
+            <div 
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full"
+              style={{ backgroundColor: colors.primary[50], border: `1px solid ${colors.primary[100]}` }}
+            >
+              <Sparkles size={14} style={{ color: colors.primary[500] }} />
+              <span style={{ color: colors.primary[600] }} className="text-sm font-medium">
+                {user?.plan === 'PRO' ? 'Pro Plan' : 'Free Plan'}
+              </span>
             </div>
             <button 
               onClick={handleLogout}
-              className="px-4 py-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium"
+              className="px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-gray-100"
+              style={{ color: colors.text.secondary }}
               data-testid="logout-btn"
             >
               Logout
@@ -159,143 +222,220 @@ export default function DashboardPage() {
         </div>
       </nav>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-8">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-10">
         {/* Welcome Header */}
         <div className="mb-10">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
-              <p className="text-purple-400 text-sm font-medium mb-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+              <p 
+                className="text-sm font-medium mb-2 flex items-center gap-2"
+                style={{ color: colors.secondary[600] }}
+              >
+                <span 
+                  className="w-2 h-2 rounded-full animate-pulse"
+                  style={{ backgroundColor: colors.secondary[500] }}
+                ></span>
                 {getGreeting()}
               </p>
-              <h1 className="text-4xl lg:text-5xl font-bold text-white mb-3">
-                {user?.firstName || 'Creator'}
-                <span className="inline-block ml-3 animate-bounce" style={{ animationDuration: '2s' }}>
-                  <svg width="40" height="40" viewBox="0 0 48 48" className="inline">
-                    <defs>
-                      <linearGradient id="wave-hand" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#FBBF24" />
-                        <stop offset="100%" stopColor="#F59E0B" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M25 14c-1-3-4-4-6-2l-1 2c-1-3-4-4-6-2-2 2-2 5-1 7l1 3c-2-2-5-2-6 0-2 2-1 5 1 7l12 12c4 4 10 4 14 0 4-4 4-10 0-14l-6-11c-1-2-4-3-6-1l2 4" fill="url(#wave-hand)" />
-                  </svg>
-                </span>
+              <h1 
+                className="text-4xl lg:text-5xl font-bold mb-3"
+                style={{ 
+                  color: colors.text.primary,
+                  fontFamily: typography.fontFamily.sans,
+                }}
+              >
+                {user?.firstName || 'Creator'} <WavingHandIcon size={40} />
               </h1>
-              <p className="text-white/50 text-lg">Here&apos;s how your profile is performing</p>
+              <p style={{ color: colors.text.secondary }} className="text-lg">
+                Here&apos;s how your wellness journey is growing
+              </p>
             </div>
             
-            {/* Quick URL Copy */}
-            <div className="flex-shrink-0">
+            {/* Quick URL Copy Card */}
+            <Tilt3DCard maxTilt={4} scale={1.01} glare={true}>
               <div 
-                className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-2xl p-4 transition-all cursor-pointer"
+                className="group relative rounded-2xl p-5 cursor-pointer transition-all"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  border: `1px solid ${colors.gray[200]}`,
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+                }}
                 onClick={handleCopyUrl}
               >
-                <p className="text-white/40 text-xs font-medium mb-2">YOUR PROFILE URL</p>
+                <p 
+                  className="text-xs font-semibold mb-2 uppercase tracking-wide"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Your Profile URL
+                </p>
                 <div className="flex items-center gap-3">
-                  <code className="text-white/80 text-sm truncate max-w-[250px]">{profileUrl}</code>
-                  <div className={`p-2 rounded-lg transition-all ${copied ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/10 text-white/60 group-hover:text-white'}`}>
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  <code 
+                    className="text-sm truncate max-w-[220px] font-mono"
+                    style={{ color: colors.text.primary }}
+                  >
+                    {profileUrl}
+                  </code>
+                  <div 
+                    className="p-2 rounded-lg transition-all"
+                    style={{ 
+                      backgroundColor: copied ? colors.secondary[100] : colors.gray[100],
+                      color: copied ? colors.secondary[600] : colors.text.secondary,
+                    }}
+                  >
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
                   </div>
                 </div>
                 {copied && (
-                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 bg-emerald-500 text-white text-xs rounded-lg">
+                  <div 
+                    className="absolute -top-8 left-1/2 -translate-x-1/2 px-3 py-1 rounded-lg text-xs text-white font-medium"
+                    style={{ backgroundColor: colors.secondary[500] }}
+                  >
                     Copied!
                   </div>
                 )}
               </div>
-            </div>
+            </Tilt3DCard>
           </div>
         </div>
 
-        {/* Stats Grid - 3D Cards */}
+        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {/* Profile Views */}
-          <Tilt3DCard maxTilt={8} scale={1.02} glare={true}>
+          <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
             <div 
               className="relative overflow-hidden rounded-3xl p-6 h-full"
               style={{
-                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)',
-                border: '1px solid rgba(139, 92, 246, 0.2)',
-                backdropFilter: 'blur(20px)',
+                background: `linear-gradient(135deg, ${colors.primary[50]} 0%, white 100%)`,
+                border: `1px solid ${colors.primary[100]}`,
+                boxShadow: `0 10px 40px ${colors.primary[100]}`,
               }}
               data-testid="stat-views"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl"></div>
+              {/* Decorative circle */}
+              <div 
+                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                style={{ backgroundColor: colors.primary[300] }}
+              ></div>
+              
               <div className="relative">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                    <Eye className="w-7 h-7 text-white" />
+                <div className="flex items-center justify-between mb-5">
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.primary[500]} 100%)`,
+                      boxShadow: `0 8px 20px ${colors.primary[200]}`,
+                    }}
+                  >
+                    <Eye size={26} color="white" />
                   </div>
-                  <div className="flex items-center gap-1 text-emerald-400 text-sm">
-                    <TrendingUp className="w-4 h-4" />
+                  <div 
+                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
+                    style={{ backgroundColor: colors.secondary[100], color: colors.secondary[600] }}
+                  >
+                    <TrendingUp size={12} />
                     <span>+12%</span>
                   </div>
                 </div>
-                <p className="text-white/50 text-sm font-medium mb-1">Profile Views</p>
-                <p className="text-4xl font-bold text-white mb-1">{stats?.profileViews || 0}</p>
-                <p className="text-white/30 text-xs">Last 7 days</p>
+                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                  Profile Views
+                </p>
+                <p className="text-4xl font-bold mb-1" style={{ color: colors.text.primary }}>
+                  {stats?.profileViews || 0}
+                </p>
+                <p className="text-xs" style={{ color: colors.gray[400] }}>Last 7 days</p>
               </div>
             </div>
           </Tilt3DCard>
 
           {/* Link Clicks */}
-          <Tilt3DCard maxTilt={8} scale={1.02} glare={true}>
+          <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
             <div 
               className="relative overflow-hidden rounded-3xl p-6 h-full"
               style={{
-                background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%)',
-                border: '1px solid rgba(236, 72, 153, 0.2)',
-                backdropFilter: 'blur(20px)',
+                background: `linear-gradient(135deg, ${colors.secondary[50]} 0%, white 100%)`,
+                border: `1px solid ${colors.secondary[100]}`,
+                boxShadow: `0 10px 40px ${colors.secondary[100]}`,
               }}
               data-testid="stat-clicks"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/20 rounded-full blur-3xl"></div>
+              <div 
+                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                style={{ backgroundColor: colors.secondary[300] }}
+              ></div>
+              
               <div className="relative">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center shadow-lg shadow-pink-500/30">
-                    <MousePointer className="w-7 h-7 text-white" />
+                <div className="flex items-center justify-between mb-5">
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.secondary[400]} 0%, ${colors.secondary[500]} 100%)`,
+                      boxShadow: `0 8px 20px ${colors.secondary[200]}`,
+                    }}
+                  >
+                    <MousePointer size={26} color="white" />
                   </div>
-                  <div className="flex items-center gap-1 text-emerald-400 text-sm">
-                    <TrendingUp className="w-4 h-4" />
+                  <div 
+                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
+                    style={{ backgroundColor: colors.secondary[100], color: colors.secondary[600] }}
+                  >
+                    <TrendingUp size={12} />
                     <span>+8%</span>
                   </div>
                 </div>
-                <p className="text-white/50 text-sm font-medium mb-1">Link Clicks</p>
-                <p className="text-4xl font-bold text-white mb-1">{stats?.linkClicks || 0}</p>
-                <p className="text-white/30 text-xs">Last 7 days</p>
+                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                  Link Clicks
+                </p>
+                <p className="text-4xl font-bold mb-1" style={{ color: colors.text.primary }}>
+                  {stats?.linkClicks || 0}
+                </p>
+                <p className="text-xs" style={{ color: colors.gray[400] }}>Last 7 days</p>
               </div>
             </div>
           </Tilt3DCard>
 
           {/* Top Link */}
-          <Tilt3DCard maxTilt={8} scale={1.02} glare={true}>
+          <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
             <div 
               className="relative overflow-hidden rounded-3xl p-6 h-full"
               style={{
-                background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%)',
-                border: '1px solid rgba(251, 191, 36, 0.2)',
-                backdropFilter: 'blur(20px)',
+                background: `linear-gradient(135deg, ${colors.accent[50]} 0%, white 100%)`,
+                border: `1px solid ${colors.accent[100]}`,
+                boxShadow: `0 10px 40px ${colors.accent[100]}`,
               }}
               data-testid="stat-top"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/20 rounded-full blur-3xl"></div>
+              <div 
+                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                style={{ backgroundColor: colors.accent[300] }}
+              ></div>
+              
               <div className="relative">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                    <Trophy className="w-7 h-7 text-white" />
+                <div className="flex items-center justify-between mb-5">
+                  <div 
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
+                      boxShadow: `0 8px 20px ${colors.accent[200]}`,
+                    }}
+                  >
+                    <Trophy size={26} color="white" />
                   </div>
                   {stats?.topClickedLink && (
-                    <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium">
+                    <span 
+                      className="px-2 py-1 rounded-full text-xs font-semibold"
+                      style={{ backgroundColor: colors.accent[100], color: colors.accent[600] }}
+                    >
                       {stats.topClickedLink.clicks} clicks
                     </span>
                   )}
                 </div>
-                <p className="text-white/50 text-sm font-medium mb-1">Top Performer</p>
-                <p className="text-xl font-bold text-white mb-1 truncate">
+                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                  Top Performer
+                </p>
+                <p className="text-xl font-bold mb-1 truncate" style={{ color: colors.text.primary }}>
                   {stats?.topClickedLink?.title || 'No data yet'}
                 </p>
-                <p className="text-white/30 text-xs">
+                <p className="text-xs" style={{ color: colors.gray[400] }}>
                   {stats?.topClickedLink ? 'Your best link' : 'Add links to track'}
                 </p>
               </div>
@@ -306,31 +446,51 @@ export default function DashboardPage() {
         {/* Action Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
           {/* Edit Profile */}
-          <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
+          <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
             <Link 
               href="/dashboard/profile-editor"
               className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(20px)',
+                backgroundColor: 'white',
+                border: `1px solid ${colors.gray[200]}`,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
               }}
               data-testid="edit-profile-btn"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              {/* Hover gradient overlay */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: `linear-gradient(135deg, ${colors.primary[50]} 0%, transparent 100%)` }}
+              ></div>
+              
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-6 shadow-lg shadow-purple-500/20 group-hover:shadow-purple-500/40 transition-shadow">
-                  <Edit3 className="w-8 h-8 text-white" />
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-shadow group-hover:shadow-xl"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.primary[500]} 100%)`,
+                    boxShadow: `0 8px 24px ${colors.primary[200]}`,
+                  }}
+                >
+                  <Edit3 size={28} color="white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                <h3 
+                  className="text-xl font-bold mb-2 transition-colors"
+                  style={{ color: colors.text.primary }}
+                >
                   Edit Profile
                 </h3>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Customize your bio, add links, blocks, and retreats to make your profile stand out.
+                <p 
+                  className="text-sm leading-relaxed mb-6"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Customize your bio, add links, blocks, and showcase your retreats.
                 </p>
-                <div className="mt-6 flex items-center text-purple-400 text-sm font-medium group-hover:text-purple-300">
+                <div 
+                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-3"
+                  style={{ color: colors.primary[500] }}
+                >
                   <span>Open Editor</span>
-                  <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -339,32 +499,51 @@ export default function DashboardPage() {
           </Tilt3DCard>
 
           {/* Preview Profile */}
-          <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
+          <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
             <Link 
               href={`/profile/${user?.handle}`}
               target="_blank"
               className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
               style={{
-                background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(20px)',
+                backgroundColor: 'white',
+                border: `1px solid ${colors.gray[200]}`,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
               }}
               data-testid="preview-profile-btn"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: `linear-gradient(135deg, ${colors.secondary[50]} 0%, transparent 100%)` }}
+              ></div>
+              
               <div className="relative">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center mb-6 shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-shadow">
-                  <ExternalLink className="w-8 h-8 text-white" />
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-shadow group-hover:shadow-xl"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${colors.secondary[400]} 0%, ${colors.secondary[500]} 100%)`,
+                    boxShadow: `0 8px 24px ${colors.secondary[200]}`,
+                  }}
+                >
+                  <ExternalLink size={28} color="white" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                <h3 
+                  className="text-xl font-bold mb-2 transition-colors"
+                  style={{ color: colors.text.primary }}
+                >
                   Preview Profile
                 </h3>
-                <p className="text-white/50 text-sm leading-relaxed">
-                  See how visitors experience your profile. Check your live page in a new tab.
+                <p 
+                  className="text-sm leading-relaxed mb-6"
+                  style={{ color: colors.text.secondary }}
+                >
+                  See how visitors experience your wellness profile. View it live.
                 </p>
-                <div className="mt-6 flex items-center text-cyan-400 text-sm font-medium group-hover:text-cyan-300">
+                <div 
+                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-3"
+                  style={{ color: colors.secondary[500] }}
+                >
                   <span>View Live</span>
-                  <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -374,35 +553,61 @@ export default function DashboardPage() {
 
           {/* Upgrade to Pro */}
           {user?.plan !== 'PRO' && (
-            <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
+            <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
               <Link 
                 href="/pricing"
                 className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%)',
-                  border: '1px solid rgba(251, 191, 36, 0.3)',
-                  backdropFilter: 'blur(20px)',
+                  background: `linear-gradient(135deg, ${colors.accent[50]} 0%, ${colors.primary[50]} 100%)`,
+                  border: `2px solid ${colors.accent[200]}`,
+                  boxShadow: `0 10px 40px ${colors.accent[100]}`,
                 }}
                 data-testid="upgrade-btn"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-orange-500/20 rounded-full blur-3xl"></div>
+                {/* Decorative elements */}
+                <div 
+                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30"
+                  style={{ backgroundColor: colors.accent[200] }}
+                ></div>
+                <div 
+                  className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20"
+                  style={{ backgroundColor: colors.primary[200] }}
+                ></div>
+                
                 <div className="relative">
-                  <div className="absolute top-0 right-0 px-3 py-1 rounded-full bg-amber-500/30 text-amber-300 text-xs font-bold">
-                    RECOMMENDED
+                  <div 
+                    className="absolute top-0 right-0 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+                    style={{ backgroundColor: colors.accent[500], color: 'white' }}
+                  >
+                    Recommended
                   </div>
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-6 shadow-lg shadow-amber-500/30">
-                    <Zap className="w-8 h-8 text-white" />
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
+                      boxShadow: `0 8px 24px ${colors.accent[200]}`,
+                    }}
+                  >
+                    <Zap size={28} color="white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                  <h3 
+                    className="text-xl font-bold mb-2"
+                    style={{ color: colors.text.primary }}
+                  >
                     Upgrade to Pro
                   </h3>
-                  <p className="text-white/50 text-sm leading-relaxed">
+                  <p 
+                    className="text-sm leading-relaxed mb-6"
+                    style={{ color: colors.text.secondary }}
+                  >
                     Unlock video heroes, premium themes, advanced analytics & more.
                   </p>
-                  <div className="mt-6 flex items-center text-amber-400 text-sm font-medium group-hover:text-amber-300">
+                  <div 
+                    className="flex items-center text-sm font-semibold"
+                    style={{ color: colors.accent[600] }}
+                  >
                     <span>See Plans</span>
-                    <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
@@ -412,73 +617,35 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Quick Insights */}
+        {/* Wellness Quote */}
         <div 
-          className="rounded-3xl p-8"
+          className="rounded-3xl p-8 text-center"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(20px)',
+            background: `linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 100%)`,
+            border: `1px solid ${colors.gray[200]}`,
+            backdropFilter: 'blur(10px)',
           }}
         >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white">Quick Insights</h2>
+          <div 
+            className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: colors.secondary[100] }}
+          >
+            <Heart size={24} style={{ color: colors.secondary[500] }} />
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <Users className="w-6 h-6 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-white/40 text-xs">Engagement Rate</p>
-                <p className="text-white text-lg font-semibold">
-                  {stats?.profileViews && stats?.linkClicks 
-                    ? `${((stats.linkClicks / stats.profileViews) * 100).toFixed(1)}%`
-                    : '0%'
-                  }
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-              <div className="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-pink-400" />
-              </div>
-              <div>
-                <p className="text-white/40 text-xs">Weekly Growth</p>
-                <p className="text-white text-lg font-semibold">+15%</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-amber-400" />
-              </div>
-              <div>
-                <p className="text-white/40 text-xs">Profile Score</p>
-                <p className="text-white text-lg font-semibold">85/100</p>
-              </div>
-            </div>
-          </div>
+          <p 
+            className="text-lg italic max-w-2xl mx-auto"
+            style={{ color: colors.text.secondary }}
+          >
+            &quot;The journey of a thousand miles begins with a single step.&quot;
+          </p>
+          <p 
+            className="text-sm mt-2 font-medium"
+            style={{ color: colors.secondary[500] }}
+          >
+            — Lao Tzu
+          </p>
         </div>
       </div>
-
-      {/* Custom styles */}
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-      `}</style>
     </div>
   )
 }
