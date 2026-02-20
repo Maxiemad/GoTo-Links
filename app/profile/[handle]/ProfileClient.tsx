@@ -374,6 +374,23 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
             {profile.blocks.map((block, index) => renderBlock(block, index))}
           </div>
 
+          {/* Sections - Mini Website Content */}
+          {profile.sections && profile.sections.length > 0 && (
+            <div className="space-y-4 mt-6">
+              {profile.sections
+                .filter(section => section.enabled)
+                .sort((a, b) => a.order - b.order)
+                .map((section, index) => (
+                  <SectionRenderer
+                    key={section.id}
+                    section={section}
+                    theme={themeConfig}
+                    index={profile.blocks.length + index}
+                  />
+                ))}
+            </div>
+          )}
+
           {/* Footer */}
           <div className="mt-16 text-center">
             <Link 
