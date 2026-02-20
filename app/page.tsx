@@ -8,6 +8,7 @@ import { Button } from './components/Button'
 import { Card } from './components/Card'
 import { Navbar } from './components/Navbar'
 import { FloatingParticles, BreathingCircle, LotusElement, AuroraGlow, SoftWaves, TwinkleDots, FloatingOrb } from './components/AnimationSystem'
+import { Tilt3DCard, Hero3DCard, FloatingShape, ParallaxLayer } from './components/Effects3D'
 import { colors, typography, borderRadius, themes, ThemeKey } from './styles/theme'
 
 // Get theme keys as typed array
