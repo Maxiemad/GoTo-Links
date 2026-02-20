@@ -232,7 +232,7 @@ export default function DashboardPage() {
                 justifyContent: 'center',
                 fontSize: '1.5rem',
               }}>
-                ⭐
+                <StarIcon3D size={28} />
               </div>
               <div>
                 <p style={{ fontSize: '0.875rem', color: colors.text.secondary }}>Top Link</p>
