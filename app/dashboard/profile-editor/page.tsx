@@ -554,75 +554,86 @@ export default function ProfileEditorPage() {
             </div>
           </div>
         </div>
+          </>
+        )}
 
-        {/* Blocks */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Blocks</h2>
-            <button
-              onClick={() => setShowAddBlock(true)}
-              className="flex items-center gap-2 bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transition-colors"
-              data-testid="add-block-btn"
-            >
-              <Plus className="w-4 h-4" />
-              Add Block
-            </button>
+        {/* Blocks Tab */}
+        {activeTab === 'blocks' && (
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Link Blocks</h2>
+              <button
+                onClick={() => setShowAddBlock(true)}
+                className="flex items-center gap-2 bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transition-colors"
+                data-testid="add-block-btn"
+              >
+                <Plus className="w-4 h-4" />
+                Add Block
+              </button>
+            </div>
+
+            {profile.blocks.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p>No blocks yet. Add your first block to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {profile.blocks.map((block, index) => (
+                  <div
+                    key={block.id}
+                    className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors bg-white"
+                    data-testid={`block-${block.id}`}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <button
+                        onClick={() => handleReorderBlock(block.id, 'up')}
+                        disabled={index === 0}
+                        className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
+                        data-testid={`block-${block.id}-up`}
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleReorderBlock(block.id, 'down')}
+                        disabled={index === profile.blocks.length - 1}
+                        className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
+                        data-testid={`block-${block.id}-down`}
+                      >
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-2xl">{BLOCK_TYPES.find(t => t.id === block.type)?.icon || '📎'}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-800 truncate">{block.title || 'Untitled'}</p>
+                      <p className="text-sm text-gray-500">{block.type.replace('_', ' ')}</p>
+                    </div>
+                    <button
+                      onClick={() => setEditingBlock(block)}
+                      className="text-gray-500 hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                      data-testid={`block-${block.id}-edit`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteBlock(block.id)}
+                      className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                      data-testid={`block-${block.id}-delete`}
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
+        )}
 
-          {profile.blocks.length === 0 ? (
-            <div className="text-center py-12 text-gray-500">
-              <p>No blocks yet. Add your first block to get started!</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {profile.blocks.map((block, index) => (
-                <div
-                  key={block.id}
-                  className="flex items-center gap-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors"
-                  data-testid={`block-${block.id}`}
-                >
-                  <div className="flex flex-col gap-1">
-                    <button
-                      onClick={() => handleReorderBlock(block.id, 'up')}
-                      disabled={index === 0}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
-                      data-testid={`block-${block.id}-up`}
-                    >
-                      <ChevronUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleReorderBlock(block.id, 'down')}
-                      disabled={index === profile.blocks.length - 1}
-                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
-                      data-testid={`block-${block.id}-down`}
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="text-2xl">{BLOCK_TYPES.find(t => t.id === block.type)?.icon || '📎'}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800 truncate">{block.title || 'Untitled'}</p>
-                    <p className="text-sm text-gray-500">{block.type.replace('_', ' ')}</p>
-                  </div>
-                  <button
-                    onClick={() => setEditingBlock(block)}
-                    className="text-gray-500 hover:text-gray-700"
-                    data-testid={`block-${block.id}-edit`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteBlock(block.id)}
-                    className="text-red-500 hover:text-red-700"
-                    data-testid={`block-${block.id}-delete`}
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Sections Tab - Mini Website Builder */}
+        {activeTab === 'sections' && (
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <SectionEditor profileTheme={profile.theme} />
+          </div>
+        )}
       </div>
 
       {/* Add Block Modal */}
