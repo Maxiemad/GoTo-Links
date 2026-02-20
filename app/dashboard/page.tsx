@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { colors, typography, borderRadius, shadows } from '../styles/theme'
+import { LinkIcon3D, StarIcon3D, SparkleIcon3D } from '../components/Icons3D'
 
 interface User {
   id: string
