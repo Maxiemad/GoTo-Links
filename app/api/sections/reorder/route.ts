@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     const reorderedSections = sectionIds
       .filter((id: string) => sectionMap.has(id))
       .map((id: string, index: number) => {
-        const section = sectionMap.get(id)
+        const section = sectionMap.get(id) as any
         return { ...section, order: index, updatedAt: new Date() }
       })
 
