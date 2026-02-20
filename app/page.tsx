@@ -621,9 +621,27 @@ export default function HomePage() {
           padding: '5rem 2rem',
           background: `linear-gradient(180deg, ${colors.white} 0%, ${colors.background} 100%)`,
           position: 'relative',
-          overflow: 'hidden',
+          overflow: 'visible',
         }}
       >
+        {/* 3D Stickers around features section */}
+        {!prefersReducedMotion && (
+          <>
+            <div style={{ position: 'absolute', top: '5%', left: '3%', zIndex: 20, pointerEvents: 'none' }}>
+              <CrystalSticker size={55} />
+            </div>
+            <div style={{ position: 'absolute', top: '30%', right: '2%', zIndex: 20, pointerEvents: 'none' }}>
+              <MoonSticker size={60} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '15%', left: '5%', zIndex: 20, pointerEvents: 'none' }}>
+              <SparkleSticker size={50} />
+            </div>
+            <div style={{ position: 'absolute', bottom: '5%', right: '8%', zIndex: 20, pointerEvents: 'none' }}>
+              <HeartSticker size={50} />
+            </div>
+          </>
+        )}
+
         {/* Subtle Floating Particles */}
         <FloatingParticles count={28} intensity="low" sacredGeometry={true} />
 
