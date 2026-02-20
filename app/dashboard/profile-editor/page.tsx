@@ -6,6 +6,34 @@ import Link from 'next/link'
 import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown, GripVertical, Layers } from 'lucide-react'
 import { getThemeList, getTheme, ThemeConfig } from '../../../lib/themes'
 import SectionEditor from '../../components/SectionEditor'
+import { 
+  LinkIcon3D, 
+  RetreatIcon3D, 
+  QuoteIcon3D, 
+  PhoneIcon3D,
+  HeartIcon3D,
+  SparkleIcon3D
+} from '../../components/Icons3D'
+
+// Helper to render block type icons
+const BlockTypeIcon = ({ type, size = 20 }: { type: string; size?: number }) => {
+  switch (type) {
+    case 'LINK':
+      return <LinkIcon3D size={size} />
+    case 'RETREAT':
+      return <RetreatIcon3D size={size} />
+    case 'TESTIMONIAL':
+      return <QuoteIcon3D size={size} />
+    case 'BOOK_CALL':
+      return <PhoneIcon3D size={size} />
+    case 'WHATSAPP':
+      return <HeartIcon3D size={size} />
+    case 'TELEGRAM':
+      return <SparkleIcon3D size={size} />
+    default:
+      return <LinkIcon3D size={size} />
+  }
+}
 
 interface Block {
   id: string
