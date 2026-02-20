@@ -770,9 +770,11 @@ export default function SectionEditor({ profileTheme }: SectionEditorProps) {
     if (!confirm('Are you sure you want to delete this section?')) return
     
     try {
-      const res = await fetch(`/api/sections?sectionId=${sectionId}`, {
+      const res = await fetch('/api/sections', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
+        body: JSON.stringify({ sectionId }),
       })
       
       const data = await res.json()
