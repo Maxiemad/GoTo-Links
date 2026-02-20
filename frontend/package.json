@@ -2,8 +2,7 @@
   "name": "frontend-wrapper",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx --prefix /app next dev -p 3000",
-    "dev": "npx --prefix /app next dev -p 3000",
-    "build": "npx --prefix /app next build"
+    "start": "node start.js",
+    "dev": "node start.js"
   }
 }
