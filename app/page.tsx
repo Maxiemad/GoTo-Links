@@ -735,7 +735,8 @@ export default function HomePage() {
                 <p style={{ color: colors.text.secondary, lineHeight: 1.6 }}>
                   {feature.description}
                 </p>
-              </Card>
+                </Card>
+              </Tilt3DCard>
             ))}
           </div>
         </div>
