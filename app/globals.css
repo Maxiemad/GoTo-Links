@@ -905,11 +905,53 @@ html {
 /* Input Focus Animation */
 input:focus {
   outline: none;
+  border-color: #FF7043 !important;
+  box-shadow: 0 0 0 3px rgba(255, 112, 67, 0.15) !important;
 }
 
 input:focus + label,
 label:has(+ input:focus) {
   color: #FF7043;
+}
+
+/* Modern Input Styling */
+input, textarea {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:hover:not(:focus), textarea:hover:not(:focus) {
+  border-color: #BDBDBD !important;
+}
+
+/* Button Loading State */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Primary Button Hover */
+button[style*="background-color: rgb(161, 130, 103)"],
+button[style*="backgroundColor: #A18267"],
+button[style*="background-color:#A18267"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button[style*="background-color: rgb(161, 130, 103)"]:hover:not(:disabled),
+button[style*="backgroundColor: #A18267"]:hover:not(:disabled) {
+  background-color: #8B6F57 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(161, 130, 103, 0.35) !important;
+}
+
+/* Google Button Styling */
+button[style*="border: 2px solid"][style*="background: rgb(255, 255, 255)"],
+button[style*="border: 2px solid #"]:hover {
+  background-color: #F5F5F5 !important;
+  transform: translateY(-1px);
 }
 
 /* Form Card Entrance */
