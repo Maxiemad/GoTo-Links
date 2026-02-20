@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Plus, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, X, Edit2, Star, Image, Play, Calendar, User, MessageCircle, Loader2 } from 'lucide-react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Plus, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, X, Edit2, Star, Image, Play, Calendar, User, MessageCircle, Loader2, GripVertical } from 'lucide-react'
 import { 
   Section, 
   SectionType, 
@@ -35,7 +35,7 @@ const SECTION_ICONS: Record<SectionType, React.ReactNode> = {
 }
 
 // ============================================
-// SECTION CARD
+// SECTION CARD WITH DRAG & DROP
 // ============================================
 
 interface SectionCardProps {
@@ -46,9 +46,27 @@ interface SectionCardProps {
   onDelete: () => void
   onToggleVisibility: () => void
   onReorder: (direction: 'up' | 'down') => void
+  onDragStart: (e: React.DragEvent, index: number) => void
+  onDragOver: (e: React.DragEvent, index: number) => void
+  onDragEnd: () => void
+  isDragging: boolean
+  dragOverIndex: number | null
 }
 
-function SectionCard({ section, index, total, onEdit, onDelete, onToggleVisibility, onReorder }: SectionCardProps) {
+function SectionCard({ 
+  section, 
+  index, 
+  total, 
+  onEdit, 
+  onDelete, 
+  onToggleVisibility, 
+  onReorder,
+  onDragStart,
+  onDragOver,
+  onDragEnd,
+  isDragging,
+  dragOverIndex
+}: SectionCardProps) {
   const meta = getAllSectionTypes().find(s => s.type === section.type)
   
   const getPreviewText = () => {
@@ -70,31 +88,24 @@ function SectionCard({ section, index, total, onEdit, onDelete, onToggleVisibili
     return meta?.name || 'Section'
   }
 
+  const isDropTarget = dragOverIndex === index
+
   return (
     <div 
-      className={`flex items-center gap-4 p-4 border rounded-xl transition-all ${
+      draggable
+      onDragStart={(e) => onDragStart(e, index)}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDragEnd={onDragEnd}
+      className={`flex items-center gap-3 p-4 border rounded-xl transition-all cursor-grab active:cursor-grabbing ${
         section.enabled 
           ? 'border-gray-200 bg-white hover:border-gray-300' 
           : 'border-gray-100 bg-gray-50 opacity-60'
-      }`}
+      } ${isDragging ? 'opacity-50' : ''} ${isDropTarget ? 'border-primary-400 bg-primary-50 border-dashed' : ''}`}
       data-testid={`section-${section.id}`}
     >
-      {/* Reorder buttons */}
-      <div className="flex flex-col gap-1">
-        <button
-          onClick={() => onReorder('up')}
-          disabled={index === 0}
-          className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
-        >
-          <ChevronUp className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => onReorder('down')}
-          disabled={index === total - 1}
-          className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
-        >
-          <ChevronDown className="w-4 h-4" />
-        </button>
+      {/* Drag Handle */}
+      <div className="flex items-center text-gray-300 hover:text-gray-500 cursor-grab">
+        <GripVertical className="w-5 h-5" />
       </div>
 
       {/* Icon */}
