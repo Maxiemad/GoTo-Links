@@ -98,7 +98,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
         case 'TESTIMONIAL':
           return (
             <div data-testid={`block-${block.id}`}>
-              <div className="text-2xl mb-3">💬</div>
+              <div className="text-2xl mb-3"><QuoteIcon3D size={32} /></div>
               <p 
                 className="italic mb-3 leading-relaxed" 
                 style={{ 
