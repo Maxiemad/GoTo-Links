@@ -927,7 +927,7 @@ export const Navbar: React.FC = () => {
                               border: `1px solid ${colors.gray[200]}`,
                             }}
                           >
-                            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{contentItem.icon}</div>
+                            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}><IconRenderer emoji={contentItem.icon} size={36} /></div>
                             <div style={{ fontWeight: 600, marginBottom: '0.5rem', fontSize: '1.125rem', color: colors.text.primary }}>
                               {contentItem.title}
                             </div>
