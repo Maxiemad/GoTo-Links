@@ -501,9 +501,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Hero Animation - Right Side */}
-          <div
-            className="parallax-container elegant-hover"
+          {/* Hero Animation - Right Side with 3D Tilt Effect */}
+          <Tilt3DCard
+            maxTilt={6}
+            scale={1.02}
+            glare={true}
+            className="tilt-3d-card shadow-3d"
             style={{
               flex: '1 1 400px',
               width: '100%',
@@ -511,12 +514,10 @@ export default function HomePage() {
               height: '400px',
               borderRadius: '1.5rem',
               overflow: 'hidden',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02)',
               backgroundColor: 'transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              position: 'relative',
               zIndex: 1,
             }}
           >
@@ -544,7 +545,7 @@ export default function HomePage() {
                 Loading animation...
               </div>
             )}
-          </div>
+          </Tilt3DCard>
         </div>
 
       </section>
