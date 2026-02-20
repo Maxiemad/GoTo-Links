@@ -1,56 +1,32 @@
 # GoToLinks - Product Requirements Document
 
 ## Original Problem Statement
-Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend implementation:
-1. Set up the project and ensure it runs locally
-2. Migrate fully to Next.js (remove Vite)
-3. Implement backend APIs for Authentication, Profiles, Blocks, Analytics
-4. Integrate Supabase (PostgreSQL) with Prisma
-5. Implement Stripe (test mode) for Pro plan
-6. Add Cloudinary for file uploads
-7. Structure for Vercel deployment
-
-**USER CONSTRAINT: UI is locked. Backend changes only. No visual changes allowed.**
+Build a production-ready, full-stack "link-in-bio" application that functions as a micro-website builder for wellness creators. The application allows users to create profiles with links, sections (About, Retreats, Gallery, Video, Testimonials), and customizable themes.
 
 ## Architecture
 
 ### Tech Stack
-- **Frontend**: Next.js 14.2.35 (App Router), React 18 - **ORIGINAL UI PRESERVED**
-- **Backend**: FastAPI proxy + Next.js API Routes
-- **Database**: MongoDB (fully migrated - Prisma removed)
-- **Authentication**: JWT + Google OAuth (Emergent Auth) - **WORKING**
-- **Payments**: Stripe (test mode) - Scaffolded with MongoDB
+- **Frontend**: Next.js 14.2.35 (App Router), React 18, Tailwind CSS, Framer Motion
+- **Backend**: Next.js API Routes + FastAPI proxy (local dev only)
+- **Database**: MongoDB
+- **Authentication**: JWT + Google OAuth (Emergent Auth)
+- **Payments**: Stripe (test mode) - Scaffolded
 - **File Uploads**: Cloudinary - Scaffolded
-- **Deployment**: Vercel-ready structure ✅
+- **Deployment**: Vercel-ready structure
 
 ### Project Structure (Pure Next.js App Router)
 ```
 /app                    # Root project directory
 ├── app/               # Next.js App Router pages & API routes
 │   ├── (auth)/        # Auth pages (login, signup, callback)
-│   ├── (dashboard)/   # Protected dashboard routes
-│   ├── api/           # API routes (auth, blocks, profile, etc.)
-│   └── profile/       # Public profile page
-├── lib/               # Shared utilities (mongodb, auth, themes)
-├── components/        # UI components
-├── backend/           # FastAPI proxy (minimal, routes to Next.js)
-├── .env.local         # All environment variables (MongoDB, JWT, Stripe, etc.)
+│   ├── dashboard/     # Dashboard pages (main, profile-editor, upgrade)
+│   ├── api/           # API routes (auth, blocks, profile, sections)
+│   ├── components/    # UI components (SectionEditor, SectionRenderer, ThemeAnimations)
+│   └── profile/       # Public profile page with dynamic routing
+├── lib/               # Shared utilities (mongodb, auth, themes, sections)
+├── .env.local         # Environment variables
 └── package.json       # Dependencies
 ```
-
-**Note:** No separate frontend/backend folder structure. This is a pure Next.js fullstack app.
-
-## Deployment Readiness ✅ (Feb 19, 2026 - Updated)
-- ✅ Build passes successfully (`npm run build` completes without errors)
-- ✅ All Prisma dependencies removed
-- ✅ MongoDB package pinned to `6.12.0` (requires Node >=16.20.1 - compatible with Vercel's Node 20.18.1)
-- ✅ yarn.lock correctly locks mongodb@6.12.0
-- ✅ No hardcoded URLs or credentials
-- ✅ Environment variables properly configured
-- ✅ package-lock.json removed (using yarn only)
-- ✅ tsconfig.json has `baseUrl: "."` for path alias resolution
-- ✅ **All `@/` path aliases converted to relative imports** (Docker/Vercel compatible)
-- ✅ Deployment agent verification PASSED
 
 ## What's Been Implemented
 
@@ -59,116 +35,116 @@ Migrate GoToLinks from Vite + React to Next.js 14 App Router with full backend i
 - [x] Email login
 - [x] Session management with cookies
 - [x] Google OAuth via Emergent Auth
-- [x] Protected dashboard route
+- [x] Protected dashboard routes
 - [x] Logout functionality
 
-### Theme System - FULLY WORKING ✅ (Feb 2026)
-- [x] 8 premium themes defined in `/lib/themes.ts`
-- [x] `PATCH /api/profile/theme` endpoint for saving themes
-- [x] Theme carousel with no scroll reset bug
-- [x] Live preview in profile editor updates instantly
-- [x] Public profile dynamically applies saved theme
+### Theme Engine 2.0 - FULLY WORKING ✅
+- [x] 8 premium themes with animated backgrounds
+- [x] Dynamic font pairings
+- [x] Profile image glow aura
+- [x] Block animations (fadeUp, slideIn, staggeredAppear, etc.)
+- [x] Block styles (glassmorphism, gradient-pill, soft-shadow, etc.)
+- [x] Theme carousel in dashboard with instant preview
 - [x] Themes: zen-minimal, sacred-earth, ocean-temple, forest-calm, sunset-glow, lavender-dreams, midnight-bloom, rose-quartz
 
-### Block Management CRUD - FULLY WORKING ✅ (Feb 19, 2026)
+### Block Management CRUD - FULLY WORKING ✅
 - [x] Create blocks (Link, Retreat, Testimonial, Book Call, WhatsApp, Telegram)
-- [x] Read blocks (GET all, GET single)
-- [x] Update blocks (title, url, description, visibility, etc.)
-- [x] Delete blocks (with cascade delete of analytics)
-- [x] Reorder blocks (persisted order in MongoDB)
-- [x] Dashboard UI with up/down reorder buttons
-- [x] Public profile renders blocks dynamically sorted by order
-- [x] Only visible blocks (isVisible=true) shown on public profile
-- [x] Comprehensive backend tests: `/app/backend/tests/test_blocks_api.py`
+- [x] Read, Update, Delete blocks
+- [x] Reorder blocks with persistence
+- [x] Dashboard UI with reorder buttons
+- [x] Public profile renders blocks dynamically
 
-### API Routes Implemented (MongoDB Backend)
-**Auth:**
-- `POST /api/auth/signup` - Email registration ✅
-- `POST /api/auth/login` - Email login ✅
-- `POST /api/auth/logout` - Session logout ✅
-- `GET /api/auth/me` - Get current user ✅
-- `POST /api/auth/google` - Google OAuth callback ✅
+### Mini Website Sections System - FULLY WORKING ✅ (Feb 20, 2026)
+- [x] **Dashboard Section Editor UI** with tabbed navigation (Profile Info, Link Blocks, Mini Website)
+- [x] **5 Section Types**: About Me, Upcoming Event, Image Gallery, YouTube Video, Testimonials
+- [x] **Rich inline editing** with dedicated forms for each section type
+- [x] **Drag-and-drop reordering** via GripVertical handle
+- [x] **Visibility toggle** (eye icon) to show/hide sections
+- [x] **Edit/Delete controls** for each section
+- [x] **Real-time rendering** on public profile
+- [x] **API endpoints**: GET/POST/PUT/DELETE `/api/sections`, POST `/api/sections/reorder`
+- [x] **100% test coverage** - All 20 backend tests passing
 
-**Profile:**
-- `GET /api/profile` - Get user's profile with blocks ✅
-- `PUT /api/profile` - Update profile ✅
-- `PATCH /api/profile/theme` - Update theme ✅
-- `GET /api/profile/[handle]` - Get public profile with blocks ✅
+#### Section Types Detail:
+1. **About Me** - Expandable card with title, description, optional highlight quote
+2. **Upcoming Event** - Event card with title, location, date, countdown timer, CTA button
+3. **Image Gallery** - Slider or grid layout with lightbox support
+4. **YouTube Video** - Embedded video with lazy loading play button
+5. **Testimonials** - Auto-sliding carousel with ratings
 
-**Blocks:**
-- `GET /api/blocks` - Get all user's blocks ✅
-- `POST /api/blocks` - Create new block ✅
-- `GET /api/blocks/[id]` - Get single block ✅
-- `PUT /api/blocks/[id]` - Update block ✅
-- `DELETE /api/blocks/[id]` - Delete block ✅
-- `POST /api/blocks/reorder` - Reorder blocks ✅
+## API Routes Implemented
 
-**Payments (MongoDB):**
-- `POST /api/payments/checkout` - Create Stripe checkout ✅
-- `GET /api/payments/status/[sessionId]` - Get payment status ✅
+### Auth
+- `POST /api/auth/signup` - Email registration
+- `POST /api/auth/login` - Email login
+- `POST /api/auth/logout` - Session logout
+- `GET /api/auth/me` - Get current user
 
-**Analytics:**
-- `GET /api/analytics` - Get analytics data
-- `POST /api/analytics/track` - Track events
+### Profile
+- `GET /api/profile` - Get user's profile with blocks and sections
+- `PUT /api/profile` - Update profile
+- `PATCH /api/profile/theme` - Update theme
+- `GET /api/profile/[handle]` - Get public profile
 
-## Test Credentials
-- Email: blocktest@example.com
-- Password: Test1234!
-- Handle: blocktester
+### Blocks
+- `GET /api/blocks` - Get all user's blocks
+- `POST /api/blocks` - Create new block
+- `PUT /api/blocks/[id]` - Update block
+- `DELETE /api/blocks/[id]` - Delete block
+- `POST /api/blocks/reorder` - Reorder blocks
+
+### Sections
+- `GET /api/sections` - Get all user's sections
+- `POST /api/sections` - Create new section
+- `PUT /api/sections` - Update section (data, visibility)
+- `DELETE /api/sections` - Delete section
+- `POST /api/sections/reorder` - Reorder sections
 
 ## Database Schema (MongoDB)
 
 ### users
 ```json
-{ _id, email, password, firstName, lastName, handle, plan, picture, theme }
+{ _id, email, passwordHash, firstName, lastName, handle, plan, picture, authProvider }
 ```
 
 ### profiles
 ```json
-{ _id, userId, name, headline, bio, photoUrl, videoUrl, location, theme, customDomain }
+{ _id, userId, name, headline, bio, photoUrl, location, theme, sections: [...] }
 ```
 
-### blocks
+### sections (embedded in profiles)
 ```json
-{ _id, profileId, type, order, isVisible, title, url, description, dateRange, location, price, authorName, authorPhoto, quote, phone, createdAt, updatedAt }
+{ id, type, data, order, enabled, createdAt, updatedAt }
 ```
 
-### sessions
+### blocks (separate collection)
 ```json
-{ _id, userId, sessionToken, expiresAt }
+{ _id, profileId, type, order, isVisible, title, url, description, ... }
 ```
 
-### analytics
-```json
-{ _id, userId, blockId, eventType, referrer, userAgent, createdAt }
-```
-
-### payments
-```json
-{ _id, userId, stripeSessionId, amount, currency, status, metadata, createdAt, updatedAt }
-```
+## Test Credentials
+- Email: test@example.com
+- Password: Test1234!
+- Handle: testuser
 
 ## Completed Tasks
-1. ✅ Migrate from Vite to Next.js
-2. ✅ Implement authentication (JWT + Google OAuth)
-3. ✅ Fix theme selection system with database persistence
-4. ✅ Add live theme preview in dashboard
-5. ✅ Complete blocks CRUD API (MongoDB) - add, edit, delete, reorder blocks
-6. ✅ Profile editor form functionality - save name, headline, bio, location
-7. ✅ Public profile renders blocks dynamically
-8. ✅ Fix Tailwind CSS styling (added @tailwind directives)
-9. ✅ Remove all Prisma dependencies - MongoDB only architecture
-10. ✅ Migrate payment routes to MongoDB
-11. ✅ Deployment readiness verified
+1. ✅ Next.js 14 App Router setup
+2. ✅ Authentication (JWT + Google OAuth)
+3. ✅ Theme Engine 2.0 with animations
+4. ✅ Block CRUD with reordering
+5. ✅ **Mini Website Sections System (Dashboard UI)** - Feb 20, 2026
+6. ✅ Profile editor with tabbed navigation
+7. ✅ Public profile with themed rendering
+8. ✅ Deployment readiness
 
-## Next Tasks (Priority Order)
-1. Complete Analytics System - ensure tracking and data fetching work
-2. Secure Auth Middleware - protect dashboard routes
-3. Test Stripe payment flow end-to-end
-4. Add Cloudinary image uploads
+## Upcoming Tasks (Priority Order)
+1. **Production Auth Fix** - Change `secure: false` to environment-aware setting
+2. **3D Effects** - Add subtle tilt/parallax to homepage and profile pages (NOT dashboard)
+3. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
 
 ## Future/Backlog
-- Implement Google OAuth for production
-- Add social media blocks (Instagram, YouTube, Twitter)
-- Video hero feature for Pro users
+- Stripe integration for Pro plan
+- Cloudinary integration for image uploads
 - Custom domains for Pro users
+- Analytics dashboard
+- Social media blocks (Instagram, YouTube, Twitter)
