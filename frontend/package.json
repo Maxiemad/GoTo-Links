@@ -1,8 +1,0 @@
-{
-  "name": "frontend-wrapper",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "node start.js",
-    "dev": "node start.js"
-  }
-}
