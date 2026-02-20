@@ -1309,12 +1309,13 @@ export default function HomePage() {
                 <Button
                   variant={plan.highlight ? 'primary' : 'outline'}
                   size="lg"
-                  className="button-elegant"
+                  className="button-elegant button-3d"
                   style={{ width: '100%' }}
                 >
                   {plan.cta}
                 </Button>
               </Card>
+              </Tilt3DCard>
             ))}
           </div>
         </div>
