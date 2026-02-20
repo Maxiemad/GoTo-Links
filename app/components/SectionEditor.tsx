@@ -934,6 +934,11 @@ export default function SectionEditor({ profileTheme }: SectionEditorProps) {
               onDelete={() => handleDeleteSection(section.id)}
               onToggleVisibility={() => handleToggleVisibility(section)}
               onReorder={(dir) => handleReorder(section.id, dir)}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDragEnd={handleDragEnd}
+              isDragging={draggedIndex === index}
+              dragOverIndex={dragOverIndex}
             />
           ))}
         </div>
