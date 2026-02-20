@@ -23,35 +23,19 @@ dist-ssr
 *.sln
 *.sw?
 
+# Next.js build
+.next
+
+# Local wrapper folders (for supervisor only - not deployed)
+/frontend
+/backend
+backend_test.py
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# SWC binaries
 node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
 node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
-frontend/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
-frontend/node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
