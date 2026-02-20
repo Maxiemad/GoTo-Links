@@ -1136,6 +1136,7 @@ export default function HomePage() {
                   {stat}
                 </div>
               </div>
+              </Tilt3DCard>
             ))}
           </div>
         </div>
