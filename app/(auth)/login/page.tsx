@@ -155,6 +155,20 @@ export default function LoginPage() {
               borderRadius: borderRadius.xl,
               cursor: isLoading ? 'not-allowed' : 'pointer',
               opacity: isLoading ? 0.7 : 1,
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 14px rgba(161, 130, 103, 0.3)',
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.backgroundColor = colors.accent[600]
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(161, 130, 103, 0.4)'
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.accent[500]
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 14px rgba(161, 130, 103, 0.3)'
             }}
           >
             {isLoading ? 'Signing in...' : 'Sign in'}
