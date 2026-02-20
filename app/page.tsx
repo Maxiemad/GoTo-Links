@@ -1237,17 +1237,26 @@ export default function HomePage() {
                 highlight: true,
               },
             ].map((plan, idx) => (
-              <Card
+              <Tilt3DCard
                 key={idx}
-                className={`card-elegant stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
+                maxTilt={plan.highlight ? 6 : 4}
+                scale={plan.highlight ? 1.04 : 1.02}
+                glare={true}
+                className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
-                  border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
-                  position: 'relative',
                   opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
                   transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
                   transition: prefersReducedMotion ? 'none' : `opacity 0.4s ease-out ${0.08 + idx * 0.06}s, transform 0.4s ease-out ${0.08 + idx * 0.06}s`,
                 }}
               >
+                <Card
+                  className="shadow-3d h-full"
+                  style={{
+                    border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
+                    position: 'relative',
+                    height: '100%',
+                  }}
+                >
                 {plan.highlight && (
                   <div
                     className="float-element"
