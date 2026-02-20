@@ -27,6 +27,7 @@ function SignupForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, firstName, lastName, theme: selectedTheme }),
+        credentials: 'include', // Important for cookies
       })
       
       const data = await res.json()
