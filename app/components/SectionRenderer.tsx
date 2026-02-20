@@ -207,7 +207,7 @@ export function RetreatSection({ data, theme, index }: RetreatSectionProps) {
     >
       {/* Event Badge */}
       <div className="flex items-center gap-2 mb-3">
-        <span className="text-2xl">🏕️</span>
+        <span className="text-2xl"><RetreatIcon3D size={28} /></span>
         <span
           className="px-2 py-0.5 rounded-full text-xs font-medium"
           style={{
