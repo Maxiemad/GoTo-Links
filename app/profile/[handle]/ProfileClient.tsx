@@ -61,7 +61,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               data-testid={`block-${block.id}`}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="text-2xl">🏕️</div>
+              <div className="text-2xl"><RetreatIcon3D size={32} /></div>
                 <ExternalLink className="w-4 h-4" style={{ color: themeConfig.textSecondary }} />
               </div>
               <h3 
