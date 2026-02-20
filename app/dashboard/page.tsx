@@ -205,7 +205,7 @@ export default function DashboardPage() {
                 justifyContent: 'center',
                 fontSize: '1.5rem',
               }}>
-                🔗
+                <LinkIcon3D size={28} />
               </div>
               <div>
                 <p style={{ fontSize: '0.875rem', color: colors.text.secondary }}>Link Clicks</p>
