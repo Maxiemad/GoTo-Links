@@ -164,8 +164,19 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
     }
 
+    // Try to get sectionId from query params first, then from body
     const { searchParams } = new URL(request.url)
-    const sectionId = searchParams.get('sectionId')
+    let sectionId = searchParams.get('sectionId')
+    
+    // If not in query params, try reading from body (for CDN compatibility)
+    if (!sectionId) {
+      try {
+        const body = await request.json()
+        sectionId = body.sectionId
+      } catch {
+        // Body might not be JSON or empty
+      }
+    }
 
     if (!sectionId) {
       return NextResponse.json({ success: false, error: 'Missing sectionId' }, { status: 400 })
