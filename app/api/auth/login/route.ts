@@ -69,9 +69,8 @@ export async function POST(request: NextRequest) {
       },
     })
     
-    // Temporarily set secure: false to diagnose cookie issues
-    // TODO: Change back to process.env.NODE_ENV === 'production' after HTTPS is confirmed
-    const isProduction = false // process.env.NODE_ENV === 'production'
+    // Environment-aware secure cookie setting
+    const isProduction = process.env.NODE_ENV === 'production'
     
     response.cookies.set('session_token', sessionToken, {
       httpOnly: true,
