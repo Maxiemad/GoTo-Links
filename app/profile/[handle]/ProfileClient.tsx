@@ -283,41 +283,51 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
         {/* Mobile-first container - max 420px */}
         <div className="max-w-[420px] mx-auto px-4 py-12">
           
-          {/* Profile Header with Glow Aura */}
+          {/* Profile Header with Glow Aura and 3D Depth */}
           <div className="text-center mb-10">
-            {/* Avatar with Glow */}
-            <div className="relative inline-block mb-5">
-              <GlowAura config={themeConfig.glowAura} size={112} />
-              <div 
-                className="w-28 h-28 rounded-full p-1 relative z-10"
-                style={{ 
-                  background: themeConfig.headerGradient || `linear-gradient(135deg, ${themeConfig.buttonPrimary} 0%, ${themeConfig.accent} 100%)` 
-                }}
-              >
-                <div 
-                  className="w-full h-full rounded-full flex items-center justify-center overflow-hidden"
-                  style={{ backgroundColor: themeConfig.cardBackground }}
+            {/* Avatar with 3D Depth Glow */}
+            <DepthGlow 
+              color={themeConfig.buttonPrimary || '#FF7043'} 
+              size={112}
+              className="inline-block mb-5"
+            >
+              <div className="relative">
+                <GlowAura config={themeConfig.glowAura} size={112} />
+                <Tilt3DCard
+                  maxTilt={8}
+                  scale={1.03}
+                  glare={true}
+                  className="w-28 h-28 rounded-full p-1 relative z-10 avatar-3d-glow"
+                  style={{ 
+                    background: themeConfig.headerGradient || `linear-gradient(135deg, ${themeConfig.buttonPrimary} 0%, ${themeConfig.accent} 100%)`,
+                    ['--glow-color' as string]: `${themeConfig.buttonPrimary}50`,
+                  }}
                 >
-                  {profile.photoUrl || user.picture ? (
-                    <img 
-                      src={profile.photoUrl || user.picture || ''} 
-                      alt={profile.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span 
-                      className="text-4xl font-bold" 
-                      style={{ 
-                        color: themeConfig.textPrimary,
-                        fontFamily: themeConfig.fontPairing.heading,
-                      }}
-                    >
-                      {profile.name.charAt(0)}
-                    </span>
-                  )}
-                </div>
+                  <div 
+                    className="w-full h-full rounded-full flex items-center justify-center overflow-hidden"
+                    style={{ backgroundColor: themeConfig.cardBackground }}
+                  >
+                    {profile.photoUrl || user.picture ? (
+                      <img 
+                        src={profile.photoUrl || user.picture || ''} 
+                        alt={profile.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span 
+                        className="text-4xl font-bold" 
+                        style={{ 
+                          color: themeConfig.textPrimary,
+                          fontFamily: themeConfig.fontPairing.heading,
+                        }}
+                      >
+                        {profile.name.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                </Tilt3DCard>
               </div>
-            </div>
+            </DepthGlow>
             
             {/* Name */}
             <h1 
