@@ -3,8 +3,9 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown, GripVertical, Layers } from 'lucide-react'
 import { getThemeList, getTheme, ThemeConfig } from '../../../lib/themes'
+import SectionEditor from '../../components/SectionEditor'
 
 interface Block {
   id: string
@@ -42,6 +43,9 @@ interface User {
 
 // Memoized theme list to prevent re-renders from resetting scroll
 const THEMES_LIST = getThemeList()
+
+// Tab type for dashboard navigation
+type EditorTab = 'profile' | 'blocks' | 'sections'
 
 const BLOCK_TYPES = [
   { id: 'LINK', name: 'Link', icon: '🔗' },
