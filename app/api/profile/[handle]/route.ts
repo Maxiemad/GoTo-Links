@@ -35,6 +35,11 @@ export async function GET(
       .sort({ order: 1 })
       .toArray()
     
+    // Get enabled sections
+    const sections = profile.sections 
+      ? profile.sections.filter((s: any) => s.enabled).sort((a: any, b: any) => a.order - b.order)
+      : []
+    
     // Track profile view
     await db.collection('analytics').insertOne({
       userId: user._id.toString(),
@@ -71,6 +76,7 @@ export async function GET(
             quote: b.quote,
             phone: b.phone,
           })),
+          sections: sections,
         },
         user: {
           handle: user.handle,
