@@ -934,29 +934,29 @@ export default function HomePage() {
         <FloatingOrb size={240} variant={3} duration={28} delay={2} style={{ bottom: '15%', left: '-5%' }} />
         <TwinkleDots count={16} color={colors.accent[400]} />
 
-        {/* Floating Wellness Icons */}
+        {/* Floating 3D Wellness Icons */}
         {!prefersReducedMotion && (
           <>
-            {['🧘', '🌿', '✨', '🌸', '🕯️', '🌊'].map((icon, idx) => {
+            {[YogaIcon3D, LeafIcon3D, SparkleIcon3D, FlowerIcon3D, CandleIcon3D, WaveIcon3D].map((Icon, idx) => {
               const angle = (idx * 60) * (Math.PI / 180)
               const radius = 200
               return (
                 <div
                   key={idx}
-                  className="floating-icon float-element"
+                  className="floating-icon float-element floating-3d"
                   style={{
                     position: 'absolute',
                     left: `calc(50% + ${Math.cos(angle) * radius}px)`,
                     top: `calc(50% + ${Math.sin(angle) * radius}px)`,
-                    fontSize: '3rem',
-                    opacity: 0.15,
+                    opacity: 0.25,
                     animation: `floatIcon ${8 + idx * 2}s ease-in-out infinite`,
                     animationDelay: `${idx * 0.5}s`,
                     pointerEvents: 'none',
                     transform: 'translate(-50%, -50%)',
+                    filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
                   }}
                 >
-                  {icon}
+                  <Icon size={48} />
                 </div>
               )
             })}
