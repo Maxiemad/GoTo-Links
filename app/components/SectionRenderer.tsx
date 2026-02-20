@@ -611,7 +611,7 @@ export function TestimonialsSection({ data, theme, index }: TestimonialsSectionP
       data-testid="section-testimonials"
     >
       <div className="text-center mb-4">
-        <span className="text-2xl">💬</span>
+        <span className="text-2xl"><QuoteIcon3D size={32} /></span>
         <h3
           className="text-lg font-semibold mt-2"
           style={{
