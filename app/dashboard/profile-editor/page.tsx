@@ -570,7 +570,7 @@ export default function ProfileEditorPage() {
                     color: getTheme(profile.theme).buttonPrimaryText
                   }}
                 >
-                  🔗
+                  <LinkIcon3D size={18} />
                 </div>
                 <span 
                   className="font-medium text-sm"
