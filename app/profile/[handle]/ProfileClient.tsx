@@ -261,23 +261,30 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
     })()
 
     return (
-      <AnimatedBlock
+      <Tilt3DCard
         key={block.id}
-        animation={themeConfig.blockAnimation}
-        index={index}
-        hoverEffect={themeConfig.blockHoverEffect}
-        style={blockBaseStyle}
-        className="cursor-pointer"
+        maxTilt={4}
+        scale={1.02}
+        glare={true}
+        className="profile-card-3d"
       >
-        {blockContent}
-      </AnimatedBlock>
+        <AnimatedBlock
+          animation={themeConfig.blockAnimation}
+          index={index}
+          hoverEffect={themeConfig.blockHoverEffect}
+          style={blockBaseStyle}
+          className="cursor-pointer shadow-3d"
+        >
+          {blockContent}
+        </AnimatedBlock>
+      </Tilt3DCard>
     )
   }
 
   return (
     <AnimatedBackground theme={themeConfig}>
       <div 
-        className="min-h-screen"
+        className="min-h-screen parallax-3d-container"
         data-testid="public-profile"
       >
         {/* Mobile-first container - max 420px */}
