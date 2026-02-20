@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import { MapPin, ExternalLink, Calendar, MessageCircle, Phone, Send } from 'lucide-react'
 import { ThemeConfig, getBlockStyleCSS } from '../../../lib/themes'
+import { Section } from '../../../lib/sections'
 import { AnimatedBackground, GlowAura, AnimatedBlock } from '../../components/ThemeAnimations'
+import { SectionRenderer } from '../../components/SectionRenderer'
 
 interface Block {
   id: string
@@ -27,6 +29,7 @@ interface Profile {
   location: string | null
   theme: string
   blocks: Block[]
+  sections?: Section[]
 }
 
 interface User {
