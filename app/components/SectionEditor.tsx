@@ -833,6 +833,56 @@ export default function SectionEditor({ profileTheme }: SectionEditorProps) {
     }
   }
 
+  // Drag and Drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index)
+    e.dataTransfer.effectAllowed = 'move'
+    // Add a slight delay to show the dragging state
+    setTimeout(() => {
+      const target = e.target as HTMLElement
+      target.style.opacity = '0.5'
+    }, 0)
+  }
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverIndex(index)
+  }
+
+  const handleDragEnd = async () => {
+    if (draggedIndex === null || dragOverIndex === null || draggedIndex === dragOverIndex) {
+      setDraggedIndex(null)
+      setDragOverIndex(null)
+      return
+    }
+
+    // Reorder sections
+    const newSections = [...sections]
+    const [moved] = newSections.splice(draggedIndex, 1)
+    newSections.splice(dragOverIndex, 0, moved)
+    
+    // Update order property
+    const reordered = newSections.map((s, i) => ({ ...s, order: i }))
+    setSections(reordered)
+    
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+    
+    // Persist to backend
+    try {
+      await fetch('/api/sections/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ sectionIds: reordered.map(s => s.id) }),
+      })
+    } catch (error) {
+      console.error('Failed to reorder sections:', error)
+      // Could revert here but we'll let UI stay updated for better UX
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
