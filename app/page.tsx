@@ -23,18 +23,6 @@ import {
   PhoneIcon3D,
   StarIcon3D
 } from './components/Icons3D'
-import {
-  LotusSticker,
-  MeditationSticker,
-  HeartSticker,
-  SparkleSticker,
-  LeafSticker,
-  SunSticker,
-  CrystalSticker,
-  MoonSticker,
-  WellnessBadge,
-  StickerStyles,
-} from './components/WellnessStickers'
 import { colors, typography, borderRadius, themes, ThemeKey } from './styles/theme'
 
 // Get theme keys as typed array
