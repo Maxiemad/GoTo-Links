@@ -1164,27 +1164,9 @@ export default function HomePage() {
           padding: '5rem 2rem',
           background: `linear-gradient(135deg, ${colors.white} 0%, ${colors.background} 100%)`,
           position: 'relative',
-          overflow: 'visible',
+          overflow: 'hidden',
         }}
       >
-        {/* 3D Stickers around pricing */}
-        {!prefersReducedMotion && (
-          <>
-            <div style={{ position: 'absolute', top: '8%', left: '5%', zIndex: 20, pointerEvents: 'none' }}>
-              <WellnessBadge size={80} />
-            </div>
-            <div style={{ position: 'absolute', top: '20%', right: '3%', zIndex: 20, pointerEvents: 'none' }}>
-              <SunSticker size={60} />
-            </div>
-            <div style={{ position: 'absolute', bottom: '25%', left: '2%', zIndex: 20, pointerEvents: 'none' }}>
-              <LeafSticker size={55} />
-            </div>
-            <div style={{ position: 'absolute', bottom: '10%', right: '5%', zIndex: 20, pointerEvents: 'none' }}>
-              <LotusSticker size={65} />
-            </div>
-          </>
-        )}
-
         {/* Floating Particles */}
         <FloatingParticles count={26} intensity="low" sacredGeometry={true} />
 
