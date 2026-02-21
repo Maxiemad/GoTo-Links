@@ -254,9 +254,6 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'transparent' }} className="parallax-3d-container">
-      {/* Sticker animation styles */}
-      <StickerStyles />
-      
       {/* Navigation */}
       <Navbar />
 
@@ -272,7 +269,7 @@ export default function HomePage() {
           marginTop: '2rem',
           marginBottom: '4rem',
           position: 'relative',
-          overflow: 'visible',
+          overflow: 'hidden',
           cursor: 'default',
         }}
       >
@@ -290,30 +287,6 @@ export default function HomePage() {
             pointerEvents: 'none',
           }}
         />
-
-        {/* 3D Wellness Stickers - floating around hero */}
-        {!prefersReducedMotion && (
-          <>
-            <div style={{ position: 'absolute', top: '-20px', left: '5%', zIndex: 20, pointerEvents: 'none' }}>
-              <LotusSticker size={70} />
-            </div>
-            <div style={{ position: 'absolute', top: '15%', right: '-30px', zIndex: 20, pointerEvents: 'none' }}>
-              <MeditationSticker size={85} />
-            </div>
-            <div style={{ position: 'absolute', bottom: '20%', left: '-25px', zIndex: 20, pointerEvents: 'none' }}>
-              <HeartSticker size={55} />
-            </div>
-            <div style={{ position: 'absolute', top: '40%', left: '2%', zIndex: 20, pointerEvents: 'none' }}>
-              <SparkleSticker size={45} />
-            </div>
-            <div style={{ position: 'absolute', bottom: '10%', right: '5%', zIndex: 20, pointerEvents: 'none' }}>
-              <LeafSticker size={60} />
-            </div>
-            <div style={{ position: 'absolute', top: '5%', right: '15%', zIndex: 20, pointerEvents: 'none' }}>
-              <SunSticker size={65} />
-            </div>
-          </>
-        )}
 
         {/* 3D Floating Shapes with Parallax */}
         {!prefersReducedMotion && (
