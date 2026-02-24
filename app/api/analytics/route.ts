@@ -38,8 +38,7 @@ export async function GET(request: NextRequest) {
     }
     
     const db = await getDb()
-    const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '7d'
+    const period = request.nextUrl.searchParams.get('period') || '7d'
     
     // Get profile
     const profile = await db.collection('profiles').findOne({ userId: user.id })
