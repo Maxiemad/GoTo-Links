@@ -280,17 +280,87 @@ function SignupForm() {
 }
 
 export default function SignupPage() {
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
+  const router = useRouter()
+
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        const data = await res.json()
+        if (data.success && data.data?.user) {
+          // User is already logged in, redirect to dashboard
+          router.replace('/dashboard')
+          return
+        }
+      } catch (error) {
+        // Not logged in, continue showing signup page
+      }
+      setIsCheckingAuth(false)
+    }
+    checkAuth()
+  }, [router])
+
+  // Show loading state while checking auth
+  if (isCheckingAuth) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
+        }}
+      >
+        <div style={{ 
+          width: '40px', 
+          height: '40px', 
+          border: `3px solid ${colors.gray[200]}`,
+          borderTopColor: colors.accent[500],
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
+
   return (
     <div
       style={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: `linear-gradient(135deg, ${colors.primary[50]} 0%, ${colors.secondary[50]} 100%)`,
         padding: '2rem',
       }}
     >
+      {/* Logo - clickable, redirects to homepage */}
+      <Link
+        href="/"
+        style={{
+          position: 'absolute',
+          top: '1.5rem',
+          left: '1.5rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          textDecoration: 'none',
+          transition: 'opacity 0.2s ease',
+        }}
+        data-testid="auth-logo"
+      >
+        <img
+          src="/69ba50aa-93e2-42fb-a002-736618a2bd81.png"
+          alt="GoToLinks"
+          style={{ height: '36px', width: 'auto' }}
+        />
+      </Link>
+
       <Suspense fallback={
         <div style={{ 
           width: '100%', 
