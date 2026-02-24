@@ -83,6 +83,11 @@ interface Profile {
   theme: string
   blocks: Block[]
   sections?: Section[]
+  // Custom background fields
+  backgroundImage?: string | null
+  backgroundBlur?: number
+  backgroundBrightness?: number
+  backgroundOverlayColor?: string
 }
 
 interface User {
