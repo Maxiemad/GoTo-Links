@@ -215,6 +215,16 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] **Profile card hover** - Enhanced 3D tilt effect on desktop hover
 - [x] **Mobile-first preserved** - All mobile styling unchanged, decorations hidden on mobile
 
+### Auth-Aware Navbar Fix (Feb 24, 2026)
+- [x] **User menu dropdown** - Avatar with dropdown showing Dashboard, View Profile, Logout
+- [x] **Auth state detection** - Fetches `/api/auth/me` on mount to check login status
+- [x] **Desktop user menu** - Compact avatar button with chevron, opens dropdown on click
+- [x] **Mobile user menu** - Full user info card with prominent "Go to Dashboard" CTA
+- [x] **Loading state** - Shows skeleton while checking auth status to prevent hydration mismatch
+- [x] **Logout functionality** - Properly clears session and redirects to homepage
+- [x] **User initials avatar** - Shows first/last initials when no profile picture
+- [x] **Conditional buttons** - "Get Started Free" for logged-out, user menu for logged-in
+
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
 
