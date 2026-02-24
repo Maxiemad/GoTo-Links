@@ -39,7 +39,8 @@ export async function GET(request: NextRequest) {
     
     const db = await getDb()
     const { searchParams } = new URL(request.url)
-    const period = searchParams.get('period') || '7d'
+    // Support both query param and header for period (header as fallback for some proxy configs)
+    const period = searchParams.get('period') || request.headers.get('x-analytics-period') || '7d'
     
     // Get profile
     const profile = await db.collection('profiles').findOne({ userId: user.id })
