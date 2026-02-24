@@ -207,10 +207,70 @@ export const Navbar: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
   const [isDesktop, setIsDesktop] = useState(false)
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [isAuthLoading, setIsAuthLoading] = useState(true)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const userMenuRef = useRef<HTMLDivElement>(null)
+
+  // Check auth status on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', {
+          credentials: 'include',
+        })
+        const data = await res.json()
+        if (data.success && data.data?.user) {
+          setUser(data.data.user)
+        } else {
+          setUser(null)
+        }
+      } catch (error) {
+        setUser(null)
+      } finally {
+        setIsAuthLoading(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Handle logout
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+      setUser(null)
+      setIsUserMenuOpen(false)
+      router.push('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user) return ''
+    const first = user.firstName?.charAt(0) || ''
+    const last = user.lastName?.charAt(0) || ''
+    return (first + last).toUpperCase() || user.email.charAt(0).toUpperCase()
+  }
 
   // Detect screen size
   useEffect(() => {
