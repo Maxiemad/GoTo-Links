@@ -24,16 +24,16 @@ async function getSessionUser(request: NextRequest) {
 }
 
 const updateBlockSchema = z.object({
-  title: z.string().optional(),
-  url: z.string().optional(),
-  description: z.string().optional(),
-  dateRange: z.string().optional(),
-  location: z.string().optional(),
-  price: z.number().optional(),
-  authorName: z.string().optional(),
-  authorPhoto: z.string().optional(),
-  quote: z.string().optional(),
-  phone: z.string().optional(),
+  title: z.string().nullable().optional(),
+  url: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  dateRange: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
+  price: z.number().nullable().optional(),
+  authorName: z.string().nullable().optional(),
+  authorPhoto: z.string().nullable().optional(),
+  quote: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
   isVisible: z.boolean().optional(),
   order: z.number().optional(),
 })
