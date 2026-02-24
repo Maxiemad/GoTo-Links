@@ -754,7 +754,7 @@ export default function ProfileEditorPage() {
                     <div className="flex flex-col gap-1">
                       <button
                         onClick={() => handleReorderBlock(block.id, 'up')}
-                        disabled={index === 0}
+                        disabled={index === 0 || isReordering}
                         className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
                         data-testid={`block-${block.id}-up`}
                       >
@@ -762,14 +762,14 @@ export default function ProfileEditorPage() {
                       </button>
                       <button
                         onClick={() => handleReorderBlock(block.id, 'down')}
-                        disabled={index === profile.blocks.length - 1}
+                        disabled={index === profile.blocks.length - 1 || isReordering}
                         className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed p-0.5"
                         data-testid={`block-${block.id}-down`}
                       >
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
-                    <div className="text-2xl">{BLOCK_TYPES.find(t => t.id === block.type)?.icon || '📎'}</div>
+                    <div className="text-2xl"><BlockTypeIcon type={block.type} size={24} /></div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-800 truncate">{block.title || 'Untitled'}</p>
                       <p className="text-sm text-gray-500">{block.type.replace('_', ' ')}</p>
