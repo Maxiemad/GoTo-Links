@@ -367,7 +367,7 @@ export default function ProfileEditorPage() {
   }
 
   const handleReorderBlock = async (blockId: string, direction: 'up' | 'down') => {
-    if (!profile) return
+    if (!profile || isReordering) return
     
     const currentIndex = profile.blocks.findIndex(b => b.id === blockId)
     if (currentIndex === -1) return
@@ -375,25 +375,32 @@ export default function ProfileEditorPage() {
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1
     if (newIndex < 0 || newIndex >= profile.blocks.length) return
     
+    // Store original for rollback
+    const originalBlocks = [...profile.blocks]
+    
     // Create new order
     const newBlocks = [...profile.blocks]
     const [movedBlock] = newBlocks.splice(currentIndex, 1)
     newBlocks.splice(newIndex, 0, movedBlock)
     
-    // Update order property
+    // Update order property for optimistic UI
     const reorderedBlocks = newBlocks.map((block, index) => ({
       ...block,
       order: index,
     }))
     
-    // Update local state immediately for instant feedback
+    // Optimistic update
     setProfile({
       ...profile,
       blocks: reorderedBlocks,
     })
     
+    setIsReordering(true)
+    
     // Persist to backend
     try {
+      console.log('[Frontend] Reordering blocks:', reorderedBlocks.map(b => b.id))
+      
       const res = await fetch('/api/blocks/reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -404,21 +411,34 @@ export default function ProfileEditorPage() {
       })
       
       const data = await res.json()
-      if (!data.success) {
-        // Revert on error
+      console.log('[Frontend] Reorder response:', data)
+      
+      if (data.success) {
+        // Use server response to ensure consistency
         setProfile({
           ...profile,
-          blocks: profile.blocks,
+          blocks: data.data.blocks,
         })
-        console.error('Failed to reorder blocks:', data.error)
+        // No toast for reorder to avoid spam
+      } else {
+        // Rollback on error
+        setProfile({
+          ...profile,
+          blocks: originalBlocks,
+        })
+        console.error('[Frontend] Reorder failed:', data.error)
+        showToast('error', data.error || 'Failed to reorder blocks')
       }
     } catch (error) {
-      // Revert on error
+      // Rollback on error
       setProfile({
         ...profile,
-        blocks: profile.blocks,
+        blocks: originalBlocks,
       })
-      console.error('Failed to reorder blocks:', error)
+      console.error('[Frontend] Failed to reorder blocks:', error)
+      showToast('error', 'Network error. Please try again.')
+    } finally {
+      setIsReordering(false)
     }
   }
 
