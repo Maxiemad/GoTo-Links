@@ -9,6 +9,57 @@ import { SectionRenderer } from '../../components/SectionRenderer'
 import { Tilt3DCard, DepthGlow } from '../../components/Effects3D'
 import { RetreatIcon3D, QuoteIcon3D, SparkleIcon3D } from '../../components/Icons3D'
 
+// Decorative side elements for desktop
+const DecorativeElements = ({ theme }: { theme: ThemeConfig }) => (
+  <div className="hidden lg:block fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+    {/* Left side decorations */}
+    <div className="absolute left-8 xl:left-16 top-1/4 opacity-20">
+      <div 
+        className="w-32 h-32 rounded-full blur-3xl animate-float-slow"
+        style={{ backgroundColor: theme.buttonPrimary }}
+      />
+    </div>
+    <div className="absolute left-12 xl:left-24 top-2/3 opacity-15">
+      <div 
+        className="w-24 h-24 rounded-full blur-2xl animate-float-slower"
+        style={{ backgroundColor: theme.accent }}
+      />
+    </div>
+    
+    {/* Right side decorations */}
+    <div className="absolute right-8 xl:right-16 top-1/3 opacity-20">
+      <div 
+        className="w-28 h-28 rounded-full blur-3xl animate-float-slower"
+        style={{ backgroundColor: theme.accent }}
+      />
+    </div>
+    <div className="absolute right-12 xl:right-24 bottom-1/4 opacity-15">
+      <div 
+        className="w-20 h-20 rounded-full blur-2xl animate-float-slow"
+        style={{ backgroundColor: theme.buttonPrimary }}
+      />
+    </div>
+    
+    {/* Subtle line decorations */}
+    <svg className="absolute left-0 top-0 h-full w-24 xl:w-32 opacity-5" viewBox="0 0 100 800" preserveAspectRatio="none">
+      <path 
+        d="M50 0 Q 30 200, 50 400 Q 70 600, 50 800" 
+        stroke={theme.textSecondary} 
+        strokeWidth="0.5" 
+        fill="none"
+      />
+    </svg>
+    <svg className="absolute right-0 top-0 h-full w-24 xl:w-32 opacity-5" viewBox="0 0 100 800" preserveAspectRatio="none">
+      <path 
+        d="M50 0 Q 70 200, 50 400 Q 30 600, 50 800" 
+        stroke={theme.textSecondary} 
+        strokeWidth="0.5" 
+        fill="none"
+      />
+    </svg>
+  </div>
+)
+
 interface Block {
   id: string
   type: string
