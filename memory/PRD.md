@@ -7,11 +7,11 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 
 ### Tech Stack
 - **Frontend**: Next.js 14.2.35 (App Router), React 18, Tailwind CSS, Framer Motion
-- **Backend**: Next.js API Routes + FastAPI proxy (local dev only)
+- **Backend**: Next.js API Routes
 - **Database**: MongoDB
 - **Authentication**: JWT + Google OAuth (Emergent Auth)
 - **Payments**: Stripe (test mode) - Scaffolded
-- **File Uploads**: Cloudinary - Scaffolded
+- **File Uploads**: Cloudinary (fully configured)
 - **Deployment**: Vercel-ready structure
 
 ### Project Structure (Pure Next.js App Router)
@@ -19,16 +19,39 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 /app                    # Root project directory
 ├── app/               # Next.js App Router pages & API routes
 │   ├── (auth)/        # Auth pages (login, signup, callback)
-│   ├── dashboard/     # Dashboard pages (main, profile-editor, upgrade)
-│   ├── api/           # API routes (auth, blocks, profile, sections)
+│   ├── dashboard/     # Dashboard pages (main, profile-editor, analytics, upgrade)
+│   ├── api/           # API routes (auth, blocks, profile, sections, analytics, upload)
 │   ├── components/    # UI components (SectionEditor, SectionRenderer, ThemeAnimations)
 │   └── profile/       # Public profile page with dynamic routing
-├── lib/               # Shared utilities (mongodb, auth, themes, sections)
+├── lib/               # Shared utilities (mongodb, auth, themes, sections, cloudinary)
 ├── .env.local         # Environment variables
 └── package.json       # Dependencies
 ```
 
 ## What's Been Implemented
+
+### Real-Time Analytics System - FULLY WORKING ✅ (Feb 24, 2026)
+- [x] **POST /api/analytics/track** - Tracks profile views and link clicks
+- [x] **GET /api/analytics** - Returns aggregated analytics data
+- [x] **Sparkline charts** on main dashboard stat cards
+- [x] **Real-time stats** replacing static data (views, clicks, change percentages)
+- [x] **Dedicated analytics page** at /dashboard/analytics
+- [x] **Line chart** for Performance Over Time
+- [x] **Period selector** (7D, 30D, 90D) with header fallback for proxy environments
+- [x] **Traffic sources breakdown** (Instagram, Google, Twitter/X, Direct, etc.)
+- [x] **Top performing links** section
+- [x] **Public profile tracking** - Views tracked on page load
+- [x] **Link click tracking** - Clicks tracked when users click blocks
+- [x] **Rate limiting** - In-memory rate limiting to prevent spam
+- [x] **Referrer parsing** - Detects source (Instagram, Facebook, Google, etc.)
+- [x] **Device detection** - Mobile, Tablet, Desktop
+
+### Cloudinary Integration - FULLY WORKING ✅ (Feb 24, 2026)
+- [x] Profile picture upload with Cloudinary
+- [x] Background image upload for custom themes
+- [x] Signed uploads for security
+- [x] Automatic image optimization
+- [x] Fallback to base64 if Cloudinary unavailable
 
 ### Authentication - FULLY WORKING ✅
 - [x] Email signup with password
@@ -45,7 +68,7 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] Block animations (fadeUp, slideIn, staggeredAppear, etc.)
 - [x] Block styles (glassmorphism, gradient-pill, soft-shadow, etc.)
 - [x] Theme carousel in dashboard with instant preview
-- [x] Themes: zen-minimal, sacred-earth, ocean-temple, forest-calm, sunset-glow, lavender-dreams, midnight-bloom, rose-quartz
+- [x] Custom background theme with blur, brightness, overlay controls
 
 ### Block Management CRUD - FULLY WORKING ✅
 - [x] Create blocks (Link, Retreat, Testimonial, Book Call, WhatsApp, Telegram)
@@ -54,25 +77,26 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] Dashboard UI with reorder buttons
 - [x] Public profile renders blocks dynamically
 
-### Mini Website Sections System - FULLY WORKING ✅ (Feb 20, 2026)
-- [x] **Dashboard Section Editor UI** with tabbed navigation (Profile Info, Link Blocks, Mini Website)
+### Mini Website Sections System - FULLY WORKING ✅
+- [x] **Dashboard Section Editor UI** with tabbed navigation
 - [x] **5 Section Types**: About Me, Upcoming Event, Image Gallery, YouTube Video, Testimonials
-- [x] **Rich inline editing** with dedicated forms for each section type
-- [x] **Drag-and-drop reordering** via GripVertical handle
-- [x] **Visibility toggle** (eye icon) to show/hide sections
-- [x] **Edit/Delete controls** for each section
-- [x] **Real-time rendering** on public profile
-- [x] **API endpoints**: GET/POST/PUT/DELETE `/api/sections`, POST `/api/sections/reorder`
-- [x] **100% test coverage** - All 20 backend tests passing
+- [x] **Drag-and-drop reordering**
+- [x] **Visibility toggle**
+- [x] **API endpoints**: GET/POST/PUT/DELETE `/api/sections`
 
-#### Section Types Detail:
-1. **About Me** - Expandable card with title, description, optional highlight quote
-2. **Upcoming Event** - Event card with title, location, date, countdown timer, CTA button
-3. **Image Gallery** - Slider or grid layout with lightbox support
-4. **YouTube Video** - Embedded video with lazy loading play button
-5. **Testimonials** - Auto-sliding carousel with ratings
+### Dashboard Features - FULLY WORKING ✅
+- [x] 3D Tilt cards with glassmorphism
+- [x] Wellness-themed light mode design
+- [x] Profile URL copier with toast
+- [x] Time-aware greeting
+- [x] Four action cards: Edit Profile, Preview Profile, Analytics, Upgrade
+- [x] Stats cards with sparklines (Profile Views, Link Clicks, Top Performer)
 
 ## API Routes Implemented
+
+### Analytics (New)
+- `POST /api/analytics/track` - Track VIEW or CLICK event
+- `GET /api/analytics` - Get aggregated analytics (stats, sparklines, daily breakdown, top links, referrers)
 
 ### Auth
 - `POST /api/auth/signup` - Email registration
@@ -96,9 +120,12 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 ### Sections
 - `GET /api/sections` - Get all user's sections
 - `POST /api/sections` - Create new section
-- `PUT /api/sections` - Update section (data, visibility)
+- `PUT /api/sections` - Update section
 - `DELETE /api/sections` - Delete section
 - `POST /api/sections/reorder` - Reorder sections
+
+### Upload
+- `GET /api/upload/signature` - Get Cloudinary upload signature
 
 ## Database Schema (MongoDB)
 
@@ -109,12 +136,7 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 
 ### profiles
 ```json
-{ _id, userId, name, headline, bio, photoUrl, location, theme, sections: [...] }
-```
-
-### sections (embedded in profiles)
-```json
-{ id, type, data, order, enabled, createdAt, updatedAt }
+{ _id, userId, name, headline, bio, photoUrl, location, theme, sections: [...], backgroundImage, backgroundBlur, backgroundBrightness, backgroundOverlayColor }
 ```
 
 ### blocks (separate collection)
@@ -122,157 +144,36 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 { _id, profileId, type, order, isVisible, title, url, description, ... }
 ```
 
-## Test Credentials
-- Email: test@example.com
-- Password: Test1234!
-- Handle: testuser
+### analytics (new collection)
+```json
+{ _id, profileId, userId, blockId, eventType, referrer, device, rawReferrer, userAgent, clientIp, timestamp, createdAt }
+```
 
-## Completed Tasks
-1. ✅ Next.js 14 App Router setup
-2. ✅ Authentication (JWT + Google OAuth)
-3. ✅ Theme Engine 2.0 with animations
-4. ✅ Block CRUD with reordering
-5. ✅ **Mini Website Sections System (Dashboard UI)** - Feb 20, 2026
-6. ✅ Profile editor with tabbed navigation
-7. ✅ Public profile with themed rendering
-8. ✅ Deployment readiness
-9. ✅ **Production Auth Fix** - Environment-aware cookie security (Feb 20, 2026)
-10. ✅ **3D Effects System** - Added premium 3D depth effects (Feb 20, 2026)
-
-### 3D Effects Implementation (Feb 20, 2026)
-- [x] Created comprehensive 3D CSS keyframes in `globals.css` (15+ animations)
-- [x] `Tilt3DCard` component with perspective tilt on hover + glare effect
-- [x] `DepthGlow` component for profile avatar 3D depth effect  
-- [x] `FloatingShape` component for parallax floating shapes
-- [x] `ParallaxLayer` hooks for mouse-responsive parallax motion
-- [x] **Homepage 3D Enhancements:**
-  - Hero section with floating 3D shapes (parallax)
-  - Lottie animation container with 3D tilt
-  - Feature cards with 3D tilt + glare
-  - "How it Works" step cards with 3D tilt
-  - Trust stats cards with 3D tilt
-  - Pricing cards with 3D tilt (Pro card more pronounced)
-  - 3D buttons with depth shadows
-- [x] **Public Profile 3D Enhancements:**
-  - Avatar with DepthGlow + Tilt3DCard wrapper
-  - All blocks (Retreat, Testimonial, etc.) wrapped with 3D tilt
-  - Parallax container for immersive scrolling
-- [x] All effects respect `prefers-reduced-motion` for accessibility
-- [x] CSS utility classes: `.shadow-3d`, `.button-3d`, `.parallax-3d-container`, etc.
-
-### Dashboard 3D Redesign (Feb 20, 2026)
-- [x] Complete dashboard redesign with dark mode premium theme
-- [x] Animated background with floating orbs (purple/pink/blue)
-- [x] Grid pattern overlay for depth effect
-- [x] Glassmorphism cards with backdrop blur
-- [x] 3D Tilt effects on all cards (hover interaction)
-- [x] Gradient icons with glow shadows (Eye, MousePointer, Trophy, Edit3, ExternalLink, Zap)
-- [x] Quick Insights section with Engagement Rate, Weekly Growth, Profile Score
-- [x] Time-aware greeting (Good morning/afternoon/evening)
-- [x] Profile URL copier with toast notification
-- [x] Trend indicators (+12%, +8% badges)
-- [x] Plan badge in navigation (Free Plan/Pro Plan)
-- [x] RECOMMENDED badge on upgrade card
-- [x] Replaced all emojis with 3D icons/SVGs
-- [x] Smooth animations and hover effects throughout
-- [x] Responsive design for all screen sizes
-
-### Dashboard Wellness Theme Update (Feb 20, 2026)
-- [x] Redesigned with wellness-themed light mode (warm coral/orange/pink palette)
-- [x] Soft gradient orbs background decoration
-- [x] Floating decorative elements (leaves, hearts)
-- [x] 3D Tilt cards with subtle hover effects
-- [x] All emojis replaced with gradient SVG icons:
-  - 👋 → Animated waving hand SVG with golden gradient
-  - 👁️ → Lucide Eye icon with coral gradient
-  - ✏️ → Lucide Edit3 icon with coral gradient
-  - ⭐ → Lucide Trophy icon with amber gradient
-- [x] Inspirational wellness quote section (Lao Tzu)
-- [x] "Your wellness journey is growing" messaging
-
-### Landing Page 3D Stickers (Feb 20, 2026)
-- [x] Created `WellnessStickers.tsx` with 9 custom 3D SVG stickers - **REMOVED** (user requested undo)
-
-### Block Persistence Bug Fix (Feb 24, 2026)
-- [x] **Fixed Zod schema validation** - Updated schemas to accept nullable strings for block fields
-- [x] **Enhanced PUT /api/blocks/[id]** - Added comprehensive logging, update verification, proper null handling
-- [x] **Enhanced POST /api/blocks/reorder** - Added block ownership validation, logging, proper sync with DB
-- [x] **Frontend state synchronization** - Frontend now uses server response data after updates
-- [x] **Added toast notifications** - Success/error toasts for all block operations (add, edit, delete)
-- [x] **Added loading states** - Disabled buttons during save operations to prevent double-clicks
-- [x] **Proper error handling** - Modal stays open on error, rollback on network failures
-- [x] **Cleanup** - Deleted unused `WellnessStickers.tsx` file
-
-### Desktop Profile Enhancement (Feb 24, 2026)
-- [x] **Responsive container widths** - Mobile: 420px, Tablet: 560px, Desktop: 720px, XL: 800px
-- [x] **Responsive typography** - Name scales from text-2xl to text-4xl, headline from base to xl
-- [x] **Larger avatar on desktop** - Scales from w-28/h-28 to w-36/h-36 on lg screens
-- [x] **Decorative side elements** - Subtle blurred gradient orbs with floating animation
-- [x] **Subtle line decorations** - SVG curved lines on sides for visual balance
-- [x] **Improved spacing** - More padding and margins on desktop (py-20, mb-14, space-y-5)
-- [x] **Bio max-width scaling** - Wider bio container on desktop (max-w-lg)
-- [x] **Animation enhancements** - New `animate-float-slow` and `animate-float-slower` utilities
-- [x] **Profile card hover** - Enhanced 3D tilt effect on desktop hover
-- [x] **Mobile-first preserved** - All mobile styling unchanged, decorations hidden on mobile
-
-### Auth-Aware Navbar Fix (Feb 24, 2026)
-- [x] **User menu dropdown** - Avatar with dropdown showing Dashboard, View Profile, Logout
-- [x] **Auth state detection** - Fetches `/api/auth/me` on mount to check login status
-- [x] **Desktop user menu** - Compact avatar button with chevron, opens dropdown on click
-- [x] **Mobile user menu** - Full user info card with prominent "Go to Dashboard" CTA
-- [x] **Loading state** - Shows skeleton while checking auth status to prevent hydration mismatch
-- [x] **Logout functionality** - Properly clears session and redirects to homepage
-- [x] **User initials avatar** - Shows first/last initials when no profile picture
-- [x] **Conditional buttons** - "Get Started Free" for logged-out, user menu for logged-in
-
-### Login/Signup Page UX Improvements (Feb 24, 2026)
-- [x] **Clickable logo** - GoToLinks logo positioned top-left on both /login and /signup
-- [x] **Logo navigation** - Clicking logo redirects to homepage (/)
-- [x] **Auth redirect** - Logged-in users visiting /login or /signup are auto-redirected to /dashboard
-- [x] **Loading state** - Spinner shown while checking auth status before rendering form
-- [x] **No dead ends** - Users always have a clear path back to homepage
-
-### Profile Picture Upload Feature (Feb 24, 2026)
-- [x] **Profile Picture section** - New section at top of profile editor
-- [x] **Avatar display** - Circular avatar with gradient background, shows initial or uploaded photo
-- [x] **Upload button** - Styled button to trigger file picker
-- [x] **File validation** - Accepts JPG, PNG, WEBP; max 5MB
-- [x] **Client-side resize** - Images resized to 400x400 for performance
-- [x] **Instant preview** - Shows selected image immediately before upload completes
-- [x] **Remove option** - Button to remove current profile picture
-- [x] **Loading state** - Spinner overlay during upload process
-- [x] **Toast notifications** - Success/error feedback for upload operations
-- [x] **Cloudinary integration** - With base64 fallback if Cloudinary not configured
-- [x] **Live preview update** - Theme preview section shows uploaded photo
-- [x] **Public profile display** - Photo displayed with 3D effects and theme styling
-
-### Pricing Section Layout Fix (Feb 24, 2026)
-- [x] **Equal height cards** - Flex layout with `align-items: stretch`
-- [x] **Button alignment** - CTA buttons horizontally aligned at bottom of both cards
-- [x] **Flex container** - Changed from grid to flex for better alignment control
-- [x] **Card structure** - Internal flex column with features list growing to fill space
-- [x] **Consistent spacing** - Equal padding and margins inside both cards
-- [x] **Mobile responsive** - Cards stack vertically on mobile with full-width buttons
-
-### Custom Background Theme Feature (Feb 24, 2026)
-- [x] **Custom theme option** - New "Custom" option first in theme carousel
-- [x] **Background upload** - Upload JPG/PNG/WEBP up to 5MB
-- [x] **Image optimization** - Client-side resize to 1920x1080 for performance
-- [x] **Cloudinary integration** - With base64 fallback for demo environments
-- [x] **Live preview** - Instant preview of background in dashboard
-- [x] **Adjustment controls** - Blur slider (0-20px), Brightness slider (20-150%), Overlay color selector
-- [x] **Overlay presets** - Dark, Darker, Light, Warm, None options
-- [x] **Remove option** - Button to remove background and revert to default theme
-- [x] **API updates** - Profile API supports backgroundImage, backgroundBlur, backgroundBrightness, backgroundOverlayColor fields
-- [x] **Public profile rendering** - Custom backgrounds render with full-page cover mode
-- [x] **Text readability** - Text shadows and overlays ensure content remains readable
+## Completed Tasks (Feb 24, 2026)
+1. ✅ Real-Time Analytics System - Fully implemented and tested
+2. ✅ Dashboard sparklines and real stats
+3. ✅ Analytics page with charts and period selector
+4. ✅ Cloudinary credentials configured
+5. ✅ Period selector fixed with header fallback
 
 ## Upcoming Tasks (Priority Order)
-1. **Stripe Integration (P1)** - Payment flows for Pro plan
+1. **Theme Engine 2.0 Dashboard UI (P1)** - Add UI controls for animation styles, block styles, font pairings
+2. **Stripe Integration (P2)** - Payment flows for Pro plan
 
 ## Future/Backlog
-- Stripe integration for Pro plan
-- Cloudinary integration for image uploads
+- Advanced Analytics (referrer tracking by country, device breakdown charts)
 - Custom domains for Pro users
-- Analytics dashboard
-- Social media blocks (Instagram, YouTube, Twitter)
+- Social media blocks (Instagram feed, YouTube channel)
+- Email notifications
+- Team/collaboration features
+
+## Test Credentials
+- Email: analyticstest@test.com
+- Password: Test123!
+- Handle: analyticstester
+
+## Technical Notes
+- Analytics uses in-memory rate limiting (consider Redis for production scale)
+- Period selector uses x-analytics-period header as fallback for proxy environments that strip query params
+- Public profile tracking fires on page load using useEffect
+- Link click tracking fires on block click handlers
