@@ -122,6 +122,21 @@ interface ProfileClientProps {
 }
 
 export default function ProfileClient({ profile, user, themeConfig }: ProfileClientProps) {
+  const hasTrackedView = useRef(false)
+  
+  // Track profile view on mount
+  useEffect(() => {
+    if (!hasTrackedView.current) {
+      hasTrackedView.current = true
+      trackEvent('VIEW', profile.id)
+    }
+  }, [profile.id])
+  
+  // Handle block click with tracking
+  const handleBlockClick = (blockId: string) => {
+    trackEvent('CLICK', profile.id, blockId)
+  }
+  
   const blockBaseStyle = getBlockStyleCSS(themeConfig.blockStyle, themeConfig)
 
   const renderBlock = (block: Block, index: number) => {
