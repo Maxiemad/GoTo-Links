@@ -163,6 +163,10 @@ export async function PUT(request: NextRequest) {
           location: profile!.location,
           theme: profile!.theme,
           customDomain: profile!.customDomain,
+          backgroundImage: profile!.backgroundImage,
+          backgroundBlur: profile!.backgroundBlur,
+          backgroundBrightness: profile!.backgroundBrightness,
+          backgroundOverlayColor: profile!.backgroundOverlayColor,
           blocks: blocks.map(b => ({
             id: b._id.toString(),
             profileId: b.profileId,
