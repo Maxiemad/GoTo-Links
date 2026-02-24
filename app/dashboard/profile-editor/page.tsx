@@ -98,6 +98,11 @@ interface Profile {
   location: string | null
   theme: string
   blocks: Block[]
+  // Custom background settings
+  backgroundImage?: string | null
+  backgroundBlur?: number
+  backgroundBrightness?: number
+  backgroundOverlayColor?: string
 }
 
 interface User {
