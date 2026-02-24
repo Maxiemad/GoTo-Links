@@ -1120,8 +1120,11 @@ export default function HomePage() {
           <div
             className="stagger-item"
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'stretch',
               gap: '2rem',
               marginTop: '4rem',
               textAlign: 'center',
@@ -1130,26 +1133,91 @@ export default function HomePage() {
               transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s',
             }}
           >
-            {['3 easy steps', '1 powerful wellness link', 'Unlimited sharing'].map((stat, idx) => (
+            {[
+              { 
+                text: '3 easy steps', 
+                icon: (
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="24" r="6" fill={colors.primary[400]} opacity="0.8"/>
+                    <circle cx="24" cy="24" r="6" fill={colors.accent[400]} opacity="0.9"/>
+                    <circle cx="36" cy="24" r="6" fill={colors.secondary[400]}/>
+                    <path d="M18 24H30" stroke={colors.gray[300]} strokeWidth="2" strokeDasharray="4 2"/>
+                  </svg>
+                )
+              },
+              { 
+                text: '1 powerful wellness link', 
+                icon: (
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 8L28 16L37 17.5L30.5 24L32 33L24 28.5L16 33L17.5 24L11 17.5L20 16L24 8Z" fill={colors.accent[400]} opacity="0.9"/>
+                    <circle cx="24" cy="24" r="8" stroke={colors.primary[400]} strokeWidth="2" fill="none" opacity="0.6"/>
+                  </svg>
+                )
+              },
+              { 
+                text: 'Unlimited sharing', 
+                icon: (
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="24" cy="12" r="5" fill={colors.primary[400]}/>
+                    <circle cx="12" cy="32" r="5" fill={colors.accent[400]}/>
+                    <circle cx="36" cy="32" r="5" fill={colors.secondary[400]}/>
+                    <path d="M22 16L14 28M26 16L34 28M15 32H33" stroke={colors.gray[400]} strokeWidth="2"/>
+                  </svg>
+                )
+              },
+            ].map((item, idx) => (
               <Tilt3DCard
                 key={idx}
                 maxTilt={6}
                 scale={1.05}
                 glare={true}
+                style={{
+                  flex: '1 1 250px',
+                  maxWidth: '320px',
+                  minWidth: '220px',
+                }}
               >
                 <div
-                  className="shadow-3d"
+                  className="shadow-3d feature-card-hover"
                   style={{
-                    padding: '1.5rem',
-                    borderRadius: borderRadius.xl,
-                    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-                    backdropFilter: 'blur(10px)',
+                    padding: '2.5rem 2rem',
+                    borderRadius: borderRadius['2xl'],
+                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                    backdropFilter: 'blur(12px)',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '200px',
+                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                    border: `1px solid ${colors.gray[100]}`,
                   }}
                 >
-                  <div className="gradient-text" style={{ fontSize: '1.5rem', fontWeight: 600, color: colors.text.primary, marginBottom: '0.5rem' }}>
-                  {stat}
+                  {/* Icon */}
+                  <div 
+                    className="feature-icon"
+                    style={{ 
+                      marginBottom: '1.25rem',
+                      transition: 'transform 0.3s ease',
+                    }}
+                  >
+                    {item.icon}
+                  </div>
+                  
+                  {/* Text */}
+                  <div 
+                    className="gradient-text" 
+                    style={{ 
+                      fontSize: '1.35rem', 
+                      fontWeight: 600, 
+                      color: colors.text.primary,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {item.text}
+                  </div>
                 </div>
-              </div>
               </Tilt3DCard>
             ))}
           </div>
