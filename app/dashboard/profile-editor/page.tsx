@@ -1061,6 +1061,36 @@ export default function ProfileEditorPage() {
                 style={{ scrollBehavior: 'smooth' }}
                 data-testid="theme-carousel"
               >
+                {/* Custom Background Option - First in list */}
+                <button
+                  onClick={() => handleThemeChange('custom')}
+                  className={`flex-shrink-0 w-28 p-3 rounded-xl border-2 transition-all relative ${
+                    profile.theme === 'custom'
+                      ? 'border-accent-500 ring-2 ring-accent-500/20'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  data-testid="theme-custom"
+                >
+                  {profile.theme === 'custom' && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-accent-500 rounded-full flex items-center justify-center">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                  )}
+                  <div 
+                    className="w-full h-12 rounded-lg mb-2 border border-gray-100 overflow-hidden"
+                    style={{ 
+                      background: (bgPreview || profile.backgroundImage) 
+                        ? `url(${bgPreview || profile.backgroundImage}) center/cover`
+                        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    }}
+                  >
+                    <div className="flex flex-col items-center justify-center h-full gap-1 bg-black/20">
+                      <ImageIcon className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-600 block truncate">Custom</span>
+                </button>
+
                 {THEMES_LIST.map((theme) => {
                   const isSelected = profile.theme === theme.id
                   return (
@@ -1102,6 +1132,153 @@ export default function ProfileEditorPage() {
                   )
                 })}
               </div>
+
+              {/* Custom Background Upload & Controls - Show when custom theme selected */}
+              {profile.theme === 'custom' && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ImageIcon className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-700">Custom Background</span>
+                  </div>
+
+                  {/* Upload Area */}
+                  <div className="flex items-center gap-4 mb-4">
+                    <div 
+                      className="w-24 h-16 rounded-lg overflow-hidden bg-gray-200 flex items-center justify-center border border-gray-300"
+                      style={{
+                        backgroundImage: (bgPreview || profile.backgroundImage) 
+                          ? `url(${bgPreview || profile.backgroundImage})`
+                          : undefined,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                      }}
+                    >
+                      {!(bgPreview || profile.backgroundImage) && (
+                        <ImageIcon className="w-6 h-6 text-gray-400" />
+                      )}
+                      {isUploadingBackground && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => bgFileInputRef.current?.click()}
+                          disabled={isUploadingBackground}
+                          className="px-3 py-1.5 bg-primary-500 text-white text-sm rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 flex items-center gap-1"
+                        >
+                          {isUploadingBackground ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <Upload className="w-3 h-3" />
+                          )}
+                          {profile.backgroundImage ? 'Change' : 'Upload'}
+                        </button>
+                        {(profile.backgroundImage || bgPreview) && (
+                          <button
+                            onClick={handleRemoveBackground}
+                            disabled={isUploadingBackground}
+                            className="px-3 py-1.5 border border-gray-300 text-gray-600 text-sm rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 flex items-center gap-1"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP • Max 5MB</p>
+                    </div>
+                  </div>
+
+                  {/* Background Controls */}
+                  {(profile.backgroundImage || bgPreview) && (
+                    <div className="space-y-4 pt-4 border-t border-gray-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Sliders className="w-4 h-4 text-gray-600" />
+                        <span className="text-sm font-medium text-gray-700">Adjustments</span>
+                      </div>
+
+                      {/* Blur Slider */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-600 mb-1">
+                          <span>Blur</span>
+                          <span>{bgBlur}px</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="20"
+                          value={bgBlur}
+                          onChange={(e) => setBgBlur(Number(e.target.value))}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                        />
+                      </div>
+
+                      {/* Brightness Slider */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-600 mb-1">
+                          <span>Brightness</span>
+                          <span>{bgBrightness}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="20"
+                          max="150"
+                          value={bgBrightness}
+                          onChange={(e) => setBgBrightness(Number(e.target.value))}
+                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-500"
+                        />
+                      </div>
+
+                      {/* Overlay Color */}
+                      <div>
+                        <div className="flex justify-between text-xs text-gray-600 mb-2">
+                          <span>Overlay Color</span>
+                        </div>
+                        <div className="flex gap-2">
+                          {[
+                            { color: 'rgba(0,0,0,0.4)', label: 'Dark' },
+                            { color: 'rgba(0,0,0,0.6)', label: 'Darker' },
+                            { color: 'rgba(255,255,255,0.3)', label: 'Light' },
+                            { color: 'rgba(161,130,103,0.4)', label: 'Warm' },
+                            { color: 'rgba(0,0,0,0)', label: 'None' },
+                          ].map((overlay) => (
+                            <button
+                              key={overlay.label}
+                              onClick={() => setBgOverlayColor(overlay.color)}
+                              className={`flex-1 py-2 text-xs rounded-lg border transition-all ${
+                                bgOverlayColor === overlay.color
+                                  ? 'border-primary-500 bg-primary-50 text-primary-700'
+                                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                              }`}
+                            >
+                              {overlay.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Save Settings Button */}
+                      <button
+                        onClick={saveBackgroundSettings}
+                        className="w-full py-2 bg-accent-500 text-white text-sm rounded-lg font-medium hover:bg-accent-600 transition-colors"
+                      >
+                        Save Settings
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Hidden file input */}
+                  <input
+                    ref={bgFileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleBackgroundUpload}
+                    className="hidden"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
