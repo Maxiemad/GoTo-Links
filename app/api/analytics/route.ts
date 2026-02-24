@@ -38,11 +38,24 @@ export async function GET(request: NextRequest) {
     }
     
     const db = await getDb()
-    const period = request.nextUrl.searchParams.get('period') || '7d'
     
-    // Debug log the period
-    console.log('[Analytics API] Request URL:', request.url)
-    console.log('[Analytics API] Period param:', period)
+    // Try multiple methods to get period
+    let period = request.nextUrl.searchParams.get('period')
+    if (!period) {
+      // Try with URL constructor
+      const url = new URL(request.url)
+      period = url.searchParams.get('period')
+    }
+    if (!period) {
+      // Check headers for query string (some reverse proxies)
+      const queryString = request.headers.get('x-query-string')
+      if (queryString) {
+        const params = new URLSearchParams(queryString)
+        period = params.get('period')
+      }
+    }
+    // Default value
+    period = period || '7d'
     
     // Get profile
     const profile = await db.collection('profiles').findOne({ userId: user.id })
