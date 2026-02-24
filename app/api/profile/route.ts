@@ -109,7 +109,10 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json()
-    const { name, headline, bio, photoUrl, videoUrl, location, theme } = body
+    const { 
+      name, headline, bio, photoUrl, videoUrl, location, theme,
+      backgroundImage, backgroundBlur, backgroundBrightness, backgroundOverlayColor
+    } = body
     
     // Check if user has pro plan for video
     if (videoUrl && user.plan !== 'PRO') {
@@ -129,6 +132,11 @@ export async function PUT(request: NextRequest) {
     if (videoUrl !== undefined) updateData.videoUrl = videoUrl
     if (location !== undefined) updateData.location = location
     if (theme !== undefined) updateData.theme = theme
+    // Custom background fields
+    if (backgroundImage !== undefined) updateData.backgroundImage = backgroundImage
+    if (backgroundBlur !== undefined) updateData.backgroundBlur = backgroundBlur
+    if (backgroundBrightness !== undefined) updateData.backgroundBrightness = backgroundBrightness
+    if (backgroundOverlayColor !== undefined) updateData.backgroundOverlayColor = backgroundOverlayColor
     
     await db.collection('profiles').updateOne(
       { userId: user.id },
