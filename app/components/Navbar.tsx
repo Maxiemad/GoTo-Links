@@ -711,10 +711,187 @@ export const Navbar: React.FC = () => {
               </div>
             ))}
 
-            {/* Get Started Button */}
-            <Button variant="primary" size="sm" to="/signup">
-              Get Started Free
-            </Button>
+            {/* Get Started Button OR User Menu */}
+            {isAuthLoading ? (
+              <div style={{ width: '120px', height: '40px', backgroundColor: colors.gray[100], borderRadius: borderRadius.full, animation: 'pulse 1.5s infinite' }} />
+            ) : user ? (
+              /* Logged-in User Menu */
+              <div ref={userMenuRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    background: 'none',
+                    border: `1px solid ${colors.gray[200]}`,
+                    borderRadius: borderRadius.full,
+                    padding: '0.375rem 0.75rem 0.375rem 0.375rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = colors.accent[500]
+                    e.currentTarget.style.boxShadow = `0 0 0 2px ${colors.accent[100]}`
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = colors.gray[200]
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                  data-testid="user-menu-button"
+                >
+                  {/* Avatar */}
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: user.picture ? `url(${user.picture}) center/cover` : `linear-gradient(135deg, ${colors.accent[400]}, ${colors.accent[600]})`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: colors.white,
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {!user.picture && getUserInitials()}
+                  </div>
+                  <ChevronDown 
+                    size={16} 
+                    style={{ 
+                      color: colors.text.secondary,
+                      transition: 'transform 0.2s ease',
+                      transform: isUserMenuOpen ? 'rotate(180deg)' : 'rotate(0)',
+                    }} 
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      marginTop: '0.5rem',
+                      backgroundColor: colors.white,
+                      borderRadius: borderRadius.xl,
+                      boxShadow: shadows.xl,
+                      minWidth: '200px',
+                      padding: '0.5rem',
+                      zIndex: 1001,
+                      border: `1px solid ${colors.gray[200]}`,
+                      animation: 'fadeIn 0.2s ease',
+                    }}
+                  >
+                    {/* User Info */}
+                    <div style={{ padding: '0.75rem 1rem', borderBottom: `1px solid ${colors.gray[100]}`, marginBottom: '0.5rem' }}>
+                      <p style={{ fontWeight: 600, color: colors.text.primary, fontSize: '0.9rem' }}>
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p style={{ color: colors.text.secondary, fontSize: '0.8rem', marginTop: '0.125rem' }}>
+                        {user.email}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.75rem 1rem',
+                        borderRadius: borderRadius.lg,
+                        textDecoration: 'none',
+                        color: colors.text.primary,
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = colors.gray[50]
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
+                      data-testid="user-menu-dashboard"
+                    >
+                      <LayoutDashboard size={18} style={{ color: colors.accent[500] }} />
+                      Dashboard
+                    </Link>
+
+                    <Link
+                      href={`/profile/${user.handle}`}
+                      onClick={() => setIsUserMenuOpen(false)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.75rem 1rem',
+                        borderRadius: borderRadius.lg,
+                        textDecoration: 'none',
+                        color: colors.text.primary,
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = colors.gray[50]
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                      }}
+                      data-testid="user-menu-profile"
+                    >
+                      <User size={18} style={{ color: colors.accent[500] }} />
+                      View Profile
+                    </Link>
+
+                    <div style={{ height: '1px', backgroundColor: colors.gray[100], margin: '0.5rem 0' }} />
+
+                    <button
+                      onClick={handleLogout}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.75rem 1rem',
+                        borderRadius: borderRadius.lg,
+                        background: 'none',
+                        border: 'none',
+                        width: '100%',
+                        textAlign: 'left',
+                        color: colors.text.primary,
+                        fontSize: '0.9rem',
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = colors.error[50]
+                        e.currentTarget.style.color = colors.error[600]
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent'
+                        e.currentTarget.style.color = colors.text.primary
+                      }}
+                      data-testid="user-menu-logout"
+                    >
+                      <LogOut size={18} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Not logged in - Show Get Started */
+              <Button variant="primary" size="sm" to="/signup">
+                Get Started Free
+              </Button>
+            )}
           </div>
         )}
 
