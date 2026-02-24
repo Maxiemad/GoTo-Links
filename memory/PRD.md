@@ -246,6 +246,14 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] **Live preview update** - Theme preview section shows uploaded photo
 - [x] **Public profile display** - Photo displayed with 3D effects and theme styling
 
+### Pricing Section Layout Fix (Feb 24, 2026)
+- [x] **Equal height cards** - Flex layout with `align-items: stretch`
+- [x] **Button alignment** - CTA buttons horizontally aligned at bottom of both cards
+- [x] **Flex container** - Changed from grid to flex for better alignment control
+- [x] **Card structure** - Internal flex column with features list growing to fill space
+- [x] **Consistent spacing** - Equal padding and margins inside both cards
+- [x] **Mobile responsive** - Cards stack vertically on mobile with full-width buttons
+
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
 
