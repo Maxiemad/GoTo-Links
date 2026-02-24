@@ -254,8 +254,21 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] **Consistent spacing** - Equal padding and margins inside both cards
 - [x] **Mobile responsive** - Cards stack vertically on mobile with full-width buttons
 
+### Custom Background Theme Feature (Feb 24, 2026)
+- [x] **Custom theme option** - New "Custom" option first in theme carousel
+- [x] **Background upload** - Upload JPG/PNG/WEBP up to 5MB
+- [x] **Image optimization** - Client-side resize to 1920x1080 for performance
+- [x] **Cloudinary integration** - With base64 fallback for demo environments
+- [x] **Live preview** - Instant preview of background in dashboard
+- [x] **Adjustment controls** - Blur slider (0-20px), Brightness slider (20-150%), Overlay color selector
+- [x] **Overlay presets** - Dark, Darker, Light, Warm, None options
+- [x] **Remove option** - Button to remove background and revert to default theme
+- [x] **API updates** - Profile API supports backgroundImage, backgroundBlur, backgroundBrightness, backgroundOverlayColor fields
+- [x] **Public profile rendering** - Custom backgrounds render with full-page cover mode
+- [x] **Text readability** - Text shadows and overlays ensure content remains readable
+
 ## Upcoming Tasks (Priority Order)
-1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
+1. **Stripe Integration (P1)** - Payment flows for Pro plan
 
 ## Future/Backlog
 - Stripe integration for Pro plan
