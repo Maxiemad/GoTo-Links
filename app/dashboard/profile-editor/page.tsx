@@ -270,24 +270,55 @@ export default function ProfileEditorPage() {
   }
 
   const handleUpdateBlock = async (block: Block) => {
+    if (isSavingBlock || !profile) return
+    setIsSavingBlock(true)
+    
+    // Store original blocks for potential rollback
+    const originalBlocks = [...profile.blocks]
+    
     try {
+      console.log('[Frontend] Updating block:', block.id, block)
+      
       const res = await fetch(`/api/blocks/${block.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(block),
+        body: JSON.stringify({
+          title: block.title,
+          url: block.url,
+          description: block.description,
+          dateRange: block.dateRange,
+          location: block.location,
+          price: block.price,
+          authorName: block.authorName,
+          quote: block.quote,
+          phone: block.phone,
+          isVisible: block.isVisible,
+          order: block.order,
+        }),
       })
 
       const data = await res.json()
-      if (data.success && profile) {
+      console.log('[Frontend] Update block response:', data)
+      
+      if (data.success) {
+        // Use server response to update state (ensures consistency)
         setProfile({
           ...profile,
           blocks: profile.blocks.map(b => b.id === block.id ? data.data.block : b),
         })
+        setEditingBlock(null)
+        showToast('success', 'Block saved successfully')
+      } else {
+        // Don't close modal on error - let user retry
+        console.error('[Frontend] Update failed:', data.error)
+        showToast('error', data.error || 'Failed to save block')
       }
-      setEditingBlock(null)
     } catch (error) {
-      console.error('Failed to update block:', error)
+      console.error('[Frontend] Failed to update block:', error)
+      showToast('error', 'Network error. Please try again.')
+    } finally {
+      setIsSavingBlock(false)
     }
   }
 
