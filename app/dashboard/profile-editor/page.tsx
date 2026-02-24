@@ -331,6 +331,182 @@ export default function ProfileEditorPage() {
     }
   }
 
+  // Handle background image upload
+  const handleBackgroundUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      showToast('error', 'Please upload a JPG, PNG, or WEBP image')
+      return
+    }
+
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      showToast('error', 'Image must be less than 5MB')
+      return
+    }
+
+    const previewUrl = URL.createObjectURL(file)
+    setBgPreview(previewUrl)
+    setIsUploadingBackground(true)
+
+    try {
+      // Resize for optimization (larger size for background)
+      const resizedDataUrl = await resizeImage(file, 1920, 1080)
+      let backgroundImage = resizedDataUrl
+
+      // Try Cloudinary upload
+      try {
+        const signatureRes = await fetch('/api/upload/signature?folder=backgrounds&resource_type=image', {
+          credentials: 'include',
+        })
+        const signatureData = await signatureRes.json()
+
+        if (signatureData.success) {
+          const { timestamp, signature, cloudName, apiKey, folder } = signatureData.data
+          if (cloudName && cloudName !== 'your_cloud_name' && apiKey && apiKey !== 'your_api_key') {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('api_key', apiKey)
+            formData.append('timestamp', timestamp.toString())
+            formData.append('signature', signature)
+            formData.append('folder', folder)
+
+            const uploadRes = await fetch(
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+              { method: 'POST', body: formData }
+            )
+            const uploadData = await uploadRes.json()
+            if (uploadData.secure_url) {
+              backgroundImage = uploadData.secure_url
+            }
+          }
+        }
+      } catch (cloudinaryError) {
+        console.log('Cloudinary not available, using base64 fallback')
+      }
+
+      // Update profile with background image and set theme to custom
+      const updateRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          backgroundImage,
+          theme: 'custom',
+          backgroundBlur: bgBlur,
+          backgroundBrightness: bgBrightness,
+          backgroundOverlayColor: bgOverlayColor,
+        }),
+      })
+
+      const updateData = await updateRes.json()
+
+      if (updateData.success) {
+        setProfile(prev => prev ? { 
+          ...prev, 
+          backgroundImage, 
+          theme: 'custom',
+          backgroundBlur: bgBlur,
+          backgroundBrightness: bgBrightness,
+          backgroundOverlayColor: bgOverlayColor,
+        } : null)
+        showToast('success', 'Background image uploaded')
+      } else {
+        throw new Error(updateData.error || 'Failed to save background')
+      }
+    } catch (error) {
+      console.error('Background upload error:', error)
+      showToast('error', error instanceof Error ? error.message : 'Failed to upload background')
+      setBgPreview(null)
+    } finally {
+      setIsUploadingBackground(false)
+      if (bgFileInputRef.current) {
+        bgFileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // Handle remove background image
+  const handleRemoveBackground = async () => {
+    if (!profile?.backgroundImage) return
+
+    if (!confirm('Are you sure you want to remove your background image?')) return
+
+    setIsUploadingBackground(true)
+
+    try {
+      const updateRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          backgroundImage: null,
+          theme: 'sacred-earth', // Revert to default theme
+        }),
+      })
+
+      const updateData = await updateRes.json()
+
+      if (updateData.success) {
+        setProfile(prev => prev ? { ...prev, backgroundImage: null, theme: 'sacred-earth' } : null)
+        setBgPreview(null)
+        showToast('success', 'Background removed')
+      } else {
+        throw new Error(updateData.error || 'Failed to remove background')
+      }
+    } catch (error) {
+      console.error('Remove background error:', error)
+      showToast('error', 'Failed to remove background')
+    } finally {
+      setIsUploadingBackground(false)
+    }
+  }
+
+  // Save custom background settings
+  const saveBackgroundSettings = async () => {
+    if (!profile || profile.theme !== 'custom') return
+
+    try {
+      const updateRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          backgroundBlur: bgBlur,
+          backgroundBrightness: bgBrightness,
+          backgroundOverlayColor: bgOverlayColor,
+        }),
+      })
+
+      const updateData = await updateRes.json()
+
+      if (updateData.success) {
+        setProfile(prev => prev ? { 
+          ...prev, 
+          backgroundBlur: bgBlur,
+          backgroundBrightness: bgBrightness,
+          backgroundOverlayColor: bgOverlayColor,
+        } : null)
+        showToast('success', 'Background settings saved')
+      }
+    } catch (error) {
+      console.error('Save settings error:', error)
+      showToast('error', 'Failed to save settings')
+    }
+  }
+
+  // Initialize background settings from profile
+  useEffect(() => {
+    if (profile) {
+      setBgBlur(profile.backgroundBlur ?? 0)
+      setBgBrightness(profile.backgroundBrightness ?? 100)
+      setBgOverlayColor(profile.backgroundOverlayColor ?? 'rgba(0,0,0,0.4)')
+    }
+  }, [profile?.backgroundBlur, profile?.backgroundBrightness, profile?.backgroundOverlayColor])
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
