@@ -940,20 +940,33 @@ export default function ProfileEditorPage() {
             <div className="flex gap-3 mt-6">
               <button
                 onClick={() => setEditingBlock(null)}
-                className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                disabled={isSavingBlock}
+                className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleUpdateBlock(editingBlock)}
-                className="flex-1 bg-accent-500 text-white py-3 rounded-xl font-semibold hover:bg-accent-600 transition-colors"
+                disabled={isSavingBlock}
+                className="flex-1 bg-accent-500 text-white py-3 rounded-xl font-semibold hover:bg-accent-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                data-testid="save-block-btn"
               >
-                Save Changes
+                {isSavingBlock ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
               </button>
             </div>
           </div>
         </div>
       )}
+      
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   )
 }
