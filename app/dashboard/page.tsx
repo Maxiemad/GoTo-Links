@@ -356,144 +356,187 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {/* Profile Views */}
           <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
-            <div 
-              className="relative overflow-hidden rounded-3xl p-6 h-full"
-              style={{
-                background: `linear-gradient(135deg, ${colors.primary[50]} 0%, white 100%)`,
-                border: `1px solid ${colors.primary[100]}`,
-                boxShadow: `0 10px 40px ${colors.primary[100]}`,
-              }}
-              data-testid="stat-views"
-            >
-              {/* Decorative circle */}
+            <Link href="/dashboard/analytics">
               <div 
-                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
-                style={{ backgroundColor: colors.primary[300] }}
-              ></div>
-              
-              <div className="relative">
-                <div className="flex items-center justify-between mb-5">
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.primary[500]} 100%)`,
-                      boxShadow: `0 8px 20px ${colors.primary[200]}`,
-                    }}
-                  >
-                    <Eye size={26} color="white" />
+                className="relative overflow-hidden rounded-3xl p-6 h-full cursor-pointer group"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.primary[50]} 0%, white 100%)`,
+                  border: `1px solid ${colors.primary[100]}`,
+                  boxShadow: `0 10px 40px ${colors.primary[100]}`,
+                }}
+                data-testid="stat-views"
+              >
+                {/* Decorative circle */}
+                <div 
+                  className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                  style={{ backgroundColor: colors.primary[300] }}
+                ></div>
+                
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.primary[500]} 100%)`,
+                        boxShadow: `0 8px 20px ${colors.primary[200]}`,
+                      }}
+                    >
+                      <Eye size={26} color="white" />
+                    </div>
+                    {analyticsData?.stats && (
+                      <div 
+                        className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+                          analyticsData.stats.viewsChange >= 0 
+                            ? 'bg-green-100 text-green-600' 
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
+                        <TrendingUp size={12} className={analyticsData.stats.viewsChange < 0 ? 'rotate-180' : ''} />
+                        <span>{analyticsData.stats.viewsChange >= 0 ? '+' : ''}{analyticsData.stats.viewsChange}%</span>
+                      </div>
+                    )}
                   </div>
-                  <div 
-                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ backgroundColor: colors.secondary[100], color: colors.secondary[600] }}
-                  >
-                    <TrendingUp size={12} />
-                    <span>+12%</span>
+                  <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                    Profile Views
+                  </p>
+                  <p className="text-4xl font-bold mb-2" style={{ color: colors.text.primary }}>
+                    {analyticsData?.stats?.profileViews?.toLocaleString() || 0}
+                  </p>
+                  
+                  {/* Sparkline */}
+                  <div className="h-8 mb-1">
+                    <Sparkline 
+                      data={analyticsData?.sparkline?.views || []} 
+                      color={colors.primary[400]} 
+                      height={30}
+                    />
                   </div>
+                  
+                  <p className="text-xs flex items-center justify-between" style={{ color: colors.gray[400] }}>
+                    <span>Last 7 days</span>
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-primary-500">View details →</span>
+                  </p>
                 </div>
-                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
-                  Profile Views
-                </p>
-                <p className="text-4xl font-bold mb-1" style={{ color: colors.text.primary }}>
-                  {stats?.profileViews || 0}
-                </p>
-                <p className="text-xs" style={{ color: colors.gray[400] }}>Last 7 days</p>
               </div>
-            </div>
+            </Link>
           </Tilt3DCard>
 
           {/* Link Clicks */}
           <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
-            <div 
-              className="relative overflow-hidden rounded-3xl p-6 h-full"
-              style={{
-                background: `linear-gradient(135deg, ${colors.secondary[50]} 0%, white 100%)`,
-                border: `1px solid ${colors.secondary[100]}`,
-                boxShadow: `0 10px 40px ${colors.secondary[100]}`,
-              }}
-              data-testid="stat-clicks"
-            >
+            <Link href="/dashboard/analytics">
               <div 
-                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
-                style={{ backgroundColor: colors.secondary[300] }}
-              ></div>
-              
-              <div className="relative">
-                <div className="flex items-center justify-between mb-5">
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${colors.secondary[400]} 0%, ${colors.secondary[500]} 100%)`,
-                      boxShadow: `0 8px 20px ${colors.secondary[200]}`,
-                    }}
-                  >
-                    <MousePointer size={26} color="white" />
+                className="relative overflow-hidden rounded-3xl p-6 h-full cursor-pointer group"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.secondary[50]} 0%, white 100%)`,
+                  border: `1px solid ${colors.secondary[100]}`,
+                  boxShadow: `0 10px 40px ${colors.secondary[100]}`,
+                }}
+                data-testid="stat-clicks"
+              >
+                <div 
+                  className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                  style={{ backgroundColor: colors.secondary[300] }}
+                ></div>
+                
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${colors.secondary[400]} 0%, ${colors.secondary[500]} 100%)`,
+                        boxShadow: `0 8px 20px ${colors.secondary[200]}`,
+                      }}
+                    >
+                      <MousePointer size={26} color="white" />
+                    </div>
+                    {analyticsData?.stats && (
+                      <div 
+                        className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+                          analyticsData.stats.clicksChange >= 0 
+                            ? 'bg-green-100 text-green-600' 
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
+                        <TrendingUp size={12} className={analyticsData.stats.clicksChange < 0 ? 'rotate-180' : ''} />
+                        <span>{analyticsData.stats.clicksChange >= 0 ? '+' : ''}{analyticsData.stats.clicksChange}%</span>
+                      </div>
+                    )}
                   </div>
-                  <div 
-                    className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
-                    style={{ backgroundColor: colors.secondary[100], color: colors.secondary[600] }}
-                  >
-                    <TrendingUp size={12} />
-                    <span>+8%</span>
+                  <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                    Link Clicks
+                  </p>
+                  <p className="text-4xl font-bold mb-2" style={{ color: colors.text.primary }}>
+                    {analyticsData?.stats?.linkClicks?.toLocaleString() || 0}
+                  </p>
+                  
+                  {/* Sparkline */}
+                  <div className="h-8 mb-1">
+                    <Sparkline 
+                      data={analyticsData?.sparkline?.clicks || []} 
+                      color={colors.secondary[400]} 
+                      height={30}
+                    />
                   </div>
+                  
+                  <p className="text-xs flex items-center justify-between" style={{ color: colors.gray[400] }}>
+                    <span>Last 7 days</span>
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-secondary-500">View details →</span>
+                  </p>
                 </div>
-                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
-                  Link Clicks
-                </p>
-                <p className="text-4xl font-bold mb-1" style={{ color: colors.text.primary }}>
-                  {stats?.linkClicks || 0}
-                </p>
-                <p className="text-xs" style={{ color: colors.gray[400] }}>Last 7 days</p>
               </div>
-            </div>
+            </Link>
           </Tilt3DCard>
 
           {/* Top Link */}
           <Tilt3DCard maxTilt={6} scale={1.02} glare={true}>
-            <div 
-              className="relative overflow-hidden rounded-3xl p-6 h-full"
-              style={{
-                background: `linear-gradient(135deg, ${colors.accent[50]} 0%, white 100%)`,
-                border: `1px solid ${colors.accent[100]}`,
-                boxShadow: `0 10px 40px ${colors.accent[100]}`,
-              }}
-              data-testid="stat-top"
-            >
+            <Link href="/dashboard/analytics">
               <div 
-                className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
-                style={{ backgroundColor: colors.accent[300] }}
-              ></div>
-              
-              <div className="relative">
-                <div className="flex items-center justify-between mb-5">
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
-                      boxShadow: `0 8px 20px ${colors.accent[200]}`,
-                    }}
-                  >
-                    <Trophy size={26} color="white" />
-                  </div>
-                  {stats?.topClickedLink && (
-                    <span 
-                      className="px-2 py-1 rounded-full text-xs font-semibold"
-                      style={{ backgroundColor: colors.accent[100], color: colors.accent[600] }}
+                className="relative overflow-hidden rounded-3xl p-6 h-full cursor-pointer group"
+                style={{
+                  background: `linear-gradient(135deg, ${colors.accent[50]} 0%, white 100%)`,
+                  border: `1px solid ${colors.accent[100]}`,
+                  boxShadow: `0 10px 40px ${colors.accent[100]}`,
+                }}
+                data-testid="stat-top"
+              >
+                <div 
+                  className="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-20"
+                  style={{ backgroundColor: colors.accent[300] }}
+                ></div>
+                
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-4">
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+                      style={{ 
+                        background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
+                        boxShadow: `0 8px 20px ${colors.accent[200]}`,
+                      }}
                     >
-                      {stats.topClickedLink.clicks} clicks
-                    </span>
-                  )}
+                      <Trophy size={26} color="white" />
+                    </div>
+                    {analyticsData?.topLinks?.[0] && (
+                      <span 
+                        className="px-2 py-1 rounded-full text-xs font-semibold"
+                        style={{ backgroundColor: colors.accent[100], color: colors.accent[600] }}
+                      >
+                        {analyticsData.topLinks[0].clicks} clicks
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                    Top Performer
+                  </p>
+                  <p className="text-xl font-bold mb-1 truncate" style={{ color: colors.text.primary }}>
+                    {analyticsData?.topLinks?.[0]?.title || 'No data yet'}
+                  </p>
+                  <p className="text-xs flex items-center justify-between" style={{ color: colors.gray[400] }}>
+                    <span>{analyticsData?.topLinks?.[0] ? `${analyticsData.topLinks[0].percentage}% of all clicks` : 'Add links to track'}</span>
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity text-accent-500">View all →</span>
+                  </p>
                 </div>
-                <p className="text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
-                  Top Performer
-                </p>
-                <p className="text-xl font-bold mb-1 truncate" style={{ color: colors.text.primary }}>
-                  {stats?.topClickedLink?.title || 'No data yet'}
-                </p>
-                <p className="text-xs" style={{ color: colors.gray[400] }}>
-                  {stats?.topClickedLink ? 'Your best link' : 'Add links to track'}
-                </p>
               </div>
-            </div>
+            </Link>
           </Tilt3DCard>
         </div>
 
