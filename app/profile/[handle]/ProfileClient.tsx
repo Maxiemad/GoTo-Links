@@ -150,6 +150,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               rel="noopener noreferrer"
               className="block"
               data-testid={`block-${block.id}`}
+              onClick={() => handleBlockClick(block.id)}
             >
               <div className="flex items-start justify-between mb-3">
               <div className="text-2xl"><RetreatIcon3D size={32} /></div>
