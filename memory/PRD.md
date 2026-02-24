@@ -232,6 +232,20 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] **Loading state** - Spinner shown while checking auth status before rendering form
 - [x] **No dead ends** - Users always have a clear path back to homepage
 
+### Profile Picture Upload Feature (Feb 24, 2026)
+- [x] **Profile Picture section** - New section at top of profile editor
+- [x] **Avatar display** - Circular avatar with gradient background, shows initial or uploaded photo
+- [x] **Upload button** - Styled button to trigger file picker
+- [x] **File validation** - Accepts JPG, PNG, WEBP; max 5MB
+- [x] **Client-side resize** - Images resized to 400x400 for performance
+- [x] **Instant preview** - Shows selected image immediately before upload completes
+- [x] **Remove option** - Button to remove current profile picture
+- [x] **Loading state** - Spinner overlay during upload process
+- [x] **Toast notifications** - Success/error feedback for upload operations
+- [x] **Cloudinary integration** - With base64 fallback if Cloudinary not configured
+- [x] **Live preview update** - Theme preview section shows uploaded photo
+- [x] **Public profile display** - Photo displayed with 3D effects and theme styling
+
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
 
