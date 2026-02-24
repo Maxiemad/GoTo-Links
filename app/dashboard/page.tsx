@@ -541,12 +541,12 @@ export default function DashboardPage() {
         </div>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {/* Edit Profile */}
           <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
             <Link 
               href="/dashboard/profile-editor"
-              className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
+              className="block relative overflow-hidden rounded-3xl p-6 h-full group transition-all"
               style={{
                 backgroundColor: 'white',
                 border: `1px solid ${colors.gray[200]}`,
@@ -562,32 +562,32 @@ export default function DashboardPage() {
               
               <div className="relative">
                 <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-shadow group-hover:shadow-xl"
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg transition-shadow group-hover:shadow-xl"
                   style={{ 
                     background: `linear-gradient(135deg, ${colors.primary[400]} 0%, ${colors.primary[500]} 100%)`,
                     boxShadow: `0 8px 24px ${colors.primary[200]}`,
                   }}
                 >
-                  <Edit3 size={28} color="white" />
+                  <Edit3 size={24} color="white" />
                 </div>
                 <h3 
-                  className="text-xl font-bold mb-2 transition-colors"
+                  className="text-lg font-bold mb-1 transition-colors"
                   style={{ color: colors.text.primary }}
                 >
                   Edit Profile
                 </h3>
                 <p 
-                  className="text-sm leading-relaxed mb-6"
+                  className="text-xs leading-relaxed mb-4"
                   style={{ color: colors.text.secondary }}
                 >
-                  Customize your bio, add links, blocks, and showcase your retreats.
+                  Customize bio, links & blocks
                 </p>
                 <div 
-                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-3"
+                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-2"
                   style={{ color: colors.primary[500] }}
                 >
                   <span>Open Editor</span>
-                  <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -600,7 +600,7 @@ export default function DashboardPage() {
             <Link 
               href={`/profile/${user?.handle}`}
               target="_blank"
-              className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
+              className="block relative overflow-hidden rounded-3xl p-6 h-full group transition-all"
               style={{
                 backgroundColor: 'white',
                 border: `1px solid ${colors.gray[200]}`,
@@ -615,32 +615,84 @@ export default function DashboardPage() {
               
               <div className="relative">
                 <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg transition-shadow group-hover:shadow-xl"
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg transition-shadow group-hover:shadow-xl"
                   style={{ 
                     background: `linear-gradient(135deg, ${colors.secondary[400]} 0%, ${colors.secondary[500]} 100%)`,
                     boxShadow: `0 8px 24px ${colors.secondary[200]}`,
                   }}
                 >
-                  <ExternalLink size={28} color="white" />
+                  <ExternalLink size={24} color="white" />
                 </div>
                 <h3 
-                  className="text-xl font-bold mb-2 transition-colors"
+                  className="text-lg font-bold mb-1 transition-colors"
                   style={{ color: colors.text.primary }}
                 >
                   Preview Profile
                 </h3>
                 <p 
-                  className="text-sm leading-relaxed mb-6"
+                  className="text-xs leading-relaxed mb-4"
                   style={{ color: colors.text.secondary }}
                 >
-                  See how visitors experience your wellness profile. View it live.
+                  See your live profile
                 </p>
                 <div 
-                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-3"
+                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-2"
                   style={{ color: colors.secondary[500] }}
                 >
                   <span>View Live</span>
-                  <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </Tilt3DCard>
+
+          {/* Analytics */}
+          <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
+            <Link 
+              href="/dashboard/analytics"
+              className="block relative overflow-hidden rounded-3xl p-6 h-full group transition-all"
+              style={{
+                backgroundColor: 'white',
+                border: `1px solid ${colors.gray[200]}`,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+              }}
+              data-testid="analytics-btn"
+            >
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                style={{ background: `linear-gradient(135deg, ${colors.accent[50]} 0%, transparent 100%)` }}
+              ></div>
+              
+              <div className="relative">
+                <div 
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg transition-shadow group-hover:shadow-xl"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
+                    boxShadow: `0 8px 24px ${colors.accent[200]}`,
+                  }}
+                >
+                  <BarChart3 size={24} color="white" />
+                </div>
+                <h3 
+                  className="text-lg font-bold mb-1 transition-colors"
+                  style={{ color: colors.text.primary }}
+                >
+                  Analytics
+                </h3>
+                <p 
+                  className="text-xs leading-relaxed mb-4"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Track views & clicks
+                </p>
+                <div 
+                  className="flex items-center text-sm font-semibold transition-all group-hover:gap-2"
+                  style={{ color: colors.accent[500] }}
+                >
+                  <span>View Stats</span>
+                  <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
@@ -653,7 +705,7 @@ export default function DashboardPage() {
             <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
               <Link 
                 href="/pricing"
-                className="block relative overflow-hidden rounded-3xl p-8 h-full group transition-all"
+                className="block relative overflow-hidden rounded-3xl p-6 h-full group transition-all"
                 style={{
                   background: `linear-gradient(135deg, ${colors.accent[50]} 0%, ${colors.primary[50]} 100%)`,
                   border: `2px solid ${colors.accent[200]}`,
