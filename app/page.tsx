@@ -1221,10 +1221,15 @@ export default function HomePage() {
           >
             Start free, upgrade to unlock advanced features
           </p>
+          
+          {/* Pricing Cards Container - Flex for equal height alignment */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+              alignItems: 'stretch',
               gap: '2rem',
             }}
           >
@@ -1263,17 +1268,23 @@ export default function HomePage() {
                 glare={true}
                 className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
                 style={{
+                  flex: '1 1 320px',
+                  maxWidth: '400px',
+                  minWidth: '300px',
                   opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
                   transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
                   transition: prefersReducedMotion ? 'none' : `opacity 0.4s ease-out ${0.08 + idx * 0.06}s, transform 0.4s ease-out ${0.08 + idx * 0.06}s`,
                 }}
               >
                 <Card
-                  className="shadow-3d h-full"
+                  className="shadow-3d"
                   style={{
                     border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
                     position: 'relative',
                     height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '2rem',
                   }}
                 >
                 {plan.highlight && (
@@ -1297,18 +1308,28 @@ export default function HomePage() {
                     Most Popular
                   </div>
                 )}
-                <h3 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem', color: colors.text.primary }}>
-                  {plan.name}
-                </h3>
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <span style={{ fontSize: '2.5rem', fontWeight: 700, color: colors.primary[500] }}>
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span style={{ color: colors.text.secondary }}>{plan.period}</span>
-                  )}
+                
+                {/* Plan Header */}
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem', color: colors.text.primary }}>
+                    {plan.name}
+                  </h3>
+                  <div>
+                    <span style={{ fontSize: '2.5rem', fontWeight: 700, color: colors.primary[500] }}>
+                      {plan.price}
+                    </span>
+                    {plan.period && (
+                      <span style={{ color: colors.text.secondary }}>{plan.period}</span>
+                    )}
+                  </div>
                 </div>
-                <ul style={{ listStyle: 'none', marginBottom: '2rem' }}>
+                
+                {/* Features List - Grows to fill space */}
+                <ul style={{ 
+                  listStyle: 'none', 
+                  flex: '1 1 auto',
+                  marginBottom: '1.5rem',
+                }}>
                   {plan.features.map((feature, fIdx) => (
                     <li
                       key={fIdx}
@@ -1325,14 +1346,18 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  variant={plan.highlight ? 'primary' : 'outline'}
-                  size="lg"
-                  className="button-elegant button-3d"
-                  style={{ width: '100%' }}
-                >
-                  {plan.cta}
-                </Button>
+                
+                {/* CTA Button - Fixed at bottom */}
+                <div style={{ marginTop: 'auto' }}>
+                  <Button
+                    variant={plan.highlight ? 'primary' : 'outline'}
+                    size="lg"
+                    className="button-elegant button-3d"
+                    style={{ width: '100%' }}
+                  >
+                    {plan.cta}
+                  </Button>
+                </div>
               </Card>
               </Tilt3DCard>
             ))}
