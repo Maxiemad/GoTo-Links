@@ -725,38 +725,38 @@ export default function DashboardPage() {
                 
                 <div className="relative">
                   <div 
-                    className="absolute top-0 right-0 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+                    className="absolute -top-1 -right-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
                     style={{ backgroundColor: colors.accent[500], color: 'white' }}
                   >
-                    Recommended
+                    Pro
                   </div>
                   <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
                     style={{ 
                       background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
                       boxShadow: `0 8px 24px ${colors.accent[200]}`,
                     }}
                   >
-                    <Zap size={28} color="white" />
+                    <Zap size={24} color="white" />
                   </div>
                   <h3 
-                    className="text-xl font-bold mb-2"
+                    className="text-lg font-bold mb-1"
                     style={{ color: colors.text.primary }}
                   >
-                    Upgrade to Pro
+                    Upgrade
                   </h3>
                   <p 
-                    className="text-sm leading-relaxed mb-6"
+                    className="text-xs leading-relaxed mb-4"
                     style={{ color: colors.text.secondary }}
                   >
-                    Unlock video heroes, premium themes, advanced analytics & more.
+                    Unlock premium features
                   </p>
                   <div 
                     className="flex items-center text-sm font-semibold"
                     style={{ color: colors.accent[600] }}
                   >
                     <span>See Plans</span>
-                    <svg className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
