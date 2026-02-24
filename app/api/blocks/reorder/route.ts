@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
     const user = await getSessionUser(request)
     
     if (!user) {
+      console.log('[Block Reorder] Auth failed - no user session')
       return NextResponse.json(
         { success: false, error: 'Not authenticated' },
         { status: 401 }
@@ -42,11 +43,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { blockIds } = reorderSchema.parse(body)
     
+    console.log(`[Block Reorder] User: ${user.id}, Block IDs:`, blockIds)
+    
     const db = await getDb()
     
     const profile = await db.collection('profiles').findOne({ userId: user.id })
     
     if (!profile) {
+      console.log(`[Block Reorder] Profile not found for user: ${user.id}`)
       return NextResponse.json(
         { success: false, error: 'Profile not found' },
         { status: 404 }
@@ -55,16 +59,38 @@ export async function POST(request: NextRequest) {
     
     const profileId = profile._id.toString()
     
+    // Validate all block IDs belong to this profile before updating
+    const existingBlocks = await db.collection('blocks')
+      .find({ profileId })
+      .toArray()
+    
+    const existingBlockIds = new Set(existingBlocks.map(b => b._id.toString()))
+    const invalidIds = blockIds.filter(id => !existingBlockIds.has(id))
+    
+    if (invalidIds.length > 0) {
+      console.log(`[Block Reorder] Invalid block IDs detected:`, invalidIds)
+      return NextResponse.json(
+        { success: false, error: 'One or more block IDs are invalid' },
+        { status: 400 }
+      )
+    }
+    
     // Update order for each block using bulkWrite for efficiency
+    const now = new Date()
     const bulkOps = blockIds.map((id, index) => ({
       updateOne: {
         filter: { _id: new ObjectId(id), profileId },
-        update: { $set: { order: index, updatedAt: new Date() } },
+        update: { $set: { order: index, updatedAt: now } },
       },
     }))
     
     if (bulkOps.length > 0) {
-      await db.collection('blocks').bulkWrite(bulkOps)
+      const bulkResult = await db.collection('blocks').bulkWrite(bulkOps)
+      console.log(`[Block Reorder] Bulk update result: matched=${bulkResult.matchedCount}, modified=${bulkResult.modifiedCount}`)
+      
+      if (bulkResult.matchedCount !== blockIds.length) {
+        console.log(`[Block Reorder] Warning: Not all blocks were matched. Expected ${blockIds.length}, got ${bulkResult.matchedCount}`)
+      }
     }
     
     // Fetch updated blocks sorted by order
@@ -93,18 +119,21 @@ export async function POST(request: NextRequest) {
       updatedAt: block.updatedAt,
     }))
     
+    console.log(`[Block Reorder] Success - returning ${formattedBlocks.length} blocks`)
+    
     return NextResponse.json({
       success: true,
       data: { blocks: formattedBlocks },
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.log(`[Block Reorder] Validation error:`, error.errors)
       return NextResponse.json(
         { success: false, error: error.errors[0].message },
         { status: 400 }
       )
     }
-    console.error('Reorder blocks error:', error)
+    console.error('[Block Reorder] Unexpected error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to reorder blocks' },
       { status: 500 }

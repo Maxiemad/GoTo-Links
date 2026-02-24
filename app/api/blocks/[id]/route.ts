@@ -107,6 +107,7 @@ export async function PUT(
     const user = await getSessionUser(request)
     
     if (!user) {
+      console.log('[Block Update] Auth failed - no user session')
       return NextResponse.json(
         { success: false, error: 'Not authenticated' },
         { status: 401 }
@@ -114,7 +115,11 @@ export async function PUT(
     }
     
     const { id } = await params
+    console.log(`[Block Update] Starting update for block: ${id}, user: ${user.id}`)
+    
     const body = await request.json()
+    console.log(`[Block Update] Request body:`, JSON.stringify(body))
+    
     const data = updateBlockSchema.parse(body)
     
     const db = await getDb()
@@ -123,6 +128,7 @@ export async function PUT(
     const profile = await db.collection('profiles').findOne({ userId: user.id })
     
     if (!profile) {
+      console.log(`[Block Update] Profile not found for user: ${user.id}`)
       return NextResponse.json(
         { success: false, error: 'Profile not found' },
         { status: 404 }
@@ -134,6 +140,7 @@ export async function PUT(
     try {
       existingBlock = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
     } catch {
+      console.log(`[Block Update] Invalid block ID format: ${id}`)
       return NextResponse.json(
         { success: false, error: 'Invalid block ID' },
         { status: 400 }
@@ -141,66 +148,94 @@ export async function PUT(
     }
     
     if (!existingBlock || existingBlock.profileId !== profile._id.toString()) {
+      console.log(`[Block Update] Block not found or doesn't belong to user. Block profileId: ${existingBlock?.profileId}, User profile: ${profile._id.toString()}`)
       return NextResponse.json(
         { success: false, error: 'Block not found' },
         { status: 404 }
       )
     }
     
-    // Update block
+    // Build update object - include all fields explicitly to ensure proper updates
     const updateData: Record<string, unknown> = { updatedAt: new Date() }
-    if (data.title !== undefined) updateData.title = data.title
-    if (data.url !== undefined) updateData.url = data.url
-    if (data.description !== undefined) updateData.description = data.description
-    if (data.dateRange !== undefined) updateData.dateRange = data.dateRange
-    if (data.location !== undefined) updateData.location = data.location
+    
+    // Handle all updatable fields - use null coercion for empty strings
+    if (data.title !== undefined) updateData.title = data.title || null
+    if (data.url !== undefined) updateData.url = data.url || null
+    if (data.description !== undefined) updateData.description = data.description || null
+    if (data.dateRange !== undefined) updateData.dateRange = data.dateRange || null
+    if (data.location !== undefined) updateData.location = data.location || null
     if (data.price !== undefined) updateData.price = data.price
-    if (data.authorName !== undefined) updateData.authorName = data.authorName
-    if (data.authorPhoto !== undefined) updateData.authorPhoto = data.authorPhoto
-    if (data.quote !== undefined) updateData.quote = data.quote
-    if (data.phone !== undefined) updateData.phone = data.phone
+    if (data.authorName !== undefined) updateData.authorName = data.authorName || null
+    if (data.authorPhoto !== undefined) updateData.authorPhoto = data.authorPhoto || null
+    if (data.quote !== undefined) updateData.quote = data.quote || null
+    if (data.phone !== undefined) updateData.phone = data.phone || null
     if (data.isVisible !== undefined) updateData.isVisible = data.isVisible
     if (data.order !== undefined) updateData.order = data.order
     
-    await db.collection('blocks').updateOne(
-      { _id: new ObjectId(id) },
+    console.log(`[Block Update] Update data:`, JSON.stringify(updateData))
+    
+    // Perform update and verify it succeeded
+    const updateResult = await db.collection('blocks').updateOne(
+      { _id: new ObjectId(id), profileId: profile._id.toString() },
       { $set: updateData }
     )
     
+    console.log(`[Block Update] Update result: matched=${updateResult.matchedCount}, modified=${updateResult.modifiedCount}`)
+    
+    if (updateResult.matchedCount === 0) {
+      console.log(`[Block Update] No document matched for update`)
+      return NextResponse.json(
+        { success: false, error: 'Block not found or update failed' },
+        { status: 404 }
+      )
+    }
+    
+    // Fetch the updated block to return accurate data
     const block = await db.collection('blocks').findOne({ _id: new ObjectId(id) })
+    
+    if (!block) {
+      console.log(`[Block Update] Failed to fetch updated block`)
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch updated block' },
+        { status: 500 }
+      )
+    }
+    
+    const responseBlock = {
+      id: block._id.toString(),
+      profileId: block.profileId,
+      type: block.type,
+      title: block.title,
+      url: block.url,
+      description: block.description,
+      dateRange: block.dateRange,
+      location: block.location,
+      price: block.price,
+      authorName: block.authorName,
+      authorPhoto: block.authorPhoto,
+      quote: block.quote,
+      phone: block.phone,
+      isVisible: block.isVisible,
+      order: block.order,
+      createdAt: block.createdAt,
+      updatedAt: block.updatedAt,
+    }
+    
+    console.log(`[Block Update] Success - returning block:`, JSON.stringify(responseBlock))
     
     return NextResponse.json({
       success: true,
-      data: {
-        block: {
-          id: block!._id.toString(),
-          profileId: block!.profileId,
-          type: block!.type,
-          title: block!.title,
-          url: block!.url,
-          description: block!.description,
-          dateRange: block!.dateRange,
-          location: block!.location,
-          price: block!.price,
-          authorName: block!.authorName,
-          authorPhoto: block!.authorPhoto,
-          quote: block!.quote,
-          phone: block!.phone,
-          isVisible: block!.isVisible,
-          order: block!.order,
-          createdAt: block!.createdAt,
-          updatedAt: block!.updatedAt,
-        }
-      },
+      data: { block: responseBlock },
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.log(`[Block Update] Validation error:`, error.errors)
       return NextResponse.json(
         { success: false, error: error.errors[0].message },
         { status: 400 }
       )
     }
-    console.error('Update block error:', error)
+    console.error('[Block Update] Unexpected error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update block' },
       { status: 500 }
