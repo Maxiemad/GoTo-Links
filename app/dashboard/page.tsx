@@ -116,7 +116,7 @@ const LotusIcon = ({ size = 24, className = '' }: { size?: number; className?: s
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -143,7 +143,7 @@ export default function DashboardPage() {
         const statsData = await statsRes.json()
         
         if (statsData.success) {
-          setStats(statsData.data.stats)
+          setAnalyticsData(statsData.data)
         }
       } catch (error) {
         console.error('Failed to fetch data:', error)
