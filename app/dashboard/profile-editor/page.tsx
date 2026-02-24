@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, Upload, X, Check, ChevronUp, ChevronDown, GripVertical, Layers } from 'lucide-react'
-import { getThemeList, getTheme, ThemeConfig } from '../../../lib/themes'
+import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, X, Check, ChevronUp, ChevronDown, Layers, AlertCircle, CheckCircle } from 'lucide-react'
+import { getThemeList, getTheme } from '../../../lib/themes'
 import SectionEditor from '../../components/SectionEditor'
 import { 
   LinkIcon3D, 
@@ -14,6 +14,42 @@ import {
   HeartIcon3D,
   SparkleIcon3D
 } from '../../components/Icons3D'
+
+// Toast notification component
+interface Toast {
+  id: string
+  type: 'success' | 'error'
+  message: string
+}
+
+const ToastContainer = ({ toasts, onDismiss }: { toasts: Toast[], onDismiss: (id: string) => void }) => (
+  <div className="fixed bottom-4 right-4 z-[100] space-y-2">
+    {toasts.map(toast => (
+      <div
+        key={toast.id}
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg animate-slide-in ${
+          toast.type === 'success' 
+            ? 'bg-green-50 border border-green-200 text-green-800' 
+            : 'bg-red-50 border border-red-200 text-red-800'
+        }`}
+        data-testid={`toast-${toast.type}`}
+      >
+        {toast.type === 'success' ? (
+          <CheckCircle className="w-5 h-5 text-green-600" />
+        ) : (
+          <AlertCircle className="w-5 h-5 text-red-600" />
+        )}
+        <span className="text-sm font-medium">{toast.message}</span>
+        <button 
+          onClick={() => onDismiss(toast.id)}
+          className="ml-2 text-gray-400 hover:text-gray-600"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    ))}
+  </div>
+)
 
 // Helper to render block type icons
 const BlockTypeIcon = ({ type, size = 20 }: { type: string; size?: number }) => {
