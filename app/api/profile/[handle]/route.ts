@@ -62,6 +62,10 @@ export async function GET(
           videoUrl: profile.videoUrl,
           location: profile.location,
           theme: profile.theme,
+          backgroundImage: profile.backgroundImage,
+          backgroundBlur: profile.backgroundBlur,
+          backgroundBrightness: profile.backgroundBrightness,
+          backgroundOverlayColor: profile.backgroundOverlayColor,
           blocks: blocks.map(b => ({
             id: b._id.toString(),
             type: b.type,
