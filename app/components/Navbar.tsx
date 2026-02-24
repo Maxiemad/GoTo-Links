@@ -525,7 +525,7 @@ export const Navbar: React.FC = () => {
             {navItems.map((item) => (
               <div
                 key={item.label}
-                style={{ position: 'relative', paddingBottom: item.dropdown ? '0.5rem' : '0' }}
+                style={{ position: 'relative' }}
                 onMouseEnter={() => handleMouseEnter(item.label)}
                 onMouseLeave={(e) => {
                   // Only close if mouse is not moving to dropdown
@@ -546,6 +546,9 @@ export const Navbar: React.FC = () => {
                     padding: '0.5rem 0',
                     fontFamily: typography.fontFamily.sans,
                     transition: 'color 0.2s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    height: '40px',
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = colors.accent[500]
