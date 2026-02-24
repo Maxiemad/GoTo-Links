@@ -1287,13 +1287,33 @@ export default function ProfileEditorPage() {
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Live Preview</h2>
           <div 
-            className="rounded-2xl overflow-hidden border border-gray-200"
+            className="rounded-2xl overflow-hidden border border-gray-200 relative"
             style={{ 
-              background: getTheme(profile.theme).backgroundGradient || getTheme(profile.theme).background 
+              background: profile.theme === 'custom' && (bgPreview || profile.backgroundImage)
+                ? undefined
+                : (getTheme(profile.theme).backgroundGradient || getTheme(profile.theme).background)
             }}
             data-testid="theme-preview"
           >
-            <div className="p-6 text-center">
+            {/* Custom Background Image */}
+            {profile.theme === 'custom' && (bgPreview || profile.backgroundImage) && (
+              <>
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: `url(${bgPreview || profile.backgroundImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    filter: `blur(${bgBlur}px) brightness(${bgBrightness / 100})`,
+                  }}
+                />
+                <div 
+                  className="absolute inset-0"
+                  style={{ backgroundColor: bgOverlayColor }}
+                />
+              </>
+            )}
+            <div className="p-6 text-center relative z-10">
               {/* Avatar preview */}
               <div 
                 className="w-16 h-16 mx-auto mb-3 rounded-full p-0.5 overflow-hidden"
