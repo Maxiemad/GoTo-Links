@@ -1000,17 +1000,130 @@ export const Navbar: React.FC = () => {
                   </div>
                 ))}
 
-                {/* Get Started Button (Mobile) */}
+                {/* Get Started Button OR User Options (Mobile) */}
                 <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: `2px solid ${colors.gray[200]}` }}>
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    to="/signup"
-                    style={{ width: '100%' }}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Get Started Free
-                  </Button>
+                  {isAuthLoading ? (
+                    <div style={{ width: '100%', height: '48px', backgroundColor: colors.gray[100], borderRadius: borderRadius.lg, animation: 'pulse 1.5s infinite' }} />
+                  ) : user ? (
+                    /* Logged-in User Options (Mobile) */
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                      {/* User Info */}
+                      <div style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: '0.75rem', 
+                        padding: '0.75rem',
+                        backgroundColor: colors.gray[50],
+                        borderRadius: borderRadius.lg,
+                        marginBottom: '0.5rem',
+                      }}>
+                        <div
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            background: user.picture ? `url(${user.picture}) center/cover` : `linear-gradient(135deg, ${colors.accent[400]}, ${colors.accent[600]})`,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: colors.white,
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {!user.picture && getUserInitials()}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontWeight: 600, color: colors.text.primary, fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <p style={{ color: colors.text.secondary, fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '1rem',
+                          borderRadius: borderRadius.lg,
+                          textDecoration: 'none',
+                          color: colors.white,
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          backgroundColor: colors.accent[500],
+                        }}
+                        data-testid="mobile-menu-dashboard"
+                      >
+                        <LayoutDashboard size={20} />
+                        Go to Dashboard
+                      </Link>
+
+                      <Link
+                        href={`/profile/${user.handle}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '1rem',
+                          borderRadius: borderRadius.lg,
+                          textDecoration: 'none',
+                          color: colors.text.primary,
+                          fontSize: '1rem',
+                          fontWeight: 500,
+                          backgroundColor: colors.gray[100],
+                        }}
+                        data-testid="mobile-menu-profile"
+                      >
+                        <User size={20} />
+                        View Profile
+                      </Link>
+
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          setIsMobileMenuOpen(false)
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '1rem',
+                          borderRadius: borderRadius.lg,
+                          background: 'none',
+                          border: `1px solid ${colors.gray[300]}`,
+                          width: '100%',
+                          textAlign: 'left',
+                          color: colors.text.secondary,
+                          fontSize: '1rem',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                        }}
+                        data-testid="mobile-menu-logout"
+                      >
+                        <LogOut size={20} />
+                        Logout
+                      </button>
+                    </div>
+                  ) : (
+                    /* Not logged in */
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      to="/signup"
+                      style={{ width: '100%' }}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Get Started Free
+                    </Button>
+                  )}
                 </div>
               </div>
             )}
