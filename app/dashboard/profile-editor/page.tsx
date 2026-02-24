@@ -178,44 +178,46 @@ export default function ProfileEditorPage() {
     setIsUploadingPhoto(true)
 
     try {
-      // Get upload signature from backend
-      const signatureRes = await fetch('/api/upload/signature?folder=profiles&resource_type=image', {
-        credentials: 'include',
-      })
-      const signatureData = await signatureRes.json()
+      // Convert to base64 and resize client-side for performance
+      const resizedDataUrl = await resizeImage(file, 400, 400)
+      
+      // Try Cloudinary upload first
+      let photoUrl = resizedDataUrl // Fallback to base64 if Cloudinary fails
 
-      if (!signatureData.success) {
-        throw new Error(signatureData.error || 'Failed to get upload signature')
-      }
+      try {
+        const signatureRes = await fetch('/api/upload/signature?folder=profiles&resource_type=image', {
+          credentials: 'include',
+        })
+        const signatureData = await signatureRes.json()
 
-      const { timestamp, signature, cloudName, apiKey, folder } = signatureData.data
+        if (signatureData.success) {
+          const { timestamp, signature, cloudName, apiKey, folder } = signatureData.data
 
-      // Upload to Cloudinary
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('api_key', apiKey)
-      formData.append('timestamp', timestamp.toString())
-      formData.append('signature', signature)
-      formData.append('folder', folder)
-      formData.append('transformation', 'c_fill,w_400,h_400,q_auto,f_auto')
+          // Only upload to Cloudinary if credentials are configured
+          if (cloudName && cloudName !== 'your_cloud_name' && apiKey && apiKey !== 'your_api_key') {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('api_key', apiKey)
+            formData.append('timestamp', timestamp.toString())
+            formData.append('signature', signature)
+            formData.append('folder', folder)
 
-      const uploadRes = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: formData,
+            const uploadRes = await fetch(
+              `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+              { method: 'POST', body: formData }
+            )
+
+            const uploadData = await uploadRes.json()
+            if (uploadData.secure_url) {
+              photoUrl = uploadData.secure_url
+            }
+          }
         }
-      )
-
-      const uploadData = await uploadRes.json()
-
-      if (uploadData.error) {
-        throw new Error(uploadData.error.message || 'Upload failed')
+      } catch (cloudinaryError) {
+        console.log('Cloudinary not available, using base64 fallback')
       }
 
-      // Update profile with new photo URL
-      const photoUrl = uploadData.secure_url
-
+      // Update profile with photo URL
       const updateRes = await fetch('/api/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -234,15 +236,53 @@ export default function ProfileEditorPage() {
     } catch (error) {
       console.error('Photo upload error:', error)
       showToast('error', error instanceof Error ? error.message : 'Failed to upload photo')
-      // Revert preview
       setPhotoPreview(null)
     } finally {
       setIsUploadingPhoto(false)
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
     }
+  }
+
+  // Resize image client-side for optimization
+  const resizeImage = (file: File, maxWidth: number, maxHeight: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement('img')
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let { width, height } = img
+
+        // Calculate new dimensions
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width
+            width = maxWidth
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height
+            height = maxHeight
+          }
+        }
+
+        canvas.width = width
+        canvas.height = height
+
+        const ctx = canvas.getContext('2d')
+        if (!ctx) {
+          reject(new Error('Could not get canvas context'))
+          return
+        }
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+        resolve(dataUrl)
+      }
+      img.onerror = () => reject(new Error('Failed to load image'))
+      img.src = URL.createObjectURL(file)
+    })
   }
 
   // Handle remove profile photo
