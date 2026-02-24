@@ -217,6 +217,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               rel="noopener noreferrer"
               className="flex items-center gap-4"
               data-testid={`block-${block.id}`}
+              onClick={() => handleBlockClick(block.id)}
             >
               <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center flex-shrink-0">
                 <MessageCircle className="w-6 h-6 text-white" />
@@ -250,6 +251,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               rel="noopener noreferrer"
               className="flex items-center gap-4"
               data-testid={`block-${block.id}`}
+              onClick={() => handleBlockClick(block.id)}
             >
               <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
                 <Send className="w-6 h-6 text-white" />
@@ -283,6 +285,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               rel="noopener noreferrer"
               className="flex items-center gap-4"
               data-testid={`block-${block.id}`}
+              onClick={() => handleBlockClick(block.id)}
             >
               <div 
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" 
