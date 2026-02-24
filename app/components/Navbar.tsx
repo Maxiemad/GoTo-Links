@@ -14,6 +14,18 @@ import {
   SparkleIcon3D,
   PhoneIcon3D
 } from './Icons3D'
+import { LayoutDashboard, User, LogOut, ChevronDown } from 'lucide-react'
+
+// User type for auth state
+interface AuthUser {
+  id: string
+  email: string
+  firstName: string
+  lastName?: string
+  handle: string
+  plan: string
+  picture: string | null
+}
 
 // Helper to render 3D icons based on emoji key
 const IconRenderer = ({ emoji, size = 24 }: { emoji: string; size?: number }) => {
