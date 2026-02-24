@@ -672,5 +672,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
         </div>
       </div>
     </AnimatedBackground>
+      )}
+    </>
   )
 }
