@@ -383,23 +383,39 @@ export default function HomePage() {
                 cursor: 'text',
               }}
             >
+              {/* Line 1: World's FIRST */}
               <span 
                 className="headline-line-1"
                 style={{ 
-                  fontSize: 'clamp(2rem, 3vw, 3.5rem)', 
+                  fontSize: 'clamp(1.75rem, 3vw, 3rem)', 
                   display: 'block',
-                  animation: prefersReducedMotion ? 'none' : 'heroLine1 0.35s ease-out 0s both',
+                  color: colors.accent[500],
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0s both',
                 }}
               >
-                <span style={{ color: colors.accent[500] }}>World's FIRST</span>{' '}
-                <span style={{ color: colors.text.primary }}>Wellness-Branded</span>
+                World's FIRST
               </span>
+              
+              {/* Line 2: Wellness-Branded */}
               <span 
-                className="headline-line-2 gradient-text"
+                className="headline-line-2"
+                style={{ 
+                  fontSize: 'clamp(2rem, 3.5vw, 3.5rem)', 
+                  display: 'block',
+                  color: colors.text.primary,
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.1s both',
+                }}
+              >
+                Wellness-Branded
+              </span>
+              
+              {/* Line 3: Link in Bio */}
+              <span 
+                className="headline-line-3 gradient-text"
                 style={{ 
                   fontSize: 'clamp(2.5rem, 4vw, 4rem)', 
                   display: 'block',
-                  animation: prefersReducedMotion ? 'none' : 'heroLine2Pop 0.4s ease-out 0.08s both',
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.2s both, heroPulse 3s ease-in-out 1s infinite',
                 }}
               >
                 Link in Bio
