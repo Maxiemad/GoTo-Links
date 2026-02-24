@@ -391,7 +391,7 @@ export default function HomePage() {
                   animation: prefersReducedMotion ? 'none' : 'heroLine1 0.35s ease-out 0s both',
                 }}
               >
-                Your Wellness-Branded
+                World's FIRST Wellness-Branded
               </span>
               <span 
                 className="headline-line-2 gradient-text"
@@ -416,8 +416,8 @@ export default function HomePage() {
                 animation: prefersReducedMotion ? 'none' : 'heroSubtextIn 0.4s ease-out 0.18s both',
               }}
             >
-              Designed for retreat leaders, healers, coaches and venues. A soulful alternative to
-              generic link tools.
+              Designed for retreat leaders, healers, coaches, and venues. A soulful alternative to
+              generic link-in-bio tools.
             </p>
             <div
               className="hero-buttons"
