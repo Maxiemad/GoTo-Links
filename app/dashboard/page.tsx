@@ -20,8 +20,62 @@ interface User {
 interface Stats {
   profileViews: number
   linkClicks: number
-  topClickedLink: { title: string; clicks: number } | null
+  totalViews: number
+  totalClicks: number
+  viewsChange: number
+  clicksChange: number
   period: string
+}
+
+interface TopLink {
+  id: string
+  title: string
+  type: string
+  clicks: number
+  percentage: number
+}
+
+interface AnalyticsData {
+  stats: Stats
+  topLinks: TopLink[]
+  sparkline: {
+    views: number[]
+    clicks: number[]
+  }
+}
+
+// Sparkline component
+const Sparkline = ({ data, color, height = 30 }: { data: number[]; color: string; height?: number }) => {
+  if (!data.length || data.every(v => v === 0)) return null
+  
+  const max = Math.max(...data, 1)
+  const min = Math.min(...data, 0)
+  const range = max - min || 1
+  
+  const points = data.map((value, index) => {
+    const x = (index / (data.length - 1 || 1)) * 100
+    const y = ((max - value) / range) * height
+    return `${x},${y}`
+  }).join(' ')
+  
+  return (
+    <svg 
+      viewBox={`0 0 100 ${height}`} 
+      className="w-full"
+      style={{ height: `${height}px` }}
+      preserveAspectRatio="none"
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity={0.8}
+      />
+    </svg>
+  )
 }
 
 // 3D Waving Hand Icon
