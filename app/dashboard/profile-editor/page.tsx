@@ -235,7 +235,11 @@ export default function ProfileEditorPage() {
   }
 
   const handleAddBlock = async (type: string) => {
+    if (isSavingBlock) return
+    setIsSavingBlock(true)
+    
     try {
+      console.log('[Frontend] Adding block of type:', type)
       const res = await fetch('/api/blocks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -244,16 +248,24 @@ export default function ProfileEditorPage() {
       })
 
       const data = await res.json()
+      console.log('[Frontend] Add block response:', data)
+      
       if (data.success && profile) {
         setProfile({
           ...profile,
           blocks: [...profile.blocks, data.data.block],
         })
         setEditingBlock(data.data.block)
+        showToast('success', 'Block added successfully')
+      } else {
+        showToast('error', data.error || 'Failed to add block')
       }
       setShowAddBlock(false)
     } catch (error) {
-      console.error('Failed to add block:', error)
+      console.error('[Frontend] Failed to add block:', error)
+      showToast('error', 'Failed to add block. Please try again.')
+    } finally {
+      setIsSavingBlock(false)
     }
   }
 
