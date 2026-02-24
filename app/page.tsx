@@ -1124,8 +1124,8 @@ export default function HomePage() {
               flexDirection: 'row',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              alignItems: 'stretch',
-              gap: '2rem',
+              alignItems: 'center',
+              gap: '3rem',
               marginTop: '4rem',
               textAlign: 'center',
               opacity: visibleSections.has('how-it-works') || prefersReducedMotion ? 1 : 0,
@@ -1137,68 +1137,66 @@ export default function HomePage() {
               { 
                 text: '3 easy steps', 
                 icon: (
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="24" r="6" fill={colors.primary[400]} opacity="0.8"/>
-                    <circle cx="24" cy="24" r="6" fill={colors.accent[400]} opacity="0.9"/>
-                    <circle cx="36" cy="24" r="6" fill={colors.secondary[400]}/>
-                    <path d="M18 24H30" stroke={colors.gray[300]} strokeWidth="2" strokeDasharray="4 2"/>
+                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="18" cy="36" r="8" fill={colors.primary[400]} opacity="0.9"/>
+                    <circle cx="36" cy="36" r="8" fill={colors.accent[400]}/>
+                    <circle cx="54" cy="36" r="8" fill={colors.secondary[400]} opacity="0.9"/>
+                    <path d="M26 36H46" stroke={colors.gray[300]} strokeWidth="2" strokeDasharray="4 2"/>
                   </svg>
                 )
               },
               { 
                 text: '1 powerful wellness link', 
                 icon: (
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M24 8L28 16L37 17.5L30.5 24L32 33L24 28.5L16 33L17.5 24L11 17.5L20 16L24 8Z" fill={colors.accent[400]} opacity="0.9"/>
-                    <circle cx="24" cy="24" r="8" stroke={colors.primary[400]} strokeWidth="2" fill="none" opacity="0.6"/>
+                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M36 12L42 24L55.5 26L45.75 36L48 49.5L36 43L24 49.5L26.25 36L16.5 26L30 24L36 12Z" fill={colors.accent[400]}/>
+                    <circle cx="36" cy="36" r="12" stroke={colors.primary[300]} strokeWidth="2" fill="none" opacity="0.7"/>
                   </svg>
                 )
               },
               { 
                 text: 'Unlimited sharing', 
                 icon: (
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="24" cy="12" r="5" fill={colors.primary[400]}/>
-                    <circle cx="12" cy="32" r="5" fill={colors.accent[400]}/>
-                    <circle cx="36" cy="32" r="5" fill={colors.secondary[400]}/>
-                    <path d="M22 16L14 28M26 16L34 28M15 32H33" stroke={colors.gray[400]} strokeWidth="2"/>
+                  <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="36" cy="18" r="7" fill={colors.primary[400]}/>
+                    <circle cx="18" cy="48" r="7" fill={colors.accent[400]}/>
+                    <circle cx="54" cy="48" r="7" fill={colors.secondary[400]}/>
+                    <path d="M33 24L21 42M39 24L51 42M22 48H50" stroke={colors.gray[400]} strokeWidth="2.5"/>
                   </svg>
                 )
               },
             ].map((item, idx) => (
               <Tilt3DCard
                 key={idx}
-                maxTilt={6}
-                scale={1.05}
+                maxTilt={8}
+                scale={1.08}
                 glare={true}
                 style={{
-                  flex: '1 1 250px',
-                  maxWidth: '320px',
-                  minWidth: '220px',
+                  flex: '0 0 auto',
                 }}
               >
                 <div
                   className="shadow-3d feature-card-hover"
                   style={{
-                    padding: '2.5rem 2rem',
-                    borderRadius: borderRadius['2xl'],
-                    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+                    width: '200px',
+                    height: '200px',
+                    borderRadius: '50%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     backdropFilter: 'blur(12px)',
-                    height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    minHeight: '200px',
                     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-                    border: `1px solid ${colors.gray[100]}`,
+                    border: `2px solid ${colors.gray[100]}`,
+                    padding: '1.5rem',
                   }}
                 >
                   {/* Icon */}
                   <div 
                     className="feature-icon"
                     style={{ 
-                      marginBottom: '1.25rem',
+                      marginBottom: '0.75rem',
                       transition: 'transform 0.3s ease',
                     }}
                   >
@@ -1209,10 +1207,11 @@ export default function HomePage() {
                   <div 
                     className="gradient-text" 
                     style={{ 
-                      fontSize: '1.35rem', 
+                      fontSize: '1rem', 
                       fontWeight: 600, 
                       color: colors.text.primary,
-                      lineHeight: 1.3,
+                      lineHeight: 1.2,
+                      maxWidth: '140px',
                     }}
                   >
                     {item.text}
