@@ -890,21 +890,29 @@ export default function ProfileEditorPage() {
             <div className="p-6 text-center">
               {/* Avatar preview */}
               <div 
-                className="w-16 h-16 mx-auto mb-3 rounded-full p-0.5"
+                className="w-16 h-16 mx-auto mb-3 rounded-full p-0.5 overflow-hidden"
                 style={{ 
                   background: getTheme(profile.theme).headerGradient || 
                     `linear-gradient(135deg, ${getTheme(profile.theme).buttonPrimary} 0%, ${getTheme(profile.theme).accent} 100%)` 
                 }}
               >
-                <div 
-                  className="w-full h-full rounded-full flex items-center justify-center text-lg font-bold"
-                  style={{ 
-                    backgroundColor: getTheme(profile.theme).cardBackground,
-                    color: getTheme(profile.theme).textPrimary
-                  }}
-                >
-                  {profile.name?.charAt(0) || 'U'}
-                </div>
+                {(photoPreview || profile.photoUrl) ? (
+                  <img
+                    src={photoPreview || profile.photoUrl || ''}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div 
+                    className="w-full h-full rounded-full flex items-center justify-center text-lg font-bold"
+                    style={{ 
+                      backgroundColor: getTheme(profile.theme).cardBackground,
+                      color: getTheme(profile.theme).textPrimary
+                    }}
+                  >
+                    {profile.name?.charAt(0) || 'U'}
+                  </div>
+                )}
               </div>
               {/* Name */}
               <h3 
