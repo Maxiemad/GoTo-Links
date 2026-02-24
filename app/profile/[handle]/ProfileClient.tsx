@@ -338,31 +338,213 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
     )
   }
 
+  // Check if using custom background
+  const hasCustomBackground = profile.theme === 'custom' && profile.backgroundImage
+
   return (
-    <AnimatedBackground theme={themeConfig}>
-      {/* Decorative side elements - only visible on desktop */}
-      <DecorativeElements theme={themeConfig} />
+    <>
+      {/* Custom Background - Rendered outside AnimatedBackground when active */}
+      {hasCustomBackground && (
+        <div className="fixed inset-0 z-0">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${profile.backgroundImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              filter: `blur(${profile.backgroundBlur || 0}px) brightness(${(profile.backgroundBrightness || 100) / 100})`,
+            }}
+          />
+          {/* Overlay */}
+          <div 
+            className="absolute inset-0"
+            style={{ backgroundColor: profile.backgroundOverlayColor || 'rgba(0,0,0,0.4)' }}
+          />
+        </div>
+      )}
       
-      <div 
-        className="min-h-screen parallax-3d-container relative"
-        data-testid="public-profile"
-      >
-        {/* Responsive container - mobile: 420px, tablet: 560px, desktop: 720px */}
-        <div className="
-          max-w-[420px] md:max-w-[560px] lg:max-w-[720px] xl:max-w-[800px]
-          mx-auto 
-          px-4 md:px-6 lg:px-10 
-          py-12 md:py-16 lg:py-20
-        ">
+      {/* Main Content - Use AnimatedBackground only for non-custom themes */}
+      {hasCustomBackground ? (
+        <div className="relative z-10">
+          {/* Decorative side elements - only visible on desktop */}
+          <DecorativeElements theme={themeConfig} />
           
-          {/* Profile Header with Glow Aura and 3D Depth */}
-          <div className="text-center mb-10 lg:mb-14">
-            {/* Avatar with 3D Depth Glow - scales up on desktop */}
-            <DepthGlow 
-              color={themeConfig.buttonPrimary || '#FF7043'} 
-              size={112}
-              className="inline-block mb-5 lg:mb-8"
-            >
+          <div 
+            className="min-h-screen parallax-3d-container relative"
+            data-testid="public-profile"
+          >
+            {/* Responsive container - mobile: 420px, tablet: 560px, desktop: 720px */}
+            <div className="
+              max-w-[420px] md:max-w-[560px] lg:max-w-[720px] xl:max-w-[800px]
+              mx-auto 
+              px-4 md:px-6 lg:px-10 
+              py-12 md:py-16 lg:py-20
+            ">
+              
+              {/* Profile Header with Glow Aura and 3D Depth */}
+              <div className="text-center mb-10 lg:mb-14">
+                {/* Avatar with 3D Depth Glow - scales up on desktop */}
+                <DepthGlow 
+                  color={themeConfig.buttonPrimary || '#FF7043'} 
+                  size={112}
+                  className="inline-block mb-5 lg:mb-8"
+                >
+                  <div className="relative">
+                    <GlowAura config={themeConfig.glowAura} size={112} />
+                    <Tilt3DCard
+                      maxTilt={8}
+                      scale={1.03}
+                      glare={true}
+                      className="w-28 h-28 lg:w-36 lg:h-36 rounded-full p-1 relative z-10 avatar-3d-glow"
+                      style={{ 
+                        background: themeConfig.headerGradient || `linear-gradient(135deg, ${themeConfig.buttonPrimary} 0%, ${themeConfig.accent} 100%)`,
+                        ['--glow-color' as string]: `${themeConfig.buttonPrimary}50`,
+                      }}
+                    >
+                      <div 
+                        className="w-full h-full rounded-full flex items-center justify-center overflow-hidden"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.9)' }}
+                      >
+                        {profile.photoUrl || user.picture ? (
+                          <img 
+                            src={profile.photoUrl || user.picture || ''} 
+                            alt={profile.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span 
+                            className="text-4xl lg:text-5xl font-bold" 
+                            style={{ 
+                              color: themeConfig.textPrimary,
+                              fontFamily: themeConfig.fontPairing.heading,
+                            }}
+                          >
+                            {profile.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                    </Tilt3DCard>
+                  </div>
+                </DepthGlow>
+                
+                {/* Name - responsive typography */}
+                <h1 
+                  className="text-2xl md:text-3xl lg:text-4xl mb-2 lg:mb-3" 
+                  style={{ 
+                    color: '#ffffff',
+                    fontFamily: themeConfig.fontPairing.heading,
+                    fontWeight: themeConfig.fontPairing.headingWeight,
+                    textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  }}
+                >
+                  {profile.name}
+                </h1>
+                
+                {/* Headline - responsive */}
+                {profile.headline && (
+                  <p 
+                    className="text-base md:text-lg lg:text-xl mb-2 lg:mb-3 max-w-md lg:max-w-lg mx-auto" 
+                    style={{ 
+                      color: 'rgba(255,255,255,0.9)',
+                      fontFamily: themeConfig.fontPairing.body,
+                      textShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                    }}
+                  >
+                    {profile.headline}
+                  </p>
+                )}
+                
+                {/* Location */}
+                {profile.location && (
+                  <div 
+                    className="flex items-center justify-center gap-1.5 text-sm md:text-base mb-4 lg:mb-6" 
+                    style={{ color: 'rgba(255,255,255,0.8)' }}
+                  >
+                    <MapPin className="w-4 h-4 lg:w-5 lg:h-5" />
+                    {profile.location}
+                  </div>
+                )}
+                
+                {/* Bio - wider on desktop */}
+                {profile.bio && (
+                  <p 
+                    className="leading-relaxed text-sm md:text-base lg:text-lg max-w-xs md:max-w-sm lg:max-w-lg mx-auto" 
+                    style={{ 
+                      color: 'rgba(255,255,255,0.85)',
+                      fontFamily: themeConfig.fontPairing.body,
+                      textShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                    }}
+                  >
+                    {profile.bio}
+                  </p>
+                )}
+              </div>
+
+              {/* Blocks with Staggered Animation - responsive spacing and grid on desktop */}
+              <div className="space-y-4 lg:space-y-5">
+                {profile.blocks.map((block, index) => renderBlock(block, index))}
+              </div>
+
+              {/* Sections - Mini Website Content */}
+              {profile.sections && profile.sections.length > 0 && (
+                <div className="space-y-4 lg:space-y-6 mt-6 lg:mt-10">
+                  {profile.sections
+                    .filter(section => section.enabled)
+                    .sort((a, b) => a.order - b.order)
+                    .map((section, index) => (
+                      <SectionRenderer
+                        key={section.id}
+                        section={section}
+                        theme={themeConfig}
+                        index={profile.blocks.length + index}
+                      />
+                    ))}
+                </div>
+              )}
+
+              {/* Footer - more spacing on desktop */}
+              <div className="mt-16 lg:mt-24 text-center">
+                <Link 
+                  href="/" 
+                  className="text-sm lg:text-base transition-opacity hover:opacity-70"
+                  style={{ 
+                    color: 'rgba(255,255,255,0.7)',
+                    fontFamily: themeConfig.fontPairing.body,
+                  }}
+                >
+                  <span className="inline-flex items-center gap-1.5"><SparkleIcon3D size={16} /> Powered by GoToLinks</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <AnimatedBackground theme={themeConfig}>
+          {/* Decorative side elements - only visible on desktop */}
+          <DecorativeElements theme={themeConfig} />
+          
+          <div 
+            className="min-h-screen parallax-3d-container relative"
+            data-testid="public-profile"
+          >
+            {/* Responsive container - mobile: 420px, tablet: 560px, desktop: 720px */}
+            <div className="
+              max-w-[420px] md:max-w-[560px] lg:max-w-[720px] xl:max-w-[800px]
+              mx-auto 
+              px-4 md:px-6 lg:px-10 
+              py-12 md:py-16 lg:py-20
+            ">
+              
+              {/* Profile Header with Glow Aura and 3D Depth */}
+              <div className="text-center mb-10 lg:mb-14">
+                {/* Avatar with 3D Depth Glow - scales up on desktop */}
+                <DepthGlow 
+                  color={themeConfig.buttonPrimary || '#FF7043'} 
+                  size={112}
+                  className="inline-block mb-5 lg:mb-8"
+                >
               <div className="relative">
                 <GlowAura config={themeConfig.glowAura} size={112} />
                 <Tilt3DCard
