@@ -41,8 +41,8 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json()
     const { theme } = body
     
-    // Validate theme exists
-    if (!theme || !themes[theme]) {
+    // Validate theme exists (allow 'custom' as special theme)
+    if (!theme || (theme !== 'custom' && !themes[theme])) {
       return NextResponse.json(
         { success: false, error: 'Invalid theme' },
         { status: 400 }
@@ -64,11 +64,14 @@ export async function PATCH(request: NextRequest) {
       )
     }
     
+    // Return theme config (use zen-minimal as base for custom)
+    const themeConfig = theme === 'custom' ? themes['zen-minimal'] : themes[theme]
+    
     return NextResponse.json({
       success: true,
       data: {
         theme,
-        themeConfig: themes[theme],
+        themeConfig,
       },
     })
   } catch (error) {
