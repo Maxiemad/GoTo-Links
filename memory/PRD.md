@@ -225,6 +225,13 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] **User initials avatar** - Shows first/last initials when no profile picture
 - [x] **Conditional buttons** - "Get Started Free" for logged-out, user menu for logged-in
 
+### Login/Signup Page UX Improvements (Feb 24, 2026)
+- [x] **Clickable logo** - GoToLinks logo positioned top-left on both /login and /signup
+- [x] **Logo navigation** - Clicking logo redirects to homepage (/)
+- [x] **Auth redirect** - Logged-in users visiting /login or /signup are auto-redirected to /dashboard
+- [x] **Loading state** - Spinner shown while checking auth status before rendering form
+- [x] **No dead ends** - Users always have a clear path back to homepage
+
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
 
