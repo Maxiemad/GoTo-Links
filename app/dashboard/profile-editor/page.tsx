@@ -141,8 +141,16 @@ export default function ProfileEditorPage() {
   const [toasts, setToasts] = useState<Toast[]>([])
   const themeScrollRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const bgFileInputRef = useRef<HTMLInputElement>(null)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [isUploadingBackground, setIsUploadingBackground] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [bgPreview, setBgPreview] = useState<string | null>(null)
+  
+  // Custom background controls
+  const [bgBlur, setBgBlur] = useState(0)
+  const [bgBrightness, setBgBrightness] = useState(100)
+  const [bgOverlayColor, setBgOverlayColor] = useState('rgba(0,0,0,0.4)')
 
   // Toast helper functions
   const showToast = useCallback((type: 'success' | 'error', message: string) => {
