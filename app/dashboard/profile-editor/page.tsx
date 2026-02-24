@@ -665,6 +665,104 @@ export default function ProfileEditorPage() {
         {/* Profile Settings Tab */}
         {activeTab === 'profile' && (
           <>
+            {/* Profile Picture Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+              <h2 className="text-xl font-bold text-gray-800 mb-6">Profile Picture</h2>
+              
+              <div className="flex items-center gap-6">
+                {/* Current Photo / Preview */}
+                <div className="relative group">
+                  <div 
+                    className="w-28 h-28 rounded-full overflow-hidden bg-gradient-to-br from-primary-100 to-accent-100 flex items-center justify-center ring-4 ring-white shadow-lg"
+                    data-testid="profile-picture-preview"
+                  >
+                    {(photoPreview || profile.photoUrl) ? (
+                      <img
+                        src={photoPreview || profile.photoUrl || ''}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-4xl font-bold text-primary-400">
+                        {profile.name?.charAt(0) || 'U'}
+                      </span>
+                    )}
+                    
+                    {/* Upload overlay */}
+                    {isUploadingPhoto && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-full">
+                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Camera icon overlay on hover */}
+                  {!isUploadingPhoto && (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/0 hover:bg-black/40 rounded-full flex items-center justify-center transition-all group-hover:opacity-100 opacity-0"
+                    >
+                      <Camera className="w-8 h-8 text-white" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Upload Controls */}
+                <div className="flex-1">
+                  <p className="text-sm text-gray-600 mb-3">
+                    Upload a photo to personalize your profile. Recommended: Square image, at least 400x400px.
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploadingPhoto}
+                      className="px-4 py-2 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      data-testid="upload-photo-btn"
+                    >
+                      {isUploadingPhoto ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4" />
+                          Upload Photo
+                        </>
+                      )}
+                    </button>
+                    
+                    {(profile.photoUrl || photoPreview) && (
+                      <button
+                        onClick={handleRemovePhoto}
+                        disabled={isUploadingPhoto}
+                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        data-testid="remove-photo-btn"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  
+                  <p className="text-xs text-gray-400 mt-2">
+                    JPG, PNG, or WEBP • Max 5MB
+                  </p>
+                </div>
+
+                {/* Hidden file input */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                  data-testid="photo-file-input"
+                />
+              </div>
+            </div>
+
             {/* Profile Settings */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-6">Profile Settings</h2>
