@@ -127,10 +127,27 @@ export default function ProfileEditorPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [isSavingTheme, setIsSavingTheme] = useState(false)
+  const [isSavingBlock, setIsSavingBlock] = useState(false)
+  const [isReordering, setIsReordering] = useState(false)
   const [showAddBlock, setShowAddBlock] = useState(false)
   const [editingBlock, setEditingBlock] = useState<Block | null>(null)
   const [activeTab, setActiveTab] = useState<EditorTab>('profile')
+  const [toasts, setToasts] = useState<Toast[]>([])
   const themeScrollRef = useRef<HTMLDivElement>(null)
+
+  // Toast helper functions
+  const showToast = useCallback((type: 'success' | 'error', message: string) => {
+    const id = Date.now().toString()
+    setToasts(prev => [...prev, { id, type, message }])
+    // Auto dismiss after 4 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id))
+    }, 4000)
+  }, [])
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id))
+  }, [])
 
   useEffect(() => {
     const fetchProfile = async () => {
