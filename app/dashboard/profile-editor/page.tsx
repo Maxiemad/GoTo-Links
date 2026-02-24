@@ -324,22 +324,45 @@ export default function ProfileEditorPage() {
 
   const handleDeleteBlock = async (blockId: string) => {
     if (!confirm('Are you sure you want to delete this block?')) return
+    if (!profile) return
+
+    // Store original for rollback
+    const originalBlocks = [...profile.blocks]
+    
+    // Optimistic update
+    setProfile({
+      ...profile,
+      blocks: profile.blocks.filter(b => b.id !== blockId),
+    })
 
     try {
+      console.log('[Frontend] Deleting block:', blockId)
       const res = await fetch(`/api/blocks/${blockId}`, {
         method: 'DELETE',
         credentials: 'include',
       })
 
       const data = await res.json()
-      if (data.success && profile) {
+      console.log('[Frontend] Delete block response:', data)
+      
+      if (data.success) {
+        showToast('success', 'Block deleted')
+      } else {
+        // Rollback on error
         setProfile({
           ...profile,
-          blocks: profile.blocks.filter(b => b.id !== blockId),
+          blocks: originalBlocks,
         })
+        showToast('error', data.error || 'Failed to delete block')
       }
     } catch (error) {
-      console.error('Failed to delete block:', error)
+      console.error('[Frontend] Failed to delete block:', error)
+      // Rollback on error
+      setProfile({
+        ...profile,
+        blocks: originalBlocks,
+      })
+      showToast('error', 'Network error. Please try again.')
     }
   }
 
