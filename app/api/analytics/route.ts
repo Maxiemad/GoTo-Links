@@ -40,6 +40,10 @@ export async function GET(request: NextRequest) {
     const db = await getDb()
     const period = request.nextUrl.searchParams.get('period') || '7d'
     
+    // Debug log the period
+    console.log('[Analytics API] Request URL:', request.url)
+    console.log('[Analytics API] Period param:', period)
+    
     // Get profile
     const profile = await db.collection('profiles').findOne({ userId: user.id })
     
