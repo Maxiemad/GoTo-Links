@@ -189,6 +189,24 @@ html {
   }
 }
 
+/* Feature Card Hover Effects */
+.feature-card-hover {
+  cursor: pointer;
+}
+
+.feature-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(161, 130, 103, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.feature-card-hover:hover .feature-icon {
+  transform: scale(1.1);
+}
+
+.feature-card-hover:hover .feature-icon svg {
+  filter: drop-shadow(0 4px 8px rgba(161, 130, 103, 0.3));
+}
+
 /* Glow Aura Animations */
 @keyframes glowPulse {
   0%, 100% {
