@@ -189,6 +189,27 @@ html {
   }
 }
 
+/* Hero Headline Animations */
+@keyframes heroSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
 /* Feature Card Hover Effects */
 .feature-card-hover {
   cursor: pointer;
