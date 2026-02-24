@@ -191,14 +191,17 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - [x] "Your wellness journey is growing" messaging
 
 ### Landing Page 3D Stickers (Feb 20, 2026)
-- [x] Created `WellnessStickers.tsx` with 9 custom 3D SVG stickers
-- [x] Stickers include: Lotus, Meditation Person, Heart, Sparkle, Leaf, Sun, Crystal, Moon, Wellness Badge
-- [x] All stickers have floating animation with smooth hover effects
-- [x] Added stickers to Hero section (6 stickers)
-- [x] Added stickers to Features section (4 stickers)
-- [x] Added stickers to Pricing section (4 stickers)
-- [x] All stickers respect prefers-reduced-motion
-- [x] Stickers use wellness color palette (coral, orange, pink, gold, green, purple)
+- [x] Created `WellnessStickers.tsx` with 9 custom 3D SVG stickers - **REMOVED** (user requested undo)
+
+### Block Persistence Bug Fix (Feb 24, 2026)
+- [x] **Fixed Zod schema validation** - Updated schemas to accept nullable strings for block fields
+- [x] **Enhanced PUT /api/blocks/[id]** - Added comprehensive logging, update verification, proper null handling
+- [x] **Enhanced POST /api/blocks/reorder** - Added block ownership validation, logging, proper sync with DB
+- [x] **Frontend state synchronization** - Frontend now uses server response data after updates
+- [x] **Added toast notifications** - Success/error toasts for all block operations (add, edit, delete)
+- [x] **Added loading states** - Disabled buttons during save operations to prevent double-clicks
+- [x] **Proper error handling** - Modal stays open on error, rollback on network failures
+- [x] **Cleanup** - Deleted unused `WellnessStickers.tsx` file
 
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine Dashboard Controls** - Add UI to manage theme settings in dashboard
