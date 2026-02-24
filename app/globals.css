@@ -210,6 +210,26 @@ html {
   }
 }
 
+@keyframes heroGlow {
+  0%, 100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes heroFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
 /* Feature Card Hover Effects */
 .feature-card-hover {
   cursor: pointer;
