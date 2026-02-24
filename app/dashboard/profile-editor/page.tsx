@@ -135,6 +135,9 @@ export default function ProfileEditorPage() {
   const [activeTab, setActiveTab] = useState<EditorTab>('profile')
   const [toasts, setToasts] = useState<Toast[]>([])
   const themeScrollRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
 
   // Toast helper functions
   const showToast = useCallback((type: 'success' | 'error', message: string) => {
