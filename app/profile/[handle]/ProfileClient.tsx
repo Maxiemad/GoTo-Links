@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { MapPin, ExternalLink, Calendar, MessageCircle, Phone, Send } from 'lucide-react'
 import { ThemeConfig, getBlockStyleCSS } from '../../../lib/themes'
@@ -8,6 +9,25 @@ import { AnimatedBackground, GlowAura, AnimatedBlock } from '../../components/Th
 import { SectionRenderer } from '../../components/SectionRenderer'
 import { Tilt3DCard, DepthGlow } from '../../components/Effects3D'
 import { RetreatIcon3D, QuoteIcon3D, SparkleIcon3D } from '../../components/Icons3D'
+
+// Track analytics event
+async function trackEvent(eventType: 'VIEW' | 'CLICK', profileId: string, blockId?: string) {
+  try {
+    await fetch('/api/analytics/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventType,
+        profileId,
+        blockId,
+        referrer: typeof document !== 'undefined' ? document.referrer : undefined,
+      }),
+    })
+  } catch (error) {
+    // Silently fail - don't break user experience
+    console.debug('Analytics tracking failed:', error)
+  }
+}
 
 // Decorative side elements for desktop
 const DecorativeElements = ({ theme }: { theme: ThemeConfig }) => (
