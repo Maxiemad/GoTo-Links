@@ -153,6 +153,131 @@ export default function ProfileEditorPage() {
     setToasts(prev => prev.filter(t => t.id !== id))
   }, [])
 
+  // Handle profile photo upload
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      showToast('error', 'Please upload a JPG, PNG, or WEBP image')
+      return
+    }
+
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024
+    if (file.size > maxSize) {
+      showToast('error', 'Image must be less than 5MB')
+      return
+    }
+
+    // Show preview immediately
+    const previewUrl = URL.createObjectURL(file)
+    setPhotoPreview(previewUrl)
+    setIsUploadingPhoto(true)
+
+    try {
+      // Get upload signature from backend
+      const signatureRes = await fetch('/api/upload/signature?folder=profiles&resource_type=image', {
+        credentials: 'include',
+      })
+      const signatureData = await signatureRes.json()
+
+      if (!signatureData.success) {
+        throw new Error(signatureData.error || 'Failed to get upload signature')
+      }
+
+      const { timestamp, signature, cloudName, apiKey, folder } = signatureData.data
+
+      // Upload to Cloudinary
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('api_key', apiKey)
+      formData.append('timestamp', timestamp.toString())
+      formData.append('signature', signature)
+      formData.append('folder', folder)
+      formData.append('transformation', 'c_fill,w_400,h_400,q_auto,f_auto')
+
+      const uploadRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      )
+
+      const uploadData = await uploadRes.json()
+
+      if (uploadData.error) {
+        throw new Error(uploadData.error.message || 'Upload failed')
+      }
+
+      // Update profile with new photo URL
+      const photoUrl = uploadData.secure_url
+
+      const updateRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ photoUrl }),
+      })
+
+      const updateData = await updateRes.json()
+
+      if (updateData.success) {
+        setProfile(prev => prev ? { ...prev, photoUrl } : null)
+        showToast('success', 'Profile picture updated')
+      } else {
+        throw new Error(updateData.error || 'Failed to save profile picture')
+      }
+    } catch (error) {
+      console.error('Photo upload error:', error)
+      showToast('error', error instanceof Error ? error.message : 'Failed to upload photo')
+      // Revert preview
+      setPhotoPreview(null)
+    } finally {
+      setIsUploadingPhoto(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // Handle remove profile photo
+  const handleRemovePhoto = async () => {
+    if (!profile?.photoUrl) return
+
+    if (!confirm('Are you sure you want to remove your profile picture?')) return
+
+    setIsUploadingPhoto(true)
+
+    try {
+      const updateRes = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ photoUrl: null }),
+      })
+
+      const updateData = await updateRes.json()
+
+      if (updateData.success) {
+        setProfile(prev => prev ? { ...prev, photoUrl: null } : null)
+        setPhotoPreview(null)
+        showToast('success', 'Profile picture removed')
+      } else {
+        throw new Error(updateData.error || 'Failed to remove profile picture')
+      }
+    } catch (error) {
+      console.error('Remove photo error:', error)
+      showToast('error', 'Failed to remove profile picture')
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
