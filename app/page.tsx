@@ -391,7 +391,8 @@ export default function HomePage() {
                   animation: prefersReducedMotion ? 'none' : 'heroLine1 0.35s ease-out 0s both',
                 }}
               >
-                World's FIRST Wellness-Branded
+                <span style={{ color: colors.accent[500] }}>World's FIRST</span>{' '}
+                <span style={{ color: colors.text.primary }}>Wellness-Branded</span>
               </span>
               <span 
                 className="headline-line-2 gradient-text"
