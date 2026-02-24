@@ -335,20 +335,28 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
 
   return (
     <AnimatedBackground theme={themeConfig}>
+      {/* Decorative side elements - only visible on desktop */}
+      <DecorativeElements theme={themeConfig} />
+      
       <div 
-        className="min-h-screen parallax-3d-container"
+        className="min-h-screen parallax-3d-container relative"
         data-testid="public-profile"
       >
-        {/* Mobile-first container - max 420px */}
-        <div className="max-w-[420px] mx-auto px-4 py-12">
+        {/* Responsive container - mobile: 420px, tablet: 560px, desktop: 720px */}
+        <div className="
+          max-w-[420px] md:max-w-[560px] lg:max-w-[720px] xl:max-w-[800px]
+          mx-auto 
+          px-4 md:px-6 lg:px-10 
+          py-12 md:py-16 lg:py-20
+        ">
           
           {/* Profile Header with Glow Aura and 3D Depth */}
-          <div className="text-center mb-10">
-            {/* Avatar with 3D Depth Glow */}
+          <div className="text-center mb-10 lg:mb-14">
+            {/* Avatar with 3D Depth Glow - scales up on desktop */}
             <DepthGlow 
               color={themeConfig.buttonPrimary || '#FF7043'} 
               size={112}
-              className="inline-block mb-5"
+              className="inline-block mb-5 lg:mb-8"
             >
               <div className="relative">
                 <GlowAura config={themeConfig.glowAura} size={112} />
@@ -356,7 +364,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
                   maxTilt={8}
                   scale={1.03}
                   glare={true}
-                  className="w-28 h-28 rounded-full p-1 relative z-10 avatar-3d-glow"
+                  className="w-28 h-28 lg:w-36 lg:h-36 rounded-full p-1 relative z-10 avatar-3d-glow"
                   style={{ 
                     background: themeConfig.headerGradient || `linear-gradient(135deg, ${themeConfig.buttonPrimary} 0%, ${themeConfig.accent} 100%)`,
                     ['--glow-color' as string]: `${themeConfig.buttonPrimary}50`,
@@ -374,7 +382,7 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
                       />
                     ) : (
                       <span 
-                        className="text-4xl font-bold" 
+                        className="text-4xl lg:text-5xl font-bold" 
                         style={{ 
                           color: themeConfig.textPrimary,
                           fontFamily: themeConfig.fontPairing.heading,
@@ -388,9 +396,9 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               </div>
             </DepthGlow>
             
-            {/* Name */}
+            {/* Name - responsive typography */}
             <h1 
-              className="text-2xl mb-2" 
+              className="text-2xl md:text-3xl lg:text-4xl mb-2 lg:mb-3" 
               style={{ 
                 color: themeConfig.textPrimary,
                 fontFamily: themeConfig.fontPairing.heading,
@@ -400,10 +408,10 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
               {profile.name}
             </h1>
             
-            {/* Headline */}
+            {/* Headline - responsive */}
             {profile.headline && (
               <p 
-                className="mb-2" 
+                className="text-base md:text-lg lg:text-xl mb-2 lg:mb-3 max-w-md lg:max-w-lg mx-auto" 
                 style={{ 
                   color: themeConfig.textSecondary,
                   fontFamily: themeConfig.fontPairing.body,
@@ -416,18 +424,18 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
             {/* Location */}
             {profile.location && (
               <div 
-                className="flex items-center justify-center gap-1 text-sm mb-4" 
+                className="flex items-center justify-center gap-1.5 text-sm md:text-base mb-4 lg:mb-6" 
                 style={{ color: themeConfig.textSecondary }}
               >
-                <MapPin className="w-4 h-4" />
+                <MapPin className="w-4 h-4 lg:w-5 lg:h-5" />
                 {profile.location}
               </div>
             )}
             
-            {/* Bio */}
+            {/* Bio - wider on desktop */}
             {profile.bio && (
               <p 
-                className="leading-relaxed max-w-xs mx-auto" 
+                className="leading-relaxed text-sm md:text-base lg:text-lg max-w-xs md:max-w-sm lg:max-w-lg mx-auto" 
                 style={{ 
                   color: themeConfig.textPrimary, 
                   opacity: 0.85,
@@ -439,14 +447,14 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
             )}
           </div>
 
-          {/* Blocks with Staggered Animation */}
-          <div className="space-y-4">
+          {/* Blocks with Staggered Animation - responsive spacing and grid on desktop */}
+          <div className="space-y-4 lg:space-y-5">
             {profile.blocks.map((block, index) => renderBlock(block, index))}
           </div>
 
           {/* Sections - Mini Website Content */}
           {profile.sections && profile.sections.length > 0 && (
-            <div className="space-y-4 mt-6">
+            <div className="space-y-4 lg:space-y-6 mt-6 lg:mt-10">
               {profile.sections
                 .filter(section => section.enabled)
                 .sort((a, b) => a.order - b.order)
@@ -461,17 +469,17 @@ export default function ProfileClient({ profile, user, themeConfig }: ProfileCli
             </div>
           )}
 
-          {/* Footer */}
-          <div className="mt-16 text-center">
+          {/* Footer - more spacing on desktop */}
+          <div className="mt-16 lg:mt-24 text-center">
             <Link 
               href="/" 
-              className="text-sm transition-opacity hover:opacity-70"
+              className="text-sm lg:text-base transition-opacity hover:opacity-70"
               style={{ 
                 color: themeConfig.textSecondary,
                 fontFamily: themeConfig.fontPairing.body,
               }}
             >
-              <span className="inline-flex items-center gap-1"><SparkleIcon3D size={16} /> Powered by GoToLinks</span>
+              <span className="inline-flex items-center gap-1.5"><SparkleIcon3D size={16} /> Powered by GoToLinks</span>
             </Link>
           </div>
         </div>
