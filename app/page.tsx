@@ -390,7 +390,7 @@ export default function HomePage() {
                   fontSize: 'clamp(1.75rem, 3vw, 3rem)', 
                   display: 'block',
                   color: colors.accent[500],
-                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0s both',
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0s both, heroGlow 2.5s ease-in-out 0.8s infinite',
                 }}
               >
                 World's FIRST
@@ -403,7 +403,7 @@ export default function HomePage() {
                   fontSize: 'clamp(2rem, 3.5vw, 3.5rem)', 
                   display: 'block',
                   color: colors.text.primary,
-                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.1s both',
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.1s both, heroFloat 3s ease-in-out 1s infinite',
                 }}
               >
                 Wellness-Branded
@@ -415,7 +415,7 @@ export default function HomePage() {
                 style={{ 
                   fontSize: 'clamp(2.5rem, 4vw, 4rem)', 
                   display: 'block',
-                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.2s both, heroPulse 3s ease-in-out 1s infinite',
+                  animation: prefersReducedMotion ? 'none' : 'heroSlideUp 0.5s ease-out 0.2s both, heroPulse 3s ease-in-out 1.2s infinite',
                 }}
               >
                 Link in Bio
