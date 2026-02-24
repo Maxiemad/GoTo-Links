@@ -1359,6 +1359,53 @@ footer a.elegant-hover:hover {
   animation: float3D 5s ease-in-out infinite;
 }
 
+/* Subtle floating animations for decorative elements */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-15px) translateX(5px);
+  }
+  50% {
+    transform: translateY(-5px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-20px) translateX(3px);
+  }
+}
+
+@keyframes floatSlower {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  33% {
+    transform: translateY(-10px) translateX(-8px);
+  }
+  66% {
+    transform: translateY(-18px) translateX(8px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 12s ease-in-out infinite;
+}
+
+.animate-float-slower {
+  animation: floatSlower 18s ease-in-out infinite;
+}
+
+/* Profile desktop enhancements */
+@media (min-width: 1024px) {
+  .profile-card-3d {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .profile-card-3d:hover {
+    transform: translateY(-4px);
+  }
+}
+
 /* 3D Button Effect */
 .button-3d {
   transform-style: preserve-3d;
