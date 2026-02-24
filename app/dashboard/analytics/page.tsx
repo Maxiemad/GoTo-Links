@@ -222,6 +222,9 @@ export default function AnalyticsPage() {
     try {
       const res = await fetch(`/api/analytics?period=${selectedPeriod}`, {
         credentials: 'include',
+        headers: {
+          'x-analytics-period': selectedPeriod, // Fallback header for proxy environments
+        },
       })
       const data = await res.json()
       
