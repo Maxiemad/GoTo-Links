@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, X, Check, ChevronUp, ChevronDown, Layers, AlertCircle, CheckCircle } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, Save, Plus, Trash2, Eye, Loader2, X, Check, ChevronUp, ChevronDown, Layers, AlertCircle, CheckCircle, Camera, Upload } from 'lucide-react'
 import { getThemeList, getTheme } from '../../../lib/themes'
 import SectionEditor from '../../components/SectionEditor'
 import { 
