@@ -737,70 +737,141 @@ export default function DashboardPage() {
             </Link>
           </Tilt3DCard>
 
-          {/* Upgrade to Pro */}
-          {user?.plan !== 'PRO' && (
-            <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
-              <Link 
-                href="/pricing"
-                className="block relative overflow-hidden rounded-3xl p-6 h-full group transition-all"
-                style={{
-                  background: `linear-gradient(135deg, ${colors.accent[50]} 0%, ${colors.primary[50]} 100%)`,
-                  border: `2px solid ${colors.accent[200]}`,
-                  boxShadow: `0 10px 40px ${colors.accent[100]}`,
-                }}
-                data-testid="upgrade-btn"
-              >
-                {/* Decorative elements */}
+          {/* Help Us Improve */}
+          <Tilt3DCard maxTilt={5} scale={1.02} glare={true}>
+            <div 
+              className="relative overflow-hidden rounded-3xl p-6 h-full transition-all"
+              style={{
+                background: `linear-gradient(135deg, ${colors.accent[50]} 0%, ${colors.primary[50]} 100%)`,
+                border: `2px solid ${colors.accent[200]}`,
+                boxShadow: `0 10px 40px ${colors.accent[100]}`,
+              }}
+              data-testid="feedback-card"
+            >
+              {/* Decorative elements */}
+              <div 
+                className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30"
+                style={{ backgroundColor: colors.accent[200] }}
+              ></div>
+              <div 
+                className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20"
+                style={{ backgroundColor: colors.primary[200] }}
+              ></div>
+              
+              <div className="relative">
                 <div 
-                  className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-30"
-                  style={{ backgroundColor: colors.accent[200] }}
-                ></div>
-                <div 
-                  className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full opacity-20"
-                  style={{ backgroundColor: colors.primary[200] }}
-                ></div>
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
+                    boxShadow: `0 8px 24px ${colors.accent[200]}`,
+                  }}
+                >
+                  <MessageSquare size={24} color="white" />
+                </div>
+                <h3 
+                  className="text-lg font-bold mb-1"
+                  style={{ color: colors.text.primary }}
+                >
+                  Help Us Improve
+                </h3>
+                <p 
+                  className="text-xs leading-relaxed mb-4"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Suggest features you'd love to see next.
+                </p>
                 
-                <div className="relative">
-                  <div 
-                    className="absolute -top-1 -right-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
-                    style={{ backgroundColor: colors.accent[500], color: 'white' }}
-                  >
-                    Pro
-                  </div>
-                  <div 
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 shadow-lg"
-                    style={{ 
-                      background: `linear-gradient(135deg, ${colors.accent[400]} 0%, ${colors.accent[500]} 100%)`,
-                      boxShadow: `0 8px 24px ${colors.accent[200]}`,
-                    }}
-                  >
-                    <Zap size={24} color="white" />
-                  </div>
-                  <h3 
-                    className="text-lg font-bold mb-1"
-                    style={{ color: colors.text.primary }}
-                  >
-                    Upgrade
-                  </h3>
-                  <p 
-                    className="text-xs leading-relaxed mb-4"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    Unlock premium features
-                  </p>
-                  <div 
-                    className="flex items-center text-sm font-semibold"
+                {!showSuggestionForm ? (
+                  <button
+                    onClick={() => setShowSuggestionForm(true)}
+                    className="flex items-center text-sm font-semibold cursor-pointer hover:gap-2 transition-all"
                     style={{ color: colors.accent[600] }}
+                    data-testid="suggest-features-btn"
                   >
-                    <span>See Plans</span>
-                    <svg className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span>Suggest Features</span>
+                    <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    {suggestionSuccess ? (
+                      <div 
+                        className="py-3 px-4 rounded-xl text-center"
+                        style={{ backgroundColor: colors.secondary[100] }}
+                      >
+                        <span style={{ color: colors.secondary[600] }}>Thanks for your suggestion 💛</span>
+                      </div>
+                    ) : (
+                      <>
+                        <textarea
+                          value={suggestion}
+                          onChange={(e) => {
+                            if (e.target.value.length <= 500) {
+                              setSuggestion(e.target.value)
+                              setSuggestionError(null)
+                            }
+                          }}
+                          placeholder="What features would you love to see in a future version?"
+                          className="w-full p-3 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 transition-all"
+                          style={{ 
+                            backgroundColor: 'white',
+                            border: `1px solid ${suggestionError ? '#ef4444' : colors.gray[200]}`,
+                            color: colors.text.primary,
+                            minHeight: '80px',
+                          }}
+                          rows={3}
+                          data-testid="suggestion-input"
+                        />
+                        <div className="flex items-center justify-between">
+                          <span 
+                            className="text-xs"
+                            style={{ color: suggestion.length > 450 ? '#ef4444' : colors.gray[400] }}
+                          >
+                            {suggestion.length}/500
+                          </span>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setShowSuggestionForm(false)
+                                setSuggestion('')
+                                setSuggestionError(null)
+                              }}
+                              className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-gray-100"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSubmitSuggestion}
+                              disabled={isSubmitting || suggestion.length < 10}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all disabled:opacity-50"
+                              style={{ 
+                                backgroundColor: colors.accent[500],
+                              }}
+                              data-testid="submit-suggestion-btn"
+                            >
+                              {isSubmitting ? (
+                                <span>Sending...</span>
+                              ) : (
+                                <>
+                                  <Send size={12} />
+                                  <span>Send</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        {suggestionError && (
+                          <p className="text-xs text-red-500">{suggestionError}</p>
+                        )}
+                      </>
+                    )}
                   </div>
-                </div>
-              </Link>
-            </Tilt3DCard>
-          )}
+                )}
+              </div>
+            </div>
+          </Tilt3DCard>
         </div>
 
         {/* Wellness Quote */}
