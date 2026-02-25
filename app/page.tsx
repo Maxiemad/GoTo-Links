@@ -248,6 +248,65 @@ export default function HomePage() {
     return () => observer.disconnect()
   }, [])
 
+  // Check if user is logged in for pricing suggestion
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' })
+        const data = await res.json()
+        setIsLoggedIn(data.success)
+      } catch {
+        setIsLoggedIn(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  // Handle pricing suggestion submission
+  const handlePricingSuggestionSubmit = async () => {
+    if (!pricingSuggestion.trim() || pricingSuggestion.length < 10) {
+      setPricingSuggestionError('Please enter at least 10 characters')
+      return
+    }
+    
+    if (!isLoggedIn) {
+      setPricingSuggestionError('Please log in to submit a suggestion')
+      return
+    }
+    
+    setIsPricingSubmitting(true)
+    setPricingSuggestionError(null)
+    
+    try {
+      const res = await fetch('/api/suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ 
+          suggestion: pricingSuggestion.trim(),
+          source: 'pricing_page'
+        }),
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        setPricingSuggestion('')
+        setPricingSuggestionSuccess(true)
+        setTimeout(() => {
+          setPricingSuggestionSuccess(false)
+          setShowPricingSuggestion(false)
+        }, 3000)
+      } else {
+        setPricingSuggestionError(data.error || 'Failed to submit suggestion')
+      }
+    } catch (error) {
+      setPricingSuggestionError('Failed to submit. Please try again.')
+    } finally {
+      setIsPricingSubmitting(false)
+    }
+  }
+
   const handleCreateAndStyle = () => {
     setIsLoading(true)
     setTimeout(() => {
