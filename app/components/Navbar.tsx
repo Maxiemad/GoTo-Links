@@ -62,6 +62,7 @@ interface NavItem {
     cta?: {
       text: string
       scrollTo?: string
+      href?: string
     }
     tabs?: {
       label: string
