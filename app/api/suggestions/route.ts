@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../lib/mongodb'
-import { verifySession, getSessionFromCookies } from '../../../lib/auth'
+import { validateSession } from '../../../lib/auth'
 
 // In-memory rate limiting (simple approach)
 const rateLimitMap = new Map<string, number>()
@@ -34,24 +34,16 @@ function sanitizeText(text: string): string {
 export async function POST(request: NextRequest) {
   try {
     // Verify user is logged in
-    const sessionToken = getSessionFromCookies()
-    if (!sessionToken) {
+    const user = await validateSession(request)
+    if (!user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    const session = await verifySession(sessionToken)
-    if (!session) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid session' },
-        { status: 401 }
-      )
-    }
-
     // Rate limiting
-    if (isRateLimited(session.userId)) {
+    if (isRateLimited(user.id)) {
       return NextResponse.json(
         { success: false, error: 'Please wait before submitting another suggestion' },
         { status: 429 }
@@ -85,25 +77,12 @@ export async function POST(request: NextRequest) {
     }
 
     const db = await getDb()
-    
-    // Get user email
-    const user = await db.collection('users').findOne(
-      { _id: { $eq: session.userId } },
-      { projection: { email: 1 } }
-    )
-
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      )
-    }
 
     // Sanitize and store suggestion
     const sanitizedSuggestion = sanitizeText(suggestion)
 
     await db.collection('featureSuggestions').insertOne({
-      userId: session.userId,
+      userId: user.id,
       email: user.email,
       suggestion: sanitizedSuggestion,
       createdAt: new Date(),
