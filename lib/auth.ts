@@ -107,6 +107,7 @@ export async function getCurrentUser(): Promise<UserSession | null> {
       handle: user.handle,
       plan: user.plan || 'FREE',
       picture: user.picture || null,
+      isAdmin: isAdminEmail(user.email),
     }
   } catch (error) {
     console.error('Error getting current user:', error)
