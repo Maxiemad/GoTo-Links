@@ -40,6 +40,15 @@ export default function HomePage() {
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
   const [isHoveringCTA, setIsHoveringCTA] = useState(false)
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
+  
+  // Pricing suggestion form state
+  const [showPricingSuggestion, setShowPricingSuggestion] = useState(false)
+  const [pricingSuggestion, setPricingSuggestion] = useState('')
+  const [isPricingSubmitting, setIsPricingSubmitting] = useState(false)
+  const [pricingSuggestionSuccess, setPricingSuggestionSuccess] = useState(false)
+  const [pricingSuggestionError, setPricingSuggestionError] = useState<string | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  
   const themeSectionRef = useRef<HTMLDivElement>(null)
   const themeTrackRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
