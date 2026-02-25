@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { suggestion } = body
+    const { suggestion, source } = body
 
     // Validate input
     if (!suggestion || typeof suggestion !== 'string') {
@@ -80,11 +80,13 @@ export async function POST(request: NextRequest) {
 
     // Sanitize and store suggestion
     const sanitizedSuggestion = sanitizeText(suggestion)
+    const suggestionSource = source === 'pricing_page' ? 'pricing_page' : 'dashboard'
 
     await db.collection('featureSuggestions').insertOne({
       userId: user.id,
       email: user.email,
       suggestion: sanitizedSuggestion,
+      source: suggestionSource,
       createdAt: new Date(),
     })
 
