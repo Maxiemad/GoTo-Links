@@ -120,6 +120,13 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [currentTime, setCurrentTime] = useState(new Date())
+  
+  // Suggestion form state
+  const [showSuggestionForm, setShowSuggestionForm] = useState(false)
+  const [suggestion, setSuggestion] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [suggestionSuccess, setSuggestionSuccess] = useState(false)
+  const [suggestionError, setSuggestionError] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000)
