@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, MousePointer, Trophy, Edit3, ExternalLink, Zap, Copy, Check, TrendingUp, Sparkles, Leaf, Heart, BarChart3 } from 'lucide-react'
+import { Eye, MousePointer, Trophy, Edit3, ExternalLink, Copy, Check, TrendingUp, Sparkles, Leaf, Heart, BarChart3, MessageSquare, Send } from 'lucide-react'
 import { colors, typography, borderRadius, shadows } from '../styles/theme'
 import { Tilt3DCard } from '../components/Effects3D'
 
