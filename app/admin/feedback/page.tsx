@@ -211,6 +211,12 @@ export default function AdminFeedbackPage() {
                       Date
                     </div>
                   </th>
+                  <th 
+                    className="px-6 py-4 text-left text-sm font-semibold"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Source
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -244,6 +250,17 @@ export default function AdminFeedbackPage() {
                         style={{ color: colors.text.secondary }}
                       >
                         {formatDate(suggestion.createdAt)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span 
+                        className="text-xs px-2 py-1 rounded-full"
+                        style={{ 
+                          backgroundColor: suggestion.source === 'pricing_page' ? colors.accent[100] : colors.primary[100],
+                          color: suggestion.source === 'pricing_page' ? colors.accent[600] : colors.primary[500],
+                        }}
+                      >
+                        {suggestion.source === 'pricing_page' ? 'Pricing' : 'Dashboard'}
                       </span>
                     </td>
                   </tr>
