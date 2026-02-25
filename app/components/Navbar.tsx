@@ -1220,7 +1220,9 @@ export const Navbar: React.FC = () => {
                             size="lg"
                             style={{ width: '100%' }}
                             onClick={() => {
-                              if (item.dropdown?.cta?.scrollTo) {
+                              if (item.dropdown?.cta?.href) {
+                                window.location.href = item.dropdown.cta.href
+                              } else if (item.dropdown?.cta?.scrollTo) {
                                 handleScrollTo(item.dropdown.cta.scrollTo)
                               }
                             }}
