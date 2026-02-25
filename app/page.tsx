@@ -1287,20 +1287,21 @@ export default function HomePage() {
               transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.05s, transform 0.4s ease-out 0.05s',
             }}
           >
-            Free forever, upgrade when you're ready
+            World's FIRST Wellness-Branded Link in Bio
           </h2>
           <p
             style={{
               textAlign: 'center',
               color: colors.text.secondary,
               marginBottom: '3rem',
-              fontSize: '1.125rem',
+              fontSize: '1.25rem',
+              fontWeight: 600,
               opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
               transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(20px)',
               transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.08s, transform 0.4s ease-out 0.08s',
             }}
           >
-            Start free, upgrade to unlock advanced features
+            <span style={{ color: colors.accent[500], fontWeight: 700 }}>Completely FREE</span> — No credit card required
           </p>
           
           {/* Pricing Cards Container - Flex for equal height alignment */}
