@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/mongodb'
-import { validateSession } from '../../../../lib/auth'
+import { validateSession, isAdminEmail } from '../../../../lib/auth'
 
-// Admin email(s) - add your admin emails here
-const ADMIN_EMAILS = ['admin@gotolinks.com', 'localtest@test.com', 'analyticstest@test.com']
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify user is logged in
+    // Validate session
     const user = await validateSession(request)
     if (!user) {
       return NextResponse.json(
@@ -16,8 +15,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Check if admin
-    if (!ADMIN_EMAILS.includes(user.email)) {
+    // Check admin access - server-side validation using domain
+    if (!isAdminEmail(user.email)) {
       return NextResponse.json(
         { success: false, error: 'Access denied' },
         { status: 403 }
@@ -25,10 +24,15 @@ export async function GET(request: NextRequest) {
     }
 
     const db = await getDb()
+    const { searchParams } = new URL(request.url)
+    const sourceFilter = searchParams.get('source') // 'dashboard', 'pricing_page', or null for all
 
-    // Fetch all suggestions
+    // Build filter query
+    const filterQuery = sourceFilter ? { source: sourceFilter } : {}
+
+    // Fetch suggestions
     const suggestions = await db.collection('featureSuggestions')
-      .find({})
+      .find(filterQuery)
       .sort({ createdAt: -1 })
       .toArray()
 
