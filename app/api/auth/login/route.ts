@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
           handle: user.handle,
           plan: user.plan,
           picture: user.picture,
+          isAdmin: isAdminEmail(user.email),
         },
       },
     })
