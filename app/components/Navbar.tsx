@@ -132,7 +132,7 @@ const navItems: NavItem[] = [
       description: 'Built for anyone who wants more from their bio link',
       cta: {
         text: 'Get Started Free',
-        scrollTo: 'pricing',
+        href: '/signup',
       },
       tabs: [
         {
@@ -194,10 +194,6 @@ const navItems: NavItem[] = [
         },
       ],
     },
-  },
-  {
-    label: 'Pricing',
-    scrollTo: 'pricing',
   },
 ]
 
