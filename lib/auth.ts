@@ -20,6 +20,14 @@ export interface UserSession {
   handle: string
   plan: string
   picture: string | null
+  isAdmin: boolean
+}
+
+// Admin domain check
+const ADMIN_DOMAIN = '@gotoretreats.com'
+
+export function isAdminEmail(email: string): boolean {
+  return email.toLowerCase().endsWith(ADMIN_DOMAIN)
 }
 
 // Generate JWT token
