@@ -1304,115 +1304,84 @@ export default function HomePage() {
             <span style={{ color: colors.accent[500], fontWeight: 700 }}>Completely FREE</span> — No credit card required
           </p>
           
-          {/* Pricing Cards Container - Flex for equal height alignment */}
+          {/* Pricing Card - Single Free Plan */}
           <div
             style={{
               display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
               justifyContent: 'center',
-              alignItems: 'stretch',
-              gap: '2rem',
             }}
           >
-            {[
-              {
-                name: 'Free',
-                price: '$0',
-                features: [
-                  'Unlimited links',
-                  'Retreat blocks',
-                  'Basic themes',
-                  'Profile analytics',
-                ],
-                cta: 'Get started free',
-              },
-              {
-                name: 'Pro',
-                price: '$19',
-                period: '/month',
-                features: [
-                  'Everything in Free',
-                  'Video hero backgrounds',
-                  'All premium themes',
-                  'Advanced analytics',
-                  'Custom domain',
-                  'Priority support',
-                ],
-                cta: 'Upgrade to Pro',
-                highlight: true,
-              },
-            ].map((plan, idx) => (
-              <Tilt3DCard
-                key={idx}
-                maxTilt={plan.highlight ? 6 : 4}
-                scale={plan.highlight ? 1.04 : 1.02}
-                glare={true}
-                className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
+            <Tilt3DCard
+              maxTilt={6}
+              scale={1.04}
+              glare={true}
+              className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
+              style={{
+                width: '100%',
+                maxWidth: '420px',
+                opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
+                transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+                transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.08s, transform 0.4s ease-out 0.08s',
+              }}
+            >
+              <Card
+                className="shadow-3d"
                 style={{
-                  flex: '1 1 320px',
-                  maxWidth: '400px',
-                  minWidth: '300px',
-                  opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
-                  transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
-                  transition: prefersReducedMotion ? 'none' : `opacity 0.4s ease-out ${0.08 + idx * 0.06}s, transform 0.4s ease-out ${0.08 + idx * 0.06}s`,
+                  border: `3px solid ${colors.accent[500]}`,
+                  position: 'relative',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '2rem',
                 }}
               >
-                <Card
-                  className="shadow-3d"
+                <div
+                  className="float-element"
                   style={{
-                    border: plan.highlight ? `3px solid ${colors.accent[500]}` : undefined,
-                    position: 'relative',
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    padding: '2rem',
+                    position: 'absolute',
+                    top: '-12px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: colors.accent[500],
+                    color: colors.white,
+                    padding: '0.25rem 1rem',
+                    borderRadius: borderRadius.full,
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    animation: 'float 3s ease-in-out infinite',
+                    boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
                   }}
                 >
-                {plan.highlight && (
-                  <div
-                    className="float-element"
-                    style={{
-                      position: 'absolute',
-                      top: '-12px',
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      backgroundColor: colors.accent[500],
-                      color: colors.white,
-                      padding: '0.25rem 1rem',
-                      borderRadius: borderRadius.full,
-                      fontSize: '0.875rem',
-                      fontWeight: 600,
-                      animation: 'float 3s ease-in-out infinite',
-                      boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
-                    }}
-                  >
-                    Most Popular
-                  </div>
-                )}
+                  100% Free
+                </div>
                 
                 {/* Plan Header */}
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                   <h3 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem', color: colors.text.primary }}>
-                    {plan.name}
+                    Everything Included
                   </h3>
                   <div>
                     <span style={{ fontSize: '2.5rem', fontWeight: 700, color: colors.primary[500] }}>
-                      {plan.price}
+                      $0
                     </span>
-                    {plan.period && (
-                      <span style={{ color: colors.text.secondary }}>{plan.period}</span>
-                    )}
+                    <span style={{ color: colors.text.secondary }}>/forever</span>
                   </div>
                 </div>
                 
-                {/* Features List - Grows to fill space */}
+                {/* Features List */}
                 <ul style={{ 
                   listStyle: 'none', 
                   flex: '1 1 auto',
                   marginBottom: '1.5rem',
                 }}>
-                  {plan.features.map((feature, fIdx) => (
+                  {[
+                    'Unlimited links',
+                    'Retreat blocks',
+                    'All premium themes',
+                    'Profile analytics',
+                    'Custom background',
+                    'Priority support',
+                  ].map((feature, fIdx) => (
                     <li
                       key={fIdx}
                       style={{
@@ -1429,20 +1398,20 @@ export default function HomePage() {
                   ))}
                 </ul>
                 
-                {/* CTA Button - Fixed at bottom */}
+                {/* CTA Button */}
                 <div style={{ marginTop: 'auto' }}>
                   <Button
-                    variant={plan.highlight ? 'primary' : 'outline'}
+                    variant="primary"
                     size="lg"
                     className="button-elegant button-3d"
                     style={{ width: '100%' }}
+                    onClick={() => window.location.href = '/signup'}
                   >
-                    {plan.cta}
+                    Get Started Free
                   </Button>
                 </div>
               </Card>
-              </Tilt3DCard>
-            ))}
+            </Tilt3DCard>
           </div>
         </div>
       </section>
