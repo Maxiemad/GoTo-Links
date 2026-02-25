@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
       id: s._id.toString(),
       email: s.email,
       suggestion: s.suggestion,
+      source: s.source || 'dashboard',
       createdAt: s.createdAt,
     }))
 
