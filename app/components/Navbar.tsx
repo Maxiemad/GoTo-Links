@@ -14,7 +14,7 @@ import {
   SparkleIcon3D,
   PhoneIcon3D
 } from './Icons3D'
-import { LayoutDashboard, User, LogOut, ChevronDown } from 'lucide-react'
+import { LayoutDashboard, User, LogOut, ChevronDown, Shield } from 'lucide-react'
 
 // User type for auth state
 interface AuthUser {
@@ -25,6 +25,7 @@ interface AuthUser {
   handle: string
   plan: string
   picture: string | null
+  isAdmin?: boolean
 }
 
 // Helper to render 3D icons based on emoji key
