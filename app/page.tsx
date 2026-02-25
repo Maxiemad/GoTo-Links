@@ -1372,21 +1372,27 @@ export default function HomePage() {
             <span style={{ color: colors.accent[500], fontWeight: 700 }}>Completely FREE</span> — No credit card required
           </p>
           
-          {/* Pricing Card - Single Free Plan */}
+          {/* Pricing Cards Container - Two cards: Free and Pro */}
           <div
             style={{
               display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
               justifyContent: 'center',
+              alignItems: 'stretch',
+              gap: '2rem',
             }}
           >
+            {/* Free Card */}
             <Tilt3DCard
-              maxTilt={6}
-              scale={1.04}
+              maxTilt={4}
+              scale={1.02}
               glare={true}
               className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
               style={{
-                width: '100%',
-                maxWidth: '420px',
+                flex: '1 1 320px',
+                maxWidth: '400px',
+                minWidth: '300px',
                 opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
                 transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
                 transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.08s, transform 0.4s ease-out 0.08s',
@@ -1395,7 +1401,6 @@ export default function HomePage() {
               <Card
                 className="shadow-3d"
                 style={{
-                  border: `3px solid ${colors.accent[500]}`,
                   position: 'relative',
                   height: '100%',
                   display: 'flex',
@@ -1403,36 +1408,15 @@ export default function HomePage() {
                   padding: '2rem',
                 }}
               >
-                <div
-                  className="float-element"
-                  style={{
-                    position: 'absolute',
-                    top: '-12px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    backgroundColor: colors.accent[500],
-                    color: colors.white,
-                    padding: '0.25rem 1rem',
-                    borderRadius: borderRadius.full,
-                    fontSize: '0.875rem',
-                    fontWeight: 600,
-                    animation: 'float 3s ease-in-out infinite',
-                    boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
-                  }}
-                >
-                  100% Free
-                </div>
-                
                 {/* Plan Header */}
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                   <h3 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem', color: colors.text.primary }}>
-                    Everything Included
+                    Free
                   </h3>
                   <div>
                     <span style={{ fontSize: '2.5rem', fontWeight: 700, color: colors.primary[500] }}>
                       $0
                     </span>
-                    <span style={{ color: colors.text.secondary }}>/forever</span>
                   </div>
                 </div>
                 
@@ -1445,10 +1429,8 @@ export default function HomePage() {
                   {[
                     'Unlimited links',
                     'Retreat blocks',
-                    'All premium themes',
+                    'Basic themes',
                     'Profile analytics',
-                    'Custom background',
-                    'Priority support',
                   ].map((feature, fIdx) => (
                     <li
                       key={fIdx}
@@ -1469,14 +1451,255 @@ export default function HomePage() {
                 {/* CTA Button */}
                 <div style={{ marginTop: 'auto' }}>
                   <Button
-                    variant="primary"
+                    variant="outline"
                     size="lg"
                     className="button-elegant button-3d"
                     style={{ width: '100%' }}
                     onClick={() => window.location.href = '/signup'}
                   >
-                    Get Started Free
+                    Get started free
                   </Button>
+                </div>
+              </Card>
+            </Tilt3DCard>
+
+            {/* Pro Card - Collaborative Validation */}
+            <Tilt3DCard
+              maxTilt={6}
+              scale={1.04}
+              glare={true}
+              className={`stagger-item ${visibleSections.has('pricing') || prefersReducedMotion ? 'visible' : ''}`}
+              style={{
+                flex: '1 1 320px',
+                maxWidth: '400px',
+                minWidth: '300px',
+                opacity: visibleSections.has('pricing') || prefersReducedMotion ? 1 : 0,
+                transform: visibleSections.has('pricing') || prefersReducedMotion ? 'translateY(0)' : 'translateY(18px)',
+                transition: prefersReducedMotion ? 'none' : 'opacity 0.4s ease-out 0.14s, transform 0.4s ease-out 0.14s',
+              }}
+            >
+              <Card
+                className="shadow-3d"
+                style={{
+                  border: `3px solid ${colors.accent[500]}`,
+                  position: 'relative',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '2rem',
+                }}
+              >
+                {/* Most Popular Badge */}
+                <div
+                  className="float-element"
+                  style={{
+                    position: 'absolute',
+                    top: '-12px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: colors.accent[500],
+                    color: colors.white,
+                    padding: '0.25rem 1rem',
+                    borderRadius: borderRadius.full,
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    animation: 'float 3s ease-in-out infinite',
+                    boxShadow: '0 4px 12px rgba(161, 130, 103, 0.4)',
+                  }}
+                >
+                  Most Popular
+                </div>
+                
+                {/* Plan Header */}
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <h3 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '0.5rem', color: colors.text.primary }}>
+                    Pro
+                  </h3>
+                  <div>
+                    <span style={{ fontSize: '2.5rem', fontWeight: 700, color: colors.primary[500] }}>
+                      $10
+                    </span>
+                    <span style={{ color: colors.text.secondary }}>/month</span>
+                  </div>
+                </div>
+                
+                {/* Features List */}
+                <ul style={{ 
+                  listStyle: 'none', 
+                  flex: '1 1 auto',
+                  marginBottom: '1.5rem',
+                }}>
+                  {[
+                    'Everything in Free',
+                    'Video hero backgrounds',
+                    'All premium themes',
+                    'Advanced analytics',
+                    'Custom domain',
+                    'Priority support',
+                  ].map((feature, fIdx) => (
+                    <li
+                      key={fIdx}
+                      style={{
+                        padding: '0.75rem 0',
+                        borderBottom: `1px solid ${colors.gray[200]}`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                      }}
+                    >
+                      <span style={{ color: colors.primary[500] }}>✓</span>
+                      <span style={{ color: colors.text.primary }}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                {/* CTA Section - Collaborative Validation */}
+                <div style={{ marginTop: 'auto' }}>
+                  {!showPricingSuggestion ? (
+                    <div style={{ textAlign: 'center' }}>
+                      <h4 style={{ 
+                        fontSize: '1.125rem', 
+                        fontWeight: 700, 
+                        marginBottom: '0.5rem',
+                        color: colors.text.primary,
+                      }}>
+                        Shape the Premium Version
+                      </h4>
+                      <p style={{ 
+                        fontSize: '0.875rem', 
+                        color: colors.text.secondary,
+                        marginBottom: '1rem',
+                        lineHeight: 1.5,
+                      }}>
+                        Tell us what you'd love in the $10/month plan.
+                      </p>
+                      <Button
+                        variant="primary"
+                        size="lg"
+                        className="button-elegant button-3d"
+                        style={{ width: '100%' }}
+                        onClick={() => {
+                          if (!isLoggedIn) {
+                            window.location.href = '/login?redirect=/pricing'
+                          } else {
+                            setShowPricingSuggestion(true)
+                          }
+                        }}
+                        data-testid="pricing-suggest-btn"
+                      >
+                        Suggest Features
+                      </Button>
+                    </div>
+                  ) : (
+                    <div style={{ marginTop: '0.5rem' }}>
+                      {pricingSuggestionSuccess ? (
+                        <div 
+                          style={{ 
+                            padding: '1rem',
+                            borderRadius: borderRadius.lg,
+                            backgroundColor: colors.secondary[100],
+                            textAlign: 'center',
+                          }}
+                        >
+                          <span style={{ color: colors.secondary[600], fontWeight: 500 }}>
+                            Thanks for helping shape the premium version 💛
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <textarea
+                            value={pricingSuggestion}
+                            onChange={(e) => {
+                              if (e.target.value.length <= 500) {
+                                setPricingSuggestion(e.target.value)
+                                setPricingSuggestionError(null)
+                              }
+                            }}
+                            placeholder="What features would make this worth $10/month for you?"
+                            style={{ 
+                              width: '100%',
+                              padding: '0.75rem',
+                              borderRadius: borderRadius.lg,
+                              border: `1px solid ${pricingSuggestionError ? '#ef4444' : colors.gray[200]}`,
+                              fontSize: '0.875rem',
+                              resize: 'none',
+                              minHeight: '80px',
+                              fontFamily: 'inherit',
+                              color: colors.text.primary,
+                            }}
+                            rows={3}
+                            data-testid="pricing-suggestion-input"
+                          />
+                          <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            marginTop: '0.5rem',
+                          }}>
+                            <span 
+                              style={{ 
+                                fontSize: '0.75rem',
+                                color: pricingSuggestion.length > 450 ? '#ef4444' : colors.gray[400],
+                              }}
+                            >
+                              {pricingSuggestion.length}/500
+                            </span>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                onClick={() => {
+                                  setShowPricingSuggestion(false)
+                                  setPricingSuggestion('')
+                                  setPricingSuggestionError(null)
+                                }}
+                                style={{
+                                  padding: '0.5rem 0.75rem',
+                                  borderRadius: borderRadius.md,
+                                  border: 'none',
+                                  backgroundColor: 'transparent',
+                                  color: colors.text.secondary,
+                                  fontSize: '0.75rem',
+                                  fontWeight: 500,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={handlePricingSuggestionSubmit}
+                                disabled={isPricingSubmitting || pricingSuggestion.length < 10}
+                                style={{
+                                  padding: '0.5rem 1rem',
+                                  borderRadius: borderRadius.md,
+                                  border: 'none',
+                                  backgroundColor: colors.accent[500],
+                                  color: 'white',
+                                  fontSize: '0.75rem',
+                                  fontWeight: 600,
+                                  cursor: isPricingSubmitting || pricingSuggestion.length < 10 ? 'not-allowed' : 'pointer',
+                                  opacity: isPricingSubmitting || pricingSuggestion.length < 10 ? 0.5 : 1,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '0.25rem',
+                                }}
+                                data-testid="pricing-submit-btn"
+                              >
+                                {isPricingSubmitting ? 'Sending...' : 'Send'}
+                              </button>
+                            </div>
+                          </div>
+                          {pricingSuggestionError && (
+                            <p style={{ 
+                              fontSize: '0.75rem', 
+                              color: '#ef4444',
+                              marginTop: '0.5rem',
+                            }}>
+                              {pricingSuggestionError}
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
               </Card>
             </Tilt3DCard>
