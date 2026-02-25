@@ -175,6 +175,42 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const handleSubmitSuggestion = async () => {
+    if (!suggestion.trim() || suggestion.length < 10) {
+      setSuggestionError('Please enter at least 10 characters')
+      return
+    }
+    
+    setIsSubmitting(true)
+    setSuggestionError(null)
+    
+    try {
+      const res = await fetch('/api/suggestions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ suggestion: suggestion.trim() }),
+      })
+      
+      const data = await res.json()
+      
+      if (data.success) {
+        setSuggestion('')
+        setSuggestionSuccess(true)
+        setTimeout(() => {
+          setSuggestionSuccess(false)
+          setShowSuggestionForm(false)
+        }, 3000)
+      } else {
+        setSuggestionError(data.error || 'Failed to submit suggestion')
+      }
+    } catch (error) {
+      setSuggestionError('Failed to submit. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const getGreeting = () => {
     const hour = currentTime.getHours()
     if (hour < 12) return 'Good morning'
