@@ -853,6 +853,36 @@ export const Navbar: React.FC = () => {
                       View Profile
                     </Link>
 
+                    {/* Admin link - only shown for @gotoretreats.com users */}
+                    {user.isAdmin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.75rem 1rem',
+                          borderRadius: borderRadius.lg,
+                          textDecoration: 'none',
+                          color: colors.text.primary,
+                          fontSize: '0.9rem',
+                          fontWeight: 500,
+                          transition: 'background-color 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = colors.gray[50]
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent'
+                        }}
+                        data-testid="user-menu-admin"
+                      >
+                        <Shield size={18} style={{ color: colors.accent[500] }} />
+                        Admin
+                      </Link>
+                    )}
+
                     <div style={{ height: '1px', backgroundColor: colors.gray[100], margin: '0.5rem 0' }} />
 
                     <button
