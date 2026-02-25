@@ -1119,6 +1119,30 @@ export const Navbar: React.FC = () => {
                         View Profile
                       </Link>
 
+                      {/* Admin link - only shown for @gotoretreats.com users */}
+                      {user.isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            padding: '1rem',
+                            borderRadius: borderRadius.lg,
+                            textDecoration: 'none',
+                            color: colors.text.primary,
+                            fontSize: '1rem',
+                            fontWeight: 500,
+                            backgroundColor: colors.gray[100],
+                          }}
+                          data-testid="mobile-menu-admin"
+                        >
+                          <Shield size={20} />
+                          Admin Dashboard
+                        </Link>
+                      )}
+
                       <button
                         onClick={() => {
                           handleLogout()
