@@ -164,6 +164,7 @@ export async function validateSession(request: Request): Promise<UserSession | n
       handle: user.handle,
       plan: user.plan || 'FREE',
       picture: user.picture || null,
+      isAdmin: isAdminEmail(user.email),
     }
   } catch (error) {
     console.error('Error validating session:', error)
