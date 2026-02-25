@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDb } from '../../../../lib/mongodb'
+import { isAdminEmail } from '../../../../lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,6 +50,7 @@ export async function GET(request: NextRequest) {
           handle: user.handle,
           plan: user.plan,
           picture: user.picture,
+          isAdmin: isAdminEmail(user.email),
         },
       },
     })
