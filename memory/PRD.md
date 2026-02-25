@@ -17,115 +17,106 @@ We are collecting real user demand before launching the paid version. Users shou
 - **File Uploads**: Cloudinary (fully configured)
 - **Deployment**: Vercel-ready structure
 
-### Project Structure (Pure Next.js App Router)
+### Project Structure
 ```
 /app                    # Root project directory
 ├── app/               # Next.js App Router pages & API routes
 │   ├── (auth)/        # Auth pages (login, signup, callback)
-│   ├── admin/         # Admin-only pages (feedback)
-│   ├── dashboard/     # Dashboard pages (main, profile-editor, analytics)
-│   ├── api/           # API routes (auth, blocks, profile, sections, analytics, suggestions, admin)
+│   ├── admin/         # Admin dashboard (protected by domain check)
+│   ├── dashboard/     # User dashboard pages
+│   ├── api/           # API routes
+│   │   ├── admin/     # Admin-only APIs (stats, users, feedback)
+│   │   ├── auth/      # Auth endpoints
+│   │   ├── analytics/ # Analytics tracking
+│   │   └── ...
 │   ├── components/    # UI components
-│   └── profile/       # Public profile page with dynamic routing
-├── lib/               # Shared utilities (mongodb, auth, themes, sections, cloudinary)
-├── .env.local         # Environment variables
+│   └── profile/       # Public profile page
+├── lib/               # Shared utilities
 └── package.json       # Dependencies
 ```
 
 ## What's Been Implemented
 
-### Validation Mode - Two-Card Pricing Layout ✅ (Feb 25, 2026)
-**Pricing Section:**
-- Headline: "World's FIRST Wellness-Branded Link in Bio"
-- Subtitle: "Completely FREE — No credit card required"
+### Admin System - FULLY WORKING ✅ (Feb 25, 2026)
+**Domain-Based Access Control:**
+- Admin access granted ONLY if email ends with `@gotoretreats.com`
+- Server-side validation in all admin APIs via `isAdminEmail()` function
+- Non-admin users redirected to homepage when accessing `/admin`
+- Admin link completely hidden from non-admin users in navbar
 
+**Admin Dashboard (`/admin`):**
+- **Overview Tab**: Platform metrics (Total Users, Total Profiles, New Users 7d, Total Views, Total Clicks, Feature Suggestions)
+- **Users Tab**: Searchable user list with columns (Name, Email, Handle, Profile URL, Date Joined)
+- **Suggestions Tab**: Filterable suggestions (All, Dashboard, Pricing Page) with source badges
+
+**Admin APIs:**
+- `GET /api/admin/stats` - Platform-wide metrics
+- `GET /api/admin/users?search=` - User list with search
+- `GET /api/admin/feedback?source=` - Suggestions with filter
+
+**Security:**
+- All admin APIs validate `isAdminEmail(user.email)` server-side
+- Non-admin users get 403 Access denied
+- No database IDs exposed
+- Input sanitization on suggestions
+
+### Validation Mode - Two-Card Pricing Layout ✅ (Feb 25, 2026)
 **Free Card ($0):**
-- Unlimited links
-- Retreat blocks
-- Basic themes
-- Profile analytics
-- CTA: "Get started free" button
+- Unlimited links, Retreat blocks, Basic themes, Profile analytics
+- CTA: "Get started free"
 
 **Pro Card ($10/month):**
 - "Most Popular" badge
-- Everything in Free
-- Video hero backgrounds
-- All premium themes
-- Advanced analytics
-- Custom domain
-- Priority support
-- CTA: "Shape the Premium Version" title
-- Subtitle: "Tell us what you'd love in the $10/month plan."
-- Button: "Suggest Features" (expands inline form)
+- All features listed
+- CTA: "Shape the Premium Version" → inline suggestion form
 
-### User Feedback System - FULLY WORKING ✅ (Feb 25, 2026)
-**Dashboard Feedback Card:**
-- "Help Us Improve" title
-- "Suggest features you'd love to see next." subtitle
-- "Suggest Features" button → inline form
-- 500 character limit with counter
-- Success message: "Thanks for your suggestion 💛"
-- Stored with `source: 'dashboard'`
+### User Feedback System ✅ (Feb 25, 2026)
+- Dashboard: "Help Us Improve" card with inline form
+- Pricing Page: Pro card with inline suggestion form
+- 500 character limit, success messages
+- Source tracking: `dashboard` vs `pricing_page`
 
-**Pricing Page Feedback:**
-- Inline suggestion form in Pro card
-- Placeholder: "What features would make this worth $10/month for you?"
-- Success message: "Thanks for helping shape the premium version 💛"
-- Stored with `source: 'pricing_page'`
+### Real-Time Analytics System ✅
+- Profile views and link clicks tracking
+- Sparkline charts on dashboard
+- Dedicated analytics page with period selector
 
-**Admin Features:**
-- `/admin/feedback` page shows all suggestions
-- Table with User Email, Suggestion, Date, Source columns
-- Source badges: "Pricing" (amber) vs "Dashboard" (brown)
-- Protected: Admin-only access
-
-### Real-Time Analytics System - FULLY WORKING ✅
-- POST /api/analytics/track - Tracks profile views and link clicks
-- GET /api/analytics - Returns aggregated analytics data
-- Sparkline charts on dashboard stat cards
-- Dedicated analytics page at /dashboard/analytics
-- Period selector (7D, 30D, 90D)
-
-### Cloudinary Integration - FULLY WORKING ✅
-- Profile picture upload
-- Background image upload for custom themes
-- Signed uploads for security
-
-### Authentication - FULLY WORKING ✅
+### Authentication ✅
 - Email signup/login
 - Google OAuth via Emergent Auth
 - Session management with cookies
-- Protected dashboard routes
+- `isAdmin` flag based on email domain
 
-### Theme Engine 2.0 - FULLY WORKING ✅
+### Theme Engine 2.0 ✅
 - 8 premium themes with animated backgrounds
-- Custom background theme with blur, brightness, overlay controls
+- Custom background theme
 - Dynamic font pairings
 
-### Block Management CRUD - FULLY WORKING ✅
-- Create, Read, Update, Delete blocks
-- Drag-and-drop reordering with persistence
-- Multiple block types
-
-### Mini Website Sections System - FULLY WORKING ✅
-- 5 Section Types
+### Block & Section Management ✅
+- Full CRUD operations
 - Drag-and-drop reordering
-- Visibility toggle
+- Multiple block/section types
 
 ## API Routes
 
+### Admin (Protected)
+- `GET /api/admin/stats` - Platform overview metrics
+- `GET /api/admin/users` - Users list (supports `?search=`)
+- `GET /api/admin/feedback` - Suggestions (supports `?source=`)
+
+### Auth
+- `POST /api/auth/signup` - Registration
+- `POST /api/auth/login` - Login (returns `isAdmin`)
+- `POST /api/auth/logout` - Logout
+- `GET /api/auth/me` - Get current user (returns `isAdmin`)
+
 ### Feedback
-- `POST /api/suggestions` - Submit suggestion (accepts `source` field: 'dashboard' | 'pricing_page')
-- `GET /api/admin/feedback` - Get all suggestions with source (admin-only)
+- `POST /api/suggestions` - Submit suggestion (accepts `source` field)
 
-### Analytics
-- `POST /api/analytics/track` - Track VIEW or CLICK event
-- `GET /api/analytics` - Get aggregated analytics
+### Analytics, Profile, Blocks, Sections
+- Full CRUD as documented previously
 
-### Auth, Profile, Blocks, Sections
-- Full CRUD operations as documented previously
-
-## Database Schema (MongoDB)
+## Database Schema
 
 ### featureSuggestions
 ```json
@@ -139,39 +130,37 @@ We are collecting real user demand before launching the paid version. Users shou
 }
 ```
 
-## Completed Tasks (Feb 25, 2026)
-1. ✅ Restored two-card pricing layout (Free + Pro)
-2. ✅ Changed Pro price from $19 to $10/month
-3. ✅ Kept "Most Popular" badge on Pro card
-4. ✅ Replaced Pro CTA with collaborative validation approach
-5. ✅ Added inline suggestion form to Pro card
-6. ✅ Added source field to suggestions API
-7. ✅ Added Source column to admin feedback page
+### users
+```json
+{ _id, email, passwordHash, firstName, lastName, handle, plan, picture, authProvider, createdAt }
+```
 
-## Upcoming Tasks (Priority Order)
+## Completed Tasks (Feb 25, 2026)
+1. ✅ Admin system with domain-based access (@gotoretreats.com)
+2. ✅ Admin dashboard with Overview, Users, Suggestions tabs
+3. ✅ Server-side protection for all admin routes
+4. ✅ Admin link hidden from non-admin users
+5. ✅ Fixed isAdmin missing in login response
+
+## Upcoming Tasks
 1. **Theme Engine 2.0 Dashboard UI (P1)** - Add UI controls for animation styles, block styles, font pairings
-2. **Stripe Integration (P2)** - When ready to monetize, implement payment flows
+2. **Stripe Integration (P2)** - When ready to monetize
 
 ## Future/Backlog
-- Advanced Analytics (country breakdown, device charts)
+- Advanced Analytics (country, device breakdown)
 - Custom domains for Pro users
 - Social media blocks integration
-- Email notifications for milestone achievements
-- Move admin email list to environment variable
+- Email notifications
 
 ## Test Credentials
-- Admin User: analyticstest@test.com / Test123!
-- Normal User: newuser@test.com / Test123!
+- **Admin User**: admin@gotoretreats.com / Admin123!
+- **Normal User**: analyticstest@test.com / Test123!
 
 ## Admin Access
-Admin emails (can access /admin/feedback):
-- admin@gotolinks.com
-- localtest@test.com
-- analyticstest@test.com
+Only emails ending with `@gotoretreats.com` have admin access.
+Admins can view:
+- All users and their profile URLs
+- All feature suggestions
+- Platform-wide metrics
 
-## Technical Notes
-- Analytics uses in-memory rate limiting
-- Suggestion rate limiting is also in-memory
-- XSS sanitization uses HTML entity encoding
-- Pro feature code retained in codebase
-- Source field distinguishes feedback origin
+Normal users cannot see or access the admin panel.
