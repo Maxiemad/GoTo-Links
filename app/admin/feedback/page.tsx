@@ -9,6 +9,7 @@ interface Suggestion {
   id: string
   email: string
   suggestion: string
+  source?: string
   createdAt: string
 }
 
