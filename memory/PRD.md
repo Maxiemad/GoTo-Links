@@ -10,7 +10,7 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - **Backend**: Next.js API Routes
 - **Database**: MongoDB
 - **Authentication**: JWT + Google OAuth (Emergent Auth)
-- **Payments**: Stripe (test mode) - Scaffolded
+- **Payments**: Stripe (test mode) - Scaffolded (UI removed for validation mode)
 - **File Uploads**: Cloudinary (fully configured)
 - **Deployment**: Vercel-ready structure
 
@@ -19,8 +19,9 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 /app                    # Root project directory
 ├── app/               # Next.js App Router pages & API routes
 │   ├── (auth)/        # Auth pages (login, signup, callback)
-│   ├── dashboard/     # Dashboard pages (main, profile-editor, analytics, upgrade)
-│   ├── api/           # API routes (auth, blocks, profile, sections, analytics, upload)
+│   ├── admin/         # Admin-only pages (feedback)
+│   ├── dashboard/     # Dashboard pages (main, profile-editor, analytics)
+│   ├── api/           # API routes (auth, blocks, profile, sections, analytics, suggestions, admin)
 │   ├── components/    # UI components (SectionEditor, SectionRenderer, ThemeAnimations)
 │   └── profile/       # Public profile page with dynamic routing
 ├── lib/               # Shared utilities (mongodb, auth, themes, sections, cloudinary)
@@ -30,28 +31,43 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 
 ## What's Been Implemented
 
+### User Feedback System - FULLY WORKING ✅ (Feb 25, 2026)
+- [x] Replaced "Upgrade to Pro" card with "Help Us Improve" feedback card
+- [x] Inline suggestion form (no page navigation)
+- [x] 500 character limit with counter
+- [x] Success message: "Thanks for your suggestion 💛"
+- [x] **POST /api/suggestions** - Stores feedback from logged-in users
+- [x] Rate limiting (1 request per minute per user)
+- [x] Input validation and XSS sanitization
+- [x] **GET /api/admin/feedback** - Admin-only endpoint
+- [x] **Admin page at /admin/feedback** - Protected table view of all suggestions
+- [x] MongoDB collection: `featureSuggestions`
+
+### Validation Mode - Pro Plan UI Removed ✅ (Feb 25, 2026)
+- [x] Removed "$19/month" pricing
+- [x] Removed "Upgrade to Pro" buttons
+- [x] Removed "Most Popular" badge
+- [x] Updated headline: "World's FIRST Wellness-Branded Link in Bio — Completely FREE"
+- [x] Single pricing card with "$0/forever"
+- [x] Removed Pricing link from navbar
+- [x] Pro feature code retained internally for future use
+
 ### Real-Time Analytics System - FULLY WORKING ✅ (Feb 24, 2026)
 - [x] **POST /api/analytics/track** - Tracks profile views and link clicks
 - [x] **GET /api/analytics** - Returns aggregated analytics data
-- [x] **Sparkline charts** on main dashboard stat cards
-- [x] **Real-time stats** replacing static data (views, clicks, change percentages)
-- [x] **Dedicated analytics page** at /dashboard/analytics
-- [x] **Line chart** for Performance Over Time
-- [x] **Period selector** (7D, 30D, 90D) with header fallback for proxy environments
-- [x] **Traffic sources breakdown** (Instagram, Google, Twitter/X, Direct, etc.)
-- [x] **Top performing links** section
-- [x] **Public profile tracking** - Views tracked on page load
-- [x] **Link click tracking** - Clicks tracked when users click blocks
-- [x] **Rate limiting** - In-memory rate limiting to prevent spam
-- [x] **Referrer parsing** - Detects source (Instagram, Facebook, Google, etc.)
-- [x] **Device detection** - Mobile, Tablet, Desktop
+- [x] Sparkline charts on main dashboard stat cards
+- [x] Real-time stats (views, clicks, change percentages)
+- [x] Dedicated analytics page at /dashboard/analytics
+- [x] Line chart for Performance Over Time
+- [x] Period selector (7D, 30D, 90D)
+- [x] Traffic sources breakdown
+- [x] Top performing links section
 
-### Cloudinary Integration - FULLY WORKING ✅ (Feb 24, 2026)
+### Cloudinary Integration - FULLY WORKING ✅
 - [x] Profile picture upload with Cloudinary
 - [x] Background image upload for custom themes
 - [x] Signed uploads for security
 - [x] Automatic image optimization
-- [x] Fallback to base64 if Cloudinary unavailable
 
 ### Authentication - FULLY WORKING ✅
 - [x] Email signup with password
@@ -63,40 +79,30 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 
 ### Theme Engine 2.0 - FULLY WORKING ✅
 - [x] 8 premium themes with animated backgrounds
+- [x] Custom background theme with blur, brightness, overlay controls
 - [x] Dynamic font pairings
 - [x] Profile image glow aura
-- [x] Block animations (fadeUp, slideIn, staggeredAppear, etc.)
-- [x] Block styles (glassmorphism, gradient-pill, soft-shadow, etc.)
-- [x] Theme carousel in dashboard with instant preview
-- [x] Custom background theme with blur, brightness, overlay controls
+- [x] Block animations and styles
 
 ### Block Management CRUD - FULLY WORKING ✅
-- [x] Create blocks (Link, Retreat, Testimonial, Book Call, WhatsApp, Telegram)
-- [x] Read, Update, Delete blocks
-- [x] Reorder blocks with persistence
-- [x] Dashboard UI with reorder buttons
-- [x] Public profile renders blocks dynamically
+- [x] Create, Read, Update, Delete blocks
+- [x] Drag-and-drop reordering with persistence
+- [x] Multiple block types (Link, Retreat, Testimonial, Book Call, WhatsApp, Telegram)
 
 ### Mini Website Sections System - FULLY WORKING ✅
-- [x] **Dashboard Section Editor UI** with tabbed navigation
-- [x] **5 Section Types**: About Me, Upcoming Event, Image Gallery, YouTube Video, Testimonials
-- [x] **Drag-and-drop reordering**
-- [x] **Visibility toggle**
-- [x] **API endpoints**: GET/POST/PUT/DELETE `/api/sections`
-
-### Dashboard Features - FULLY WORKING ✅
-- [x] 3D Tilt cards with glassmorphism
-- [x] Wellness-themed light mode design
-- [x] Profile URL copier with toast
-- [x] Time-aware greeting
-- [x] Four action cards: Edit Profile, Preview Profile, Analytics, Upgrade
-- [x] Stats cards with sparklines (Profile Views, Link Clicks, Top Performer)
+- [x] 5 Section Types: About Me, Upcoming Event, Image Gallery, YouTube Video, Testimonials
+- [x] Drag-and-drop reordering
+- [x] Visibility toggle
 
 ## API Routes Implemented
 
-### Analytics (New)
+### Feedback (New)
+- `POST /api/suggestions` - Submit a feature suggestion (logged-in users only)
+- `GET /api/admin/feedback` - Get all suggestions (admin-only)
+
+### Analytics
 - `POST /api/analytics/track` - Track VIEW or CLICK event
-- `GET /api/analytics` - Get aggregated analytics (stats, sparklines, daily breakdown, top links, referrers)
+- `GET /api/analytics` - Get aggregated analytics
 
 ### Auth
 - `POST /api/auth/signup` - Email registration
@@ -105,9 +111,8 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - `GET /api/auth/me` - Get current user
 
 ### Profile
-- `GET /api/profile` - Get user's profile with blocks and sections
+- `GET /api/profile` - Get user's profile
 - `PUT /api/profile` - Update profile
-- `PATCH /api/profile/theme` - Update theme
 - `GET /api/profile/[handle]` - Get public profile
 
 ### Blocks
@@ -124,9 +129,6 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 - `DELETE /api/sections` - Delete section
 - `POST /api/sections/reorder` - Reorder sections
 
-### Upload
-- `GET /api/upload/signature` - Get Cloudinary upload signature
-
 ## Database Schema (MongoDB)
 
 ### users
@@ -139,41 +141,53 @@ Build a production-ready, full-stack "link-in-bio" application that functions as
 { _id, userId, name, headline, bio, photoUrl, location, theme, sections: [...], backgroundImage, backgroundBlur, backgroundBrightness, backgroundOverlayColor }
 ```
 
-### blocks (separate collection)
+### blocks
 ```json
 { _id, profileId, type, order, isVisible, title, url, description, ... }
 ```
 
-### analytics (new collection)
+### analytics
 ```json
-{ _id, profileId, userId, blockId, eventType, referrer, device, rawReferrer, userAgent, clientIp, timestamp, createdAt }
+{ _id, profileId, userId, blockId, eventType, referrer, device, timestamp, createdAt }
 ```
 
-## Completed Tasks (Feb 24, 2026)
-1. ✅ Real-Time Analytics System - Fully implemented and tested
-2. ✅ Dashboard sparklines and real stats
-3. ✅ Analytics page with charts and period selector
-4. ✅ Cloudinary credentials configured
-5. ✅ Period selector fixed with header fallback
+### featureSuggestions (New)
+```json
+{ _id, userId, email, suggestion, createdAt }
+```
+
+## Completed Tasks (Feb 25, 2026)
+1. ✅ Removed Pro Plan UI (pricing, upgrade buttons, badges)
+2. ✅ Updated pricing headline to "Completely FREE"
+3. ✅ Replaced Upgrade card with "Help Us Improve" feedback card
+4. ✅ Implemented inline suggestion form with validation
+5. ✅ Created /api/suggestions endpoint with rate limiting
+6. ✅ Created admin-only /admin/feedback page
+7. ✅ All security measures implemented (auth, sanitization, rate limiting)
 
 ## Upcoming Tasks (Priority Order)
 1. **Theme Engine 2.0 Dashboard UI (P1)** - Add UI controls for animation styles, block styles, font pairings
-2. **Stripe Integration (P2)** - Payment flows for Pro plan
+2. **Stripe Integration (P2)** - When ready to monetize, re-enable payment flows
 
 ## Future/Backlog
 - Advanced Analytics (referrer tracking by country, device breakdown charts)
 - Custom domains for Pro users
 - Social media blocks (Instagram feed, YouTube channel)
-- Email notifications
-- Team/collaboration features
+- Email notifications for milestone achievements
+- Move admin email list to environment variable or database
 
 ## Test Credentials
-- Email: analyticstest@test.com
-- Password: Test123!
-- Handle: analyticstester
+- Admin User: analyticstest@test.com / Test123!
+- Normal User: newuser@test.com / Test123!
+
+## Admin Access
+Admin emails (can access /admin/feedback):
+- admin@gotolinks.com
+- localtest@test.com
+- analyticstest@test.com
 
 ## Technical Notes
-- Analytics uses in-memory rate limiting (consider Redis for production scale)
-- Period selector uses x-analytics-period header as fallback for proxy environments that strip query params
-- Public profile tracking fires on page load using useEffect
-- Link click tracking fires on block click handlers
+- Analytics uses in-memory rate limiting (consider Redis for production)
+- Suggestion rate limiting is also in-memory
+- XSS sanitization uses basic HTML entity encoding
+- Pro feature code retained in codebase but UI removed for validation mode
